@@ -13,10 +13,10 @@ You can use the commands listed below with `curl` by providing your token.
 
 ## API Basics
 
-| Environment       | URL                                | Protocols           |
-| ----------------- | ---------------------------------- | --------------------|
-| Production        | `https://pandabase.io/api`         | HTTP/1.1-2 over TLS |
-| Preview Features  | `https://pandabase.io/api/preview` | HTTP/1.1-2 over TLS |
+| Environment | URL                                | Protocols           |
+| ----------- | ---------------------------------- | ------------------- |
+| Production  | `https://api.pandabase.io`         | HTTP/1.1-2 over TLS |
+| Sandbox     | `https://api.sandbox.pandabase.io` | HTTP/1.1-2 over TLS |
 
 ## Additional Information
 
@@ -38,21 +38,16 @@ All requests must be encoded as JSON with the Content-Type: `application/json`
 header. If not otherwise specified, responses from the Pandabase API, including
 errors, are encoded exclusively as JSON as well.
 
-### Authentication
-
-API keys are necessary for authentication and API usage. Although
-account session tokens can be used, they are not recommended due to security reasons.
-
 ### Versioning
 
 The Pandabase API uses a hybrid versioning system that combines major versions with date-based increments to ensure stability while providing continuous improvements.
 
 **How It Works:**
 
-1. **Major Versions** (v1, v2, v3): Released when there are breaking changes that require code updates
+1. **Major Versions** (v1, v2): Released when there are breaking changes that require code updates
    - Breaking changes include endpoint restructuring, renamed fields, or removed functionality
    - Each major version is maintained separately to give you time to migrate
-   - Current version: **V3** (released December 25, 2024)
+   - Current version: **V1** (released March 7, 2026)
 
 2. **Date-Based Increments** (YYYY/MM/DD): Added to major versions for non-breaking updates
    - Non-breaking changes include new features, additional fields, bug fixes, and performance improvements
@@ -65,8 +60,7 @@ Every API response includes the current version in the `X-API-Version` header, a
 
 **Migration Timeline:**
 
-- V1 and V2 endpoints will be available until **January 1st, 2026**
-- V3 endpoints are available now at `https://pandabase.io/api`
+- V1 endpoints will be available until **April 1st, 2026**
 - See the [changelog](/developers/changelog) for detailed version history
 
 ### Request IDs

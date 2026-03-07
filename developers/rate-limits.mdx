@@ -20,18 +20,19 @@ Pandabase uses three types of rate limiters, depending on the endpoint and resou
 We provide generous rate limits designed to accommodate normal usage patterns. The account-based rate limiter is generally stricter and more dynamic than the global IP-based limiter, but both are set at levels sufficient for most use cases.
 
 <Warning>
-Rate limits may change over time as we optimize our system. Always implement retry logic and respect the rate limit headers in API responses.
+  Rate limits may change over time as we optimize our system. Always implement
+  retry logic and respect the rate limit headers in API responses.
 </Warning>
 
 ## Rate Limit Headers
 
 All API responses include the following headers to help you manage your request rate:
 
-| Header                  | Description                                                                    |
-| ----------------------- | ------------------------------------------------------------------------------ |
-| `X-RateLimit-Limit`     | The maximum number of requests permitted within the current rate limit window. |
-| `X-RateLimit-Remaining` | The number of requests remaining in the current rate limit window.             |
-| `X-RateLimit-Reset`     | The time at which the current rate limit window resets (UTC epoch seconds).    |
+| Header                  | Description                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| `X-RateLimit-Limit`     | The maximum number of requests permitted within the current rate limit window.              |
+| `X-RateLimit-Remaining` | The number of requests remaining in the current rate limit window.                          |
+| `X-RateLimit-Reset`     | The time at which the current rate limit window resets (UTC epoch seconds).                 |
 | `X-RateLimit-Type`      | The type of rate limiter applied (`GlobalResource`, `AccountResource`, or `StoreResource`). |
 
 ## Handling Rate Limits
@@ -41,10 +42,7 @@ When you exceed the rate limit, the API returns a `429 Too Many Requests` respon
 ```json
 {
   "ok": false,
-  "error": {
-    "code": "rate_limit_exceeded",
-    "message": "Rate limit exceeded. Please retry after the reset time."
-  }
+  "error": "Rate limit exceeded. Please retry after the reset time."
 }
 ```
 
@@ -65,11 +63,11 @@ async function makeRequestWithRetry(url, options, maxRetries = 3) {
     const data = await response.json();
 
     if (response.status === 429 && !data.ok) {
-      const resetTime = response.headers.get('X-RateLimit-Reset');
-      const waitTime = (resetTime * 1000) - Date.now();
+      const resetTime = response.headers.get("X-RateLimit-Reset");
+      const waitTime = resetTime * 1000 - Date.now();
 
       if (i < maxRetries - 1) {
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
         continue;
       }
     }
@@ -79,18 +77,21 @@ async function makeRequestWithRetry(url, options, maxRetries = 3) {
 }
 
 // Usage
-const { response, data } = await makeRequestWithRetry('https://pandabase.io/api/payments', {
-  method: 'GET',
-  headers: {
-    'Authorization': 'Bearer sk_v3_xxx',
-    'Content-Type': 'application/json'
-  }
-});
+const { response, data } = await makeRequestWithRetry(
+  "https://api.pandabase.io/stores/[storeId]",
+  {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer sk",
+      "Content-Type": "application/json",
+    },
+  },
+);
 
 if (data.ok) {
-  console.log('Success:', data.data);
+  console.log("Success:", data.data);
 } else {
-  console.error('Error:', data.error);
+  console.error("Error:", data.error);
 }
 ```
 
@@ -103,5 +104,6 @@ Be aware that rate limits may vary:
 - Higher-tier plans may have increased rate limits
 
 <Note>
-Always rely on the headers returned in each API response to determine your current rate limit status rather than hardcoding values.
+  Always rely on the headers returned in each API response to determine your
+  current rate limit status rather than hardcoding values.
 </Note>

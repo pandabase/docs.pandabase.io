@@ -1,679 +1,132 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
-    "title": "Pandabase API",
-    "version": "3.0.0",
-    "description": "The Pandabase API allows you to programmatically interact with your Pandabase resources. All API responses follow a consistent format with an `ok` field indicating success or failure.",
+    "title": "Pandabase V2 API",
+    "description": "Token-authenticated programmatic API for managing stores, products, orders, and more. Authenticated via Bearer token (sk_ prefix) or HMAC (stk_ token ID).",
+    "version": "2.0.0",
     "contact": {
-      "name": "Pandabase Support",
+      "name": "Pandabase",
       "url": "https://pandabase.io"
     }
   },
   "servers": [
     {
-      "url": "https://pandabase.io/api",
-      "description": "Production API"
+      "url": "https://api.pandabase.io/v2/core",
+      "description": "Production"
     },
     {
-      "url": "https://pandabase.io/api/preview",
-      "description": "Preview Features"
+      "url": "https://api.sandbox.pandabase.io/v2/core",
+      "description": "Development"
     }
   ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
+  "security": [{ "BearerAuth": [] }],
+  "tags": [
+    { "name": "Store", "description": "Store information" },
+    { "name": "Products", "description": "Product management" },
+    { "name": "Categories", "description": "Category management" },
+    { "name": "Coupons", "description": "Coupon management" },
+    { "name": "Orders", "description": "Order management" },
+    { "name": "Payments", "description": "Payment management" },
+    { "name": "Webhooks", "description": "Webhook management" },
+    { "name": "Analytics", "description": "Store analytics" },
+    { "name": "Payouts", "description": "Payout management" },
+    { "name": "Customers", "description": "Customer management" },
+    { "name": "Licenses", "description": "License management" }
   ],
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "sk_v3_xxx",
-        "description": "V3 API key authentication. Format: `sk_v3_xxxxx`"
-      }
-    },
-    "parameters": {
-      "StorefrontId": {
-        "name": "X-Storefront-Id",
-        "in": "header",
-        "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "description": "Your storefront/shop ID"
-      }
-    },
-    "schemas": {
-      "SuccessResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "example": true,
-            "description": "Always true for successful requests"
-          },
-          "data": {
-            "type": "object",
-            "description": "The requested resource or response data"
-          }
-        },
-        "required": ["ok", "data"]
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "example": false,
-            "description": "Always false for failed requests"
-          },
-          "error": {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "example": "invalid_request",
-                "description": "Machine-readable error code"
-              },
-              "message": {
-                "type": "string",
-                "example": "The request was malformed or missing required parameters",
-                "description": "Human-readable error message"
-              }
-            },
-            "required": ["code", "message"]
-          }
-        },
-        "required": ["ok", "error"]
-      },
-      "Payment": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "pmnt_1234567890"
-          },
-          "amount": {
-            "type": "integer",
-            "example": 1000,
-            "description": "Amount in cents"
-          },
-          "currency": {
-            "type": "string",
-            "example": "USD"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "processing",
-              "succeeded",
-              "failed",
-              "canceled"
-            ],
-            "example": "succeeded"
-          },
-          "description": {
-            "type": "string",
-            "example": "Premium Plan"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-12-25T10:00:00Z"
-          }
-        }
-      },
-      "Product": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "prod_abc123"
-          },
-          "name": {
-            "type": "string",
-            "example": "Premium Plan"
-          },
-          "price": {
-            "type": "integer",
-            "example": 2999,
-            "description": "Price in cents"
-          },
-          "currency": {
-            "type": "string",
-            "example": "USD"
-          },
-          "description": {
-            "type": "string"
-          },
-          "images": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                },
-                "hash": {
-                  "type": "string"
-                },
-                "path": {
-                  "type": "string"
-                },
-                "preview_url": {
-                  "type": "string"
-                },
-                "resolution": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "Order": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "ord_xyz789"
-          },
-          "amount": {
-            "type": "integer",
-            "example": 2999
-          },
-          "currency": {
-            "type": "string",
-            "example": "USD"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["pending", "completed", "canceled", "refunded"]
-          },
-          "customer": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string",
-                "format": "email"
-              }
-            }
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "Coupon": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "cpn_def456"
-          },
-          "code": {
-            "type": "string",
-            "example": "SAVE20"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["percentage", "fixed"]
-          },
-          "value": {
-            "type": "integer",
-            "example": 20
-          },
-          "enabled": {
-            "type": "boolean",
-            "example": true
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "License": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "lic_abc123"
-          },
-          "key": {
-            "type": "string",
-            "example": "XXXX-XXXX-XXXX-XXXX"
-          },
-          "product_id": {
-            "type": "string",
-            "example": "prod_xyz789"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["active", "suspended", "expired", "revoked"],
-            "example": "active"
-          },
-          "customer_id": {
-            "type": "string",
-            "example": "cust_123456"
-          },
-          "metadata": {
-            "type": "object",
-            "additionalProperties": true,
-            "description": "Custom metadata associated with the license"
-          },
-          "expires_at": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true,
-            "example": "2025-12-31T23:59:59Z"
-          },
-          "activated_at": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    },
-    "responses": {
-      "UnauthorizedError": {
-        "description": "Authentication failed",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            },
-            "example": {
-              "ok": false,
-              "error": {
-                "code": "invalid_api_key",
-                "message": "The provided API key is invalid or expired"
-              }
-            }
-          }
-        }
-      },
-      "NotFoundError": {
-        "description": "Resource not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            },
-            "example": {
-              "ok": false,
-              "error": {
-                "code": "not_found",
-                "message": "The requested resource could not be found"
-              }
-            }
-          }
-        }
-      },
-      "RateLimitError": {
-        "description": "Rate limit exceeded",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            },
-            "example": {
-              "ok": false,
-              "error": {
-                "code": "rate_limit_exceeded",
-                "message": "Rate limit exceeded. Please retry after the reset time."
-              }
-            }
-          }
-        }
-      },
-      "ValidationError": {
-        "description": "Validation failed",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            },
-            "example": {
-              "ok": false,
-              "error": {
-                "code": "validation_error",
-                "message": "The 'amount' field is required and must be a positive integer"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "paths": {
-    "/payments": {
-      "post": {
-        "summary": "Create a payment",
-        "description": "Create a new payment intent for a customer",
-        "operationId": "createPayment",
-        "tags": ["Payments"],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["amount", "currency"],
-                "properties": {
-                  "amount": {
-                    "type": "integer",
-                    "description": "Amount in cents",
-                    "example": 1000
-                  },
-                  "currency": {
-                    "type": "string",
-                    "description": "Three-letter currency code",
-                    "example": "USD"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Premium Plan"
-                  },
-                  "display_ui": {
-                    "type": "object",
-                    "properties": {
-                      "fields": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "example": "input"
-                            },
-                            "name": {
-                              "type": "string",
-                              "example": "username"
-                            },
-                            "display_name": {
-                              "type": "string",
-                              "example": "Your Username"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "return_url": {
-                    "type": "string",
-                    "format": "uri",
-                    "example": "https://your-site.com/success"
-                  },
-                  "cancel_url": {
-                    "type": "string",
-                    "format": "uri",
-                    "example": "https://your-site.com/cancel"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Payment created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "example": "pmnt_1234567890"
-                        },
-                        "checkout_url": {
-                          "type": "string",
-                          "example": "https://pandabase.io/checkout/pmnt_xxx"
-                        },
-                        "amount": {
-                          "type": "integer",
-                          "example": 1000
-                        },
-                        "currency": {
-                          "type": "string",
-                          "example": "USD"
-                        },
-                        "status": {
-                          "type": "string",
-                          "example": "pending"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimitError"
-          }
-        }
-      },
+    "/stores/{storeId}": {
       "get": {
-        "summary": "List payments",
-        "description": "Retrieve a list of payments",
-        "operationId": "listPayments",
-        "tags": ["Payments"],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 10,
-              "maximum": 100
-            }
-          }
-        ],
+        "operationId": "getStore",
+        "summary": "Get store details",
+        "tags": ["Store"],
+        "parameters": [{ "$ref": "#/components/parameters/StoreId" }],
         "responses": {
-          "200": {
-            "description": "Payments retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "payments": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Payment"
-                          }
-                        },
-                        "meta": {
-                          "type": "object",
-                          "properties": {
-                            "page": {
-                              "type": "integer",
-                              "example": 1
-                            },
-                            "page_size": {
-                              "type": "integer",
-                              "example": 10
-                            },
-                            "total": {
-                              "type": "integer",
-                              "example": 45
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimitError"
-          }
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
     },
-    "/payments/{id}": {
+    "/stores/{storeId}/products": {
       "get": {
-        "summary": "Get a payment",
-        "description": "Retrieve details of a specific payment",
-        "operationId": "getPayment",
-        "tags": ["Payments"],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Payment ID"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Payment retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/Payment"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimitError"
-          }
-        }
-      }
-    },
-    "/products": {
-      "get": {
-        "summary": "List products",
-        "description": "Retrieve a list of products",
         "operationId": "listProducts",
+        "summary": "List products",
         "tags": ["Products"],
         "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
+          { "$ref": "#/components/parameters/StoreId" },
           {
             "name": "page",
             "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
           },
           {
-            "name": "page_size",
+            "name": "limit",
             "in": "query",
             "schema": {
               "type": "integer",
-              "default": 10
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
             }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 128 }
+          },
+          {
+            "name": "productType",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/ProductType" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/ProductStatus" }
+          },
+          {
+            "name": "pricingModel",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/PricingModel" }
+          },
+          { "name": "inStock", "in": "query", "schema": { "type": "boolean" } },
+          {
+            "name": "categoryId",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["title", "price", "createdAt", "updatedAt"]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"] }
           }
         ],
         "responses": {
           "200": {
-            "description": "Products retrieved successfully",
+            "description": "Paginated list of products",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["ok", "data"],
                   "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
+                    "ok": { "type": "boolean", "const": true },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "products": {
+                        "items": {
                           "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Product"
-                          }
+                          "items": { "$ref": "#/components/schemas/Product" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
                         }
                       }
                     }
@@ -682,169 +135,167 @@
               }
             }
           },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimitError"
-          }
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
         }
       },
       "post": {
-        "summary": "Create a product",
-        "description": "Create a new product",
         "operationId": "createProduct",
+        "summary": "Create a product",
+        "tags": ["Products"],
+        "parameters": [{ "$ref": "#/components/parameters/StoreId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateProductBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/products/{productId}": {
+      "get": {
+        "operationId": "getProduct",
+        "summary": "Get a product",
         "tags": ["Products"],
         "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          }
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/ProductId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/Product" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "patch": {
+        "operationId": "updateProduct",
+        "summary": "Update a product",
+        "tags": ["Products"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/ProductId" }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["name", "price", "currency"],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "example": "Premium Plan"
-                  },
-                  "price": {
-                    "type": "integer",
-                    "example": 2999
-                  },
-                  "currency": {
-                    "type": "string",
-                    "example": "USD"
-                  },
-                  "description": {
-                    "type": "string"
-                  },
-                  "categories": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
+              "schema": { "$ref": "#/components/schemas/UpdateProductBody" }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Product created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/Product"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimitError"
-          }
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
         }
-      }
-    },
-    "/products/{id}": {
-      "get": {
-        "summary": "Get a product",
-        "description": "Retrieve details of a specific product",
-        "operationId": "getProduct",
+      },
+      "delete": {
+        "operationId": "deleteProduct",
+        "summary": "Delete a product",
         "tags": ["Products"],
         "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/ProductId" }
         ],
         "responses": {
-          "200": {
-            "description": "Product retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/Product"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
     },
-    "/orders": {
+    "/stores/{storeId}/categories": {
       "get": {
-        "summary": "List orders",
-        "description": "Retrieve a list of orders",
-        "operationId": "listOrders",
-        "tags": ["Orders"],
+        "operationId": "listCategories",
+        "summary": "List categories",
+        "tags": ["Categories"],
         "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
           {
-            "$ref": "#/components/parameters/StorefrontId"
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 128 }
+          },
+          { "name": "parentId", "in": "query", "schema": { "type": "string" } },
+          {
+            "name": "featured",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "isFavourite",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "isArchived",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["displayOrder", "name", "createdAt", "updatedAt"]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"] }
           }
         ],
         "responses": {
           "200": {
-            "description": "Orders retrieved successfully",
+            "description": "Paginated list of categories",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["ok", "data"],
                   "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
+                    "ok": { "type": "boolean", "const": true },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "orders": {
+                        "items": {
                           "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Order"
-                          }
+                          "items": { "$ref": "#/components/schemas/Category" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
                         }
                       }
                     }
@@ -852,41 +303,158 @@
                 }
               }
             }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "post": {
+        "operationId": "createCategory",
+        "summary": "Create a category",
+        "tags": ["Categories"],
+        "parameters": [{ "$ref": "#/components/parameters/StoreId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCategoryBody" }
+            }
           }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
     },
-    "/coupons": {
+    "/stores/{storeId}/categories/{categoryId}": {
       "get": {
-        "summary": "List coupons",
-        "description": "Retrieve a list of coupons",
+        "operationId": "getCategory",
+        "summary": "Get a category",
+        "tags": ["Categories"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CategoryId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/Category" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "patch": {
+        "operationId": "updateCategory",
+        "summary": "Update a category",
+        "tags": ["Categories"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CategoryId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCategoryBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCategory",
+        "summary": "Delete a category",
+        "tags": ["Categories"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CategoryId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/coupons": {
+      "get": {
         "operationId": "listCoupons",
+        "summary": "List coupons",
         "tags": ["Coupons"],
         "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
           {
-            "$ref": "#/components/parameters/StorefrontId"
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 128 }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["FIXED", "PERCENTAGE"] }
+          },
+          { "name": "enabled", "in": "query", "schema": { "type": "boolean" } },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["code", "createdAt", "updatedAt", "value", "timesUsed"]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"] }
           }
         ],
         "responses": {
           "200": {
-            "description": "Coupons retrieved successfully",
+            "description": "Paginated list of coupons",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["ok", "data"],
                   "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
+                    "ok": { "type": "boolean", "const": true },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "coupons": {
+                        "items": {
                           "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/Coupon"
-                          }
+                          "items": { "$ref": "#/components/schemas/Coupon" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
                         }
                       }
                     }
@@ -894,92 +462,820 @@
                 }
               }
             }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "post": {
+        "operationId": "createCoupon",
+        "summary": "Create a coupon",
+        "tags": ["Coupons"],
+        "parameters": [{ "$ref": "#/components/parameters/StoreId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCouponBody" }
+            }
           }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
     },
-    "/products/{productId}/licenses": {
+    "/stores/{storeId}/coupons/{couponId}": {
       "get": {
-        "summary": "List licenses",
-        "description": "Retrieve a list of licenses for a product. Only available if you use managed licenses.",
+        "operationId": "getCoupon",
+        "summary": "Get a coupon",
+        "tags": ["Coupons"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CouponId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coupon details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/Coupon" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "patch": {
+        "operationId": "updateCoupon",
+        "summary": "Update a coupon",
+        "tags": ["Coupons"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CouponId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCouponBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteCoupon",
+        "summary": "Delete a coupon",
+        "tags": ["Coupons"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CouponId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/orders": {
+      "get": {
+        "operationId": "listOrders",
+        "summary": "List orders",
+        "tags": ["Orders"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/OrderStatus" }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 128 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Order" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/orders/{orderId}": {
+      "get": {
+        "operationId": "getOrder",
+        "summary": "Get order details",
+        "tags": ["Orders"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/OrderId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/OrderDetail" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/orders/{orderId}/refunds": {
+      "get": {
+        "operationId": "listRefunds",
+        "summary": "List refunds for an order",
+        "tags": ["Orders"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/OrderId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/orders/{orderId}/retry-fulfillment": {
+      "post": {
+        "operationId": "retryFulfillment",
+        "summary": "Retry order fulfillment",
+        "tags": ["Orders"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/OrderId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/orders/payments": {
+      "get": {
+        "operationId": "listPayments",
+        "summary": "List payments",
+        "tags": ["Payments"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/PaymentStatus" }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 128 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of payments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Payment" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/orders/payments/{paymentId}": {
+      "get": {
+        "operationId": "getPayment",
+        "summary": "Get payment details",
+        "tags": ["Payments"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/PaymentId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/PaymentDetail" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/webhooks": {
+      "get": {
+        "operationId": "listWebhooks",
+        "summary": "List webhooks",
+        "tags": ["Webhooks"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of webhooks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Webhook" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "post": {
+        "operationId": "createWebhook",
+        "summary": "Create a webhook",
+        "tags": ["Webhooks"],
+        "parameters": [{ "$ref": "#/components/parameters/StoreId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateWebhookBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/webhooks/{webhookId}": {
+      "get": {
+        "operationId": "getWebhook",
+        "summary": "Get a webhook",
+        "tags": ["Webhooks"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/WebhookId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/Webhook" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "patch": {
+        "operationId": "updateWebhook",
+        "summary": "Update a webhook",
+        "tags": ["Webhooks"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/WebhookId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateWebhookBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "delete": {
+        "operationId": "deleteWebhook",
+        "summary": "Delete a webhook",
+        "tags": ["Webhooks"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/WebhookId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/analytics/overview": {
+      "get": {
+        "operationId": "getAnalyticsOverview",
+        "summary": "Get analytics overview",
+        "tags": ["Analytics"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["7d", "30d", "90d", "all", "custom"]
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/analytics/gross-volume": {
+      "get": {
+        "operationId": "getGrossVolume",
+        "summary": "Get gross volume analytics",
+        "tags": ["Analytics"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["7d", "30d", "90d", "all", "custom"]
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/analytics/orders-by-country": {
+      "get": {
+        "operationId": "getOrdersByCountry",
+        "summary": "Get orders by country",
+        "tags": ["Analytics"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["7d", "30d", "90d", "all", "custom"]
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/payouts": {
+      "get": {
+        "operationId": "listPayouts",
+        "summary": "List payouts",
+        "tags": ["Payouts"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of payouts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Payout" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/payouts/{payoutId}": {
+      "get": {
+        "operationId": "getPayoutDetails",
+        "summary": "Get payout details",
+        "tags": ["Payouts"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/PayoutId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payout details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/Payout" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/payouts/bank-accounts": {
+      "get": {
+        "operationId": "listBankAccounts",
+        "summary": "List bank accounts",
+        "tags": ["Payouts"],
+        "parameters": [{ "$ref": "#/components/parameters/StoreId" }],
+        "responses": {
+          "200": {
+            "description": "List of bank accounts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/BankAccount" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/customers": {
+      "get": {
+        "operationId": "listCustomers",
+        "summary": "List customers",
+        "tags": ["Customers"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 128 }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["email", "totalSpent", "orderCount", "createdAt"]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["asc", "desc"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of customers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CustomerSummary"
+                          }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/customers/{customerId}": {
+      "get": {
+        "operationId": "getCustomer",
+        "summary": "Get customer details",
+        "tags": ["Customers"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CustomerId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/CustomerDetail" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/licenses": {
+      "get": {
         "operationId": "listLicenses",
+        "summary": "List licenses",
         "tags": ["Licenses"],
         "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
           {
-            "$ref": "#/components/parameters/StorefrontId"
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
           },
           {
             "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Product ID"
+            "in": "query",
+            "schema": { "type": "string" }
           },
           {
             "name": "status",
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["active", "suspended", "expired", "revoked"]
-            },
-            "description": "Filter licenses by status"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "default": 10
+              "enum": ["AVAILABLE", "CLAIMED", "REVOKED"]
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Licenses retrieved successfully",
+            "description": "Paginated list of licenses",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["ok", "data"],
                   "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
+                    "ok": { "type": "boolean", "const": true },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "licenses": {
+                        "items": {
                           "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/License"
-                          }
+                          "items": { "$ref": "#/components/schemas/License" }
                         },
-                        "meta": {
-                          "type": "object",
-                          "properties": {
-                            "page": {
-                              "type": "integer",
-                              "example": 1
-                            },
-                            "page_size": {
-                              "type": "integer",
-                              "example": 10
-                            },
-                            "total": {
-                              "type": "integer",
-                              "example": 25
-                            }
-                          }
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
                         }
                       }
                     }
@@ -988,319 +1284,1278 @@
               }
             }
           },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimitError"
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a license",
-        "description": "Create a new license for a product",
-        "operationId": "createLicense",
-        "tags": ["Licenses"],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "customer_id": {
-                    "type": "string",
-                    "example": "cust_123456"
-                  },
-                  "key": {
-                    "type": "string",
-                    "description": "Custom license key (optional, will be auto-generated if not provided)",
-                    "example": "CUSTOM-KEY-HERE"
-                  },
-                  "metadata": {
-                    "type": "object",
-                    "additionalProperties": true,
-                    "description": "Custom metadata"
-                  },
-                  "expires_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Expiration date (optional, null for permanent)",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "License created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/License"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/RateLimitError"
-          }
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
     },
-    "/products/{productId}/licenses/{licenseId}": {
+    "/stores/{storeId}/licenses/{licenseId}": {
       "get": {
-        "summary": "Get a license",
-        "description": "Retrieve details of a specific license",
         "operationId": "getLicense",
+        "summary": "Get license details",
         "tags": ["Licenses"],
         "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "licenseId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/LicenseId" }
         ],
         "responses": {
           "200": {
-            "description": "License retrieved successfully",
+            "description": "License details",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["ok", "data"],
                   "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/License"
-                    }
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/License" }
                   }
                 }
               }
             }
           },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
         }
-      },
-      "patch": {
-        "summary": "Update a license",
-        "description": "Update license status or metadata",
-        "operationId": "updateLicense",
+      }
+    },
+    "/stores/{storeId}/licenses/verify": {
+      "post": {
+        "operationId": "verifyLicense",
+        "summary": "Verify a license key",
         "tags": ["Licenses"],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "licenseId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [{ "$ref": "#/components/parameters/StoreId" }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": ["key"],
                 "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": ["active", "suspended", "revoked"],
-                    "description": "Update license status"
-                  },
-                  "metadata": {
-                    "type": "object",
-                    "additionalProperties": true
-                  },
-                  "expires_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "nullable": true
-                  }
+                  "key": { "type": "string", "minLength": 1, "maxLength": 512 },
+                  "productId": { "type": "string" }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "License updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/License"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Revoke a license",
-        "description": "Permanently revoke a license",
-        "operationId": "revokeLicense",
-        "tags": ["Licenses"],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/StorefrontId"
-          },
-          {
-            "name": "productId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "licenseId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "License revoked successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ok": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string",
-                          "example": "License revoked successfully"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFoundError"
-          }
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
     }
   },
-  "tags": [
-    {
-      "name": "Payments",
-      "description": "Payment operations"
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Store API token. Use the `sk_` prefixed secret key as the Bearer token."
+      },
+      "HMAC": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "HMAC authentication using `stk_` token ID. Send `HMAC stk_xxx:signature` where signature is HMAC-SHA256 of the request body."
+      }
     },
-    {
-      "name": "Products",
-      "description": "Product management"
+    "parameters": {
+      "StoreId": {
+        "name": "storeId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Store ID (shp_ prefix)"
+      },
+      "ProductId": {
+        "name": "productId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Product ID (prd_ prefix)"
+      },
+      "CategoryId": {
+        "name": "categoryId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Category ID (ctg_ prefix)"
+      },
+      "CouponId": {
+        "name": "couponId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Coupon ID (cpn_ prefix)"
+      },
+      "OrderId": {
+        "name": "orderId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Order ID (ord_ prefix)"
+      },
+      "PaymentId": {
+        "name": "paymentId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Payment ID (pmt_ prefix)"
+      },
+      "WebhookId": {
+        "name": "webhookId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Webhook ID (whk_ prefix)"
+      },
+      "PayoutId": {
+        "name": "payoutId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Payout ID (pto_ prefix)"
+      },
+      "CustomerId": {
+        "name": "customerId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Customer ID (cus_ prefix)"
+      },
+      "LicenseId": {
+        "name": "licenseId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "License ID (lic_ prefix)"
+      }
     },
-    {
-      "name": "Orders",
-      "description": "Order management"
+    "responses": {
+      "SuccessResponse": {
+        "description": "Successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["ok", "data"],
+              "properties": {
+                "ok": { "type": "boolean", "const": true },
+                "data": {}
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "description": "Error response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["ok", "error"],
+              "properties": {
+                "ok": { "type": "boolean", "const": false },
+                "error": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
     },
-    {
-      "name": "Coupons",
-      "description": "Coupon management"
-    },
-    {
-      "name": "Licenses",
-      "description": "License management (only available with managed licenses)"
+    "schemas": {
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "total": { "type": "integer" },
+          "totalPages": { "type": "integer" }
+        }
+      },
+      "ProductType": {
+        "type": "string",
+        "enum": ["SUBSCRIPTION", "DIGITAL_DOWNLOAD", "LICENSE_KEY"]
+      },
+      "ProductStatus": {
+        "type": "string",
+        "enum": ["DRAFT", "ACTIVE"]
+      },
+      "PricingModel": {
+        "type": "string",
+        "enum": ["STANDARD", "PAY_WHAT_YOU_WANT", "FREE"]
+      },
+      "FulfillmentMode": {
+        "type": "string",
+        "enum": [
+          "MANAGED_LICENSE",
+          "LICENSE_POOL",
+          "LICENSE_WEBHOOK",
+          "INSTANT_DOWNLOAD",
+          "REDIRECT",
+          "MANUAL"
+        ]
+      },
+      "KeyFormat": {
+        "type": "string",
+        "enum": ["ALPHANUMERIC", "UUID", "CUSTOM_PREFIX"]
+      },
+      "LicenseDuration": {
+        "type": "string",
+        "enum": ["THIRTY_DAYS", "NINETY_DAYS", "ONE_YEAR", "LIFETIME"]
+      },
+      "BillingInterval": {
+        "type": "string",
+        "enum": ["WEEKLY", "MONTHLY", "YEARLY"]
+      },
+      "BillingAnchor": {
+        "type": "string",
+        "enum": ["IMMEDIATELY", "END_OF_PERIOD"]
+      },
+      "OrderStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "PROCESSING",
+          "COMPLETED",
+          "CANCELLED",
+          "FAILED",
+          "REFUNDED",
+          "CHARGEBACK"
+        ]
+      },
+      "PaymentStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "PROCESSING",
+          "COMPLETED",
+          "REFUNDED",
+          "DISPUTED",
+          "FAILED"
+        ]
+      },
+      "WebhookEventType": {
+        "type": "string",
+        "enum": [
+          "PAYMENT_PENDING",
+          "PAYMENT_PROCESSING",
+          "PAYMENT_COMPLETED",
+          "PAYMENT_REFUNDED",
+          "PAYMENT_DISPUTED",
+          "PAYMENT_DISPUTE_WON",
+          "PAYMENT_DISPUTE_LOST",
+          "PAYMENT_FAILED"
+        ]
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "subtitle": { "type": ["string", "null"] },
+          "description": { "type": ["string", "null"] },
+          "handle": { "type": "string" },
+          "price": { "type": "integer", "description": "Price in cents" },
+          "compareAtPrice": { "type": ["integer", "null"] },
+          "images": { "type": "array", "items": { "type": "string" } },
+          "inStock": { "type": "boolean" },
+          "currency": { "type": "string" },
+          "productType": { "$ref": "#/components/schemas/ProductType" },
+          "message": { "type": ["string", "null"] },
+          "fulfillmentMode": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/FulfillmentMode" },
+              { "type": "null" }
+            ]
+          },
+          "pricingModel": { "$ref": "#/components/schemas/PricingModel" },
+          "status": { "$ref": "#/components/schemas/ProductStatus" },
+          "minimumPrice": { "type": ["integer", "null"] },
+          "maxPerCustomer": { "type": ["integer", "null"] },
+          "availableFrom": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "availableUntil": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "downloadUrl": { "type": ["string", "null"] },
+          "redirectUrl": { "type": ["string", "null"] },
+          "keyFormat": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/KeyFormat" },
+              { "type": "null" }
+            ]
+          },
+          "customPrefix": { "type": ["string", "null"] },
+          "maxActivations": { "type": ["integer", "null"] },
+          "licenseDuration": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/LicenseDuration" },
+              { "type": "null" }
+            ]
+          },
+          "revokeOnRefund": { "type": "boolean" },
+          "lowStockThreshold": { "type": ["integer", "null"] },
+          "webhookUrl": { "type": ["string", "null"] },
+          "webhookSecret": { "type": ["string", "null"] },
+          "billingInterval": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/BillingInterval" },
+              { "type": "null" }
+            ]
+          },
+          "billingAnchor": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/BillingAnchor" },
+              { "type": "null" }
+            ]
+          },
+          "trialDays": { "type": ["integer", "null"] },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "values": { "type": "array", "items": { "type": "string" } },
+                "position": { "type": "integer" }
+              }
+            }
+          },
+          "variants": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Variant" }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "slug": { "type": "string" }
+              }
+            }
+          },
+          "availableLicenses": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Variant": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "slug": { "type": ["string", "null"] },
+          "description": { "type": ["string", "null"] },
+          "sku": { "type": ["string", "null"] },
+          "options": {},
+          "price": { "type": "integer", "description": "Price in cents" },
+          "compareAtPrice": { "type": ["integer", "null"] },
+          "images": { "type": "array", "items": { "type": "string" } },
+          "inStock": { "type": "boolean" },
+          "quantity": { "type": ["integer", "null"] },
+          "trackStock": { "type": "boolean" },
+          "position": { "type": "integer" }
+        }
+      },
+      "CreateProductBody": {
+        "type": "object",
+        "required": ["title", "productType", "price"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "subtitle": { "type": "string", "maxLength": 512 },
+          "description": { "type": "string", "maxLength": 10000 },
+          "productType": { "$ref": "#/components/schemas/ProductType" },
+          "price": { "type": "integer", "minimum": 0 },
+          "compareAtPrice": { "type": "integer", "minimum": 0 },
+          "images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 10
+          },
+          "message": { "type": "string", "maxLength": 1000 },
+          "fulfillmentMode": { "$ref": "#/components/schemas/FulfillmentMode" },
+          "pricingModel": { "$ref": "#/components/schemas/PricingModel" },
+          "status": { "$ref": "#/components/schemas/ProductStatus" },
+          "minimumPrice": { "type": "integer", "minimum": 0 },
+          "maxPerCustomer": { "type": "integer", "minimum": 1 },
+          "availableFrom": { "type": "string", "format": "date-time" },
+          "availableUntil": { "type": "string", "format": "date-time" },
+          "downloadUrl": { "type": "string", "maxLength": 2048 },
+          "redirectUrl": { "type": "string", "maxLength": 2048 },
+          "keyFormat": { "$ref": "#/components/schemas/KeyFormat" },
+          "customPrefix": { "type": "string", "maxLength": 32 },
+          "maxActivations": { "type": "integer", "minimum": 1 },
+          "licenseDuration": { "$ref": "#/components/schemas/LicenseDuration" },
+          "revokeOnRefund": { "type": "boolean" },
+          "lowStockThreshold": { "type": "integer", "minimum": 0 },
+          "webhookUrl": { "type": "string", "maxLength": 2048 },
+          "webhookSecret": { "type": "string", "maxLength": 256 },
+          "billingInterval": { "$ref": "#/components/schemas/BillingInterval" },
+          "billingAnchor": { "$ref": "#/components/schemas/BillingAnchor" },
+          "trialDays": { "type": "integer", "minimum": 0 },
+          "licenseKeys": {
+            "type": "array",
+            "items": { "type": "string", "maxLength": 512 },
+            "maxItems": 1000
+          },
+          "variants": {
+            "type": "array",
+            "maxItems": 4,
+            "items": {
+              "type": "object",
+              "required": ["title", "options", "price"],
+              "properties": {
+                "title": { "type": "string", "minLength": 1, "maxLength": 256 },
+                "slug": { "type": "string", "maxLength": 128 },
+                "description": { "type": "string", "maxLength": 1000 },
+                "sku": { "type": "string", "maxLength": 128 },
+                "options": {},
+                "price": { "type": "integer", "minimum": 0 },
+                "compareAtPrice": { "type": "integer", "minimum": 0 },
+                "images": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "maxItems": 10
+                },
+                "inStock": { "type": "boolean", "default": true },
+                "quantity": { "type": "integer", "minimum": 0 },
+                "trackStock": { "type": "boolean", "default": false },
+                "position": { "type": "integer", "minimum": 0 }
+              }
+            }
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "required": ["name", "values"],
+              "properties": {
+                "name": { "type": "string", "minLength": 1, "maxLength": 128 },
+                "values": {
+                  "type": "array",
+                  "items": { "type": "string", "maxLength": 128 },
+                  "minItems": 1,
+                  "maxItems": 50
+                },
+                "position": { "type": "integer", "minimum": 0 }
+              }
+            }
+          },
+          "categoryIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 20
+          }
+        }
+      },
+      "UpdateProductBody": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "subtitle": { "type": ["string", "null"], "maxLength": 512 },
+          "description": { "type": ["string", "null"], "maxLength": 10000 },
+          "productType": { "$ref": "#/components/schemas/ProductType" },
+          "price": { "type": "integer", "minimum": 0 },
+          "compareAtPrice": { "type": ["integer", "null"], "minimum": 0 },
+          "images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 10
+          },
+          "message": { "type": ["string", "null"], "maxLength": 1000 },
+          "inStock": { "type": "boolean" },
+          "fulfillmentMode": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/FulfillmentMode" },
+              { "type": "null" }
+            ]
+          },
+          "pricingModel": { "$ref": "#/components/schemas/PricingModel" },
+          "status": { "$ref": "#/components/schemas/ProductStatus" },
+          "minimumPrice": { "type": ["integer", "null"], "minimum": 0 },
+          "maxPerCustomer": { "type": ["integer", "null"], "minimum": 1 },
+          "availableFrom": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "availableUntil": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "downloadUrl": { "type": ["string", "null"], "maxLength": 2048 },
+          "redirectUrl": { "type": ["string", "null"], "maxLength": 2048 },
+          "keyFormat": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/KeyFormat" },
+              { "type": "null" }
+            ]
+          },
+          "customPrefix": { "type": ["string", "null"], "maxLength": 32 },
+          "maxActivations": { "type": ["integer", "null"], "minimum": 1 },
+          "licenseDuration": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/LicenseDuration" },
+              { "type": "null" }
+            ]
+          },
+          "revokeOnRefund": { "type": "boolean" },
+          "lowStockThreshold": { "type": ["integer", "null"], "minimum": 0 },
+          "webhookUrl": { "type": ["string", "null"], "maxLength": 2048 },
+          "webhookSecret": { "type": ["string", "null"], "maxLength": 256 },
+          "billingInterval": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/BillingInterval" },
+              { "type": "null" }
+            ]
+          },
+          "billingAnchor": {
+            "oneOf": [
+              { "$ref": "#/components/schemas/BillingAnchor" },
+              { "type": "null" }
+            ]
+          },
+          "trialDays": { "type": ["integer", "null"], "minimum": 0 },
+          "licenseKeys": {
+            "type": "array",
+            "items": { "type": "string", "maxLength": 512 },
+            "maxItems": 1000
+          },
+          "variants": {
+            "type": "array",
+            "maxItems": 4,
+            "items": { "$ref": "#/components/schemas/UpdateVariant" }
+          },
+          "options": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "required": ["name", "values"],
+              "properties": {
+                "name": { "type": "string", "maxLength": 128 },
+                "values": {
+                  "type": "array",
+                  "items": { "type": "string", "maxLength": 128 },
+                  "minItems": 1,
+                  "maxItems": 50
+                },
+                "position": { "type": "integer", "minimum": 0 }
+              }
+            }
+          },
+          "categoryIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 20
+          }
+        }
+      },
+      "UpdateVariant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Existing variant ID to update. Omit to create a new variant."
+          },
+          "title": { "type": "string", "maxLength": 256 },
+          "slug": { "type": ["string", "null"], "maxLength": 128 },
+          "description": { "type": ["string", "null"], "maxLength": 1000 },
+          "sku": { "type": ["string", "null"], "maxLength": 128 },
+          "options": {},
+          "price": { "type": "integer", "minimum": 0 },
+          "compareAtPrice": { "type": ["integer", "null"], "minimum": 0 },
+          "images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 10
+          },
+          "inStock": { "type": "boolean" },
+          "quantity": { "type": ["integer", "null"], "minimum": 0 },
+          "trackStock": { "type": "boolean" },
+          "position": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": ["string", "null"] },
+          "parentId": { "type": ["string", "null"] },
+          "parent": {
+            "type": "object",
+            "description": "Parent category (when available)"
+          },
+          "displayOrder": { "type": "integer" },
+          "icon": { "type": ["string", "null"] },
+          "metaTitle": { "type": ["string", "null"] },
+          "metaDescription": { "type": ["string", "null"] },
+          "showInNavigation": { "type": "boolean" },
+          "featured": { "type": "boolean" },
+          "isFavourite": { "type": "boolean" },
+          "isArchived": { "type": "boolean" },
+          "children": {
+            "type": "array",
+            "description": "Child categories (when available)"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" }
+              }
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateCategoryBody": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "slug": { "type": "string", "minLength": 2, "maxLength": 128 },
+          "description": { "type": "string", "maxLength": 500 },
+          "parentId": { "type": "string" },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9999,
+            "default": 0
+          },
+          "icon": { "type": "string", "maxLength": 64 },
+          "metaTitle": { "type": "string", "maxLength": 128 },
+          "metaDescription": { "type": "string", "maxLength": 320 },
+          "showInNavigation": { "type": "boolean", "default": true },
+          "featured": { "type": "boolean", "default": false },
+          "isFavourite": { "type": "boolean", "default": false },
+          "isArchived": { "type": "boolean", "default": false },
+          "productIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 100
+          }
+        }
+      },
+      "UpdateCategoryBody": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "slug": { "type": "string", "minLength": 2, "maxLength": 128 },
+          "description": { "type": ["string", "null"], "maxLength": 500 },
+          "parentId": { "type": ["string", "null"] },
+          "displayOrder": { "type": "integer", "minimum": 0, "maximum": 9999 },
+          "icon": { "type": ["string", "null"], "maxLength": 64 },
+          "metaTitle": { "type": ["string", "null"], "maxLength": 128 },
+          "metaDescription": { "type": ["string", "null"], "maxLength": 320 },
+          "showInNavigation": { "type": "boolean" },
+          "featured": { "type": "boolean" },
+          "isFavourite": { "type": "boolean" },
+          "isArchived": { "type": "boolean" },
+          "productIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 100
+          }
+        }
+      },
+      "Coupon": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "code": { "type": "string" },
+          "displayName": { "type": ["string", "null"] },
+          "description": { "type": ["string", "null"] },
+          "type": { "type": "string", "enum": ["FIXED", "PERCENTAGE"] },
+          "value": {
+            "type": "integer",
+            "description": "Discount value. For FIXED: amount in cents. For PERCENTAGE: percentage (1-100)."
+          },
+          "minimumPurchase": {
+            "type": ["integer", "null"],
+            "description": "Minimum purchase amount in cents"
+          },
+          "maxUses": { "type": ["integer", "null"] },
+          "maxUsesPerCustomer": { "type": ["integer", "null"] },
+          "firstPurchaseOnly": { "type": "boolean" },
+          "startsAt": { "type": ["string", "null"], "format": "date-time" },
+          "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+          "enabled": { "type": "boolean" },
+          "timesUsed": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateCouponBody": {
+        "type": "object",
+        "required": ["code", "type", "value"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9_\\-]+$"
+          },
+          "displayName": { "type": "string", "maxLength": 128 },
+          "description": { "type": "string", "maxLength": 500 },
+          "type": { "type": "string", "enum": ["FIXED", "PERCENTAGE"] },
+          "value": { "type": "integer", "minimum": 1 },
+          "minimumPurchase": { "type": "integer", "minimum": 0 },
+          "maxUses": { "type": "integer", "minimum": 1 },
+          "maxUsesPerCustomer": { "type": "integer", "minimum": 1 },
+          "firstPurchaseOnly": { "type": "boolean", "default": false },
+          "startsAt": { "type": "string", "format": "date-time" },
+          "expiresAt": { "type": "string", "format": "date-time" },
+          "enabled": { "type": "boolean", "default": true }
+        }
+      },
+      "UpdateCouponBody": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string", "minLength": 2, "maxLength": 64 },
+          "displayName": { "type": ["string", "null"], "maxLength": 128 },
+          "description": { "type": ["string", "null"], "maxLength": 500 },
+          "type": { "type": "string", "enum": ["FIXED", "PERCENTAGE"] },
+          "value": { "type": "integer", "minimum": 1 },
+          "minimumPurchase": { "type": ["integer", "null"], "minimum": 0 },
+          "maxUses": { "type": ["integer", "null"], "minimum": 1 },
+          "maxUsesPerCustomer": { "type": ["integer", "null"], "minimum": 1 },
+          "firstPurchaseOnly": { "type": "boolean" },
+          "startsAt": { "type": ["string", "null"], "format": "date-time" },
+          "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+          "enabled": { "type": "boolean" }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "description": "Order summary (list view)",
+        "properties": {
+          "id": { "type": "string" },
+          "orderNumber": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/OrderStatus" },
+          "amount": { "type": "integer", "description": "Subtotal in cents" },
+          "currency": { "type": "string" },
+          "gateway": { "type": "string" },
+          "discounted": { "type": "boolean" },
+          "discountCode": { "type": ["string", "null"] },
+          "customer": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" }
+            }
+          },
+          "payment": {
+            "type": ["object", "null"],
+            "properties": {
+              "status": { "$ref": "#/components/schemas/PaymentStatus" },
+              "totalAmount": { "type": "integer" }
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "OrderDetail": {
+        "type": "object",
+        "description": "Full order details",
+        "properties": {
+          "id": { "type": "string" },
+          "orderNumber": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/OrderStatus" },
+          "amount": { "type": "integer" },
+          "currency": { "type": "string" },
+          "gateway": { "type": "string" },
+          "discounted": { "type": "boolean" },
+          "discountCode": { "type": ["string", "null"] },
+          "customFields": { "type": ["object", "null"] },
+          "returnUrl": { "type": ["string", "null"] },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "productId": { "type": "string" },
+                "variantId": { "type": ["string", "null"] },
+                "name": { "type": ["string", "null"] },
+                "quantity": { "type": "integer" },
+                "price": {
+                  "type": "integer",
+                  "description": "Unit price in cents"
+                }
+              }
+            }
+          },
+          "customer": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" },
+              "firstName": { "type": ["string", "null"] },
+              "lastName": { "type": ["string", "null"] },
+              "guest": { "type": "boolean" }
+            }
+          },
+          "billingAddress": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "addressLine1": { "type": "string" },
+              "addressLine2": { "type": ["string", "null"] },
+              "city": { "type": "string" },
+              "state": { "type": "string" },
+              "postalCode": { "type": "string" },
+              "country": { "type": "string" }
+            }
+          },
+          "payment": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "referenceId": { "type": "string" },
+              "amount": { "type": "integer" },
+              "discountAmount": { "type": "integer" },
+              "platformFeeAmount": { "type": "integer" },
+              "pspFeeAmount": { "type": "integer" },
+              "taxAmount": { "type": "integer" },
+              "totalAmount": { "type": "integer" },
+              "settledAmount": { "type": "integer" },
+              "status": { "$ref": "#/components/schemas/PaymentStatus" },
+              "pspProvider": { "type": "string" },
+              "couponCode": { "type": ["string", "null"] },
+              "taxId": { "type": ["string", "null"] },
+              "createdAt": { "type": "string", "format": "date-time" }
+            }
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "key": { "type": "string" },
+                "status": {
+                  "type": "string",
+                  "enum": ["AVAILABLE", "CLAIMED", "REVOKED"]
+                },
+                "productId": { "type": "string" },
+                "variantId": { "type": ["string", "null"] },
+                "claimedAt": {
+                  "type": ["string", "null"],
+                  "format": "date-time"
+                }
+              }
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "description": "Payment summary (list view)",
+        "properties": {
+          "id": { "type": "string" },
+          "referenceId": { "type": "string" },
+          "amount": { "type": "integer" },
+          "totalAmount": { "type": "integer" },
+          "status": { "$ref": "#/components/schemas/PaymentStatus" },
+          "pspProvider": { "type": "string" },
+          "couponCode": { "type": ["string", "null"] },
+          "country": { "type": ["string", "null"] },
+          "customer": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" }
+            }
+          },
+          "order": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "orderNumber": { "type": "string" },
+              "status": { "$ref": "#/components/schemas/OrderStatus" }
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PaymentDetail": {
+        "type": "object",
+        "description": "Full payment details with geo, timeline, and dispute info",
+        "properties": {
+          "id": { "type": "string" },
+          "referenceId": { "type": "string" },
+          "amount": { "type": "integer" },
+          "discountAmount": { "type": "integer" },
+          "platformFeeAmount": { "type": "integer" },
+          "pspFeeAmount": { "type": "integer" },
+          "taxAmount": { "type": "integer" },
+          "totalAmount": { "type": "integer" },
+          "settledAmount": { "type": "integer" },
+          "status": { "$ref": "#/components/schemas/PaymentStatus" },
+          "pspProvider": { "type": "string" },
+          "couponCode": { "type": ["string", "null"] },
+          "taxId": { "type": ["string", "null"] },
+          "ipAddress": { "type": ["string", "null"] },
+          "userAgent": { "type": ["string", "null"] },
+          "geo": {
+            "type": "object",
+            "properties": {
+              "city": { "type": ["string", "null"] },
+              "region": { "type": ["string", "null"] },
+              "country": { "type": ["string", "null"] },
+              "postal": { "type": ["string", "null"] },
+              "asn": { "type": ["string", "null"] },
+              "org": { "type": ["string", "null"] }
+            }
+          },
+          "customer": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" },
+              "firstName": { "type": ["string", "null"] },
+              "lastName": { "type": ["string", "null"] },
+              "guest": { "type": "boolean" }
+            }
+          },
+          "order": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "orderNumber": { "type": "string" },
+              "status": { "$ref": "#/components/schemas/OrderStatus" },
+              "amount": { "type": "integer" },
+              "currency": { "type": "string" }
+            }
+          },
+          "dispute": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "disputeId": { "type": "string" },
+              "reason": {
+                "type": "string",
+                "enum": [
+                  "DUPLICATE_CHARGE",
+                  "FRAUDULENT",
+                  "PRODUCT_NOT_RECEIVED",
+                  "PRODUCT_UNACCEPTABLE",
+                  "GENERAL",
+                  "UNRECOGNIZED"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": ["AWAITING_REVIEW", "UNDER_REVIEW", "WON", "LOST"]
+              },
+              "hasEvidence": { "type": "boolean" },
+              "totalAmount": { "type": "integer" },
+              "amount": { "type": "integer" },
+              "fee": { "type": "integer" },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "updatedAt": { "type": "string", "format": "date-time" }
+            }
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "eventType": { "type": "string" },
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "metadata": { "type": ["object", "null"] },
+                "createdAt": { "type": "string", "format": "date-time" }
+              }
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Webhook": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "note": { "type": ["string", "null"] },
+          "isEnabled": { "type": "boolean" },
+          "eventTypes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WebhookEventType" }
+          },
+          "secret": {
+            "type": "string",
+            "description": "Only included on create"
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateWebhookBody": {
+        "type": "object",
+        "required": ["url", "eventTypes"],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 512,
+            "pattern": "^https://"
+          },
+          "eventTypes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WebhookEventType" },
+            "minItems": 1
+          },
+          "note": { "type": "string", "maxLength": 256 }
+        }
+      },
+      "UpdateWebhookBody": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 512,
+            "pattern": "^https://"
+          },
+          "eventTypes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WebhookEventType" },
+            "minItems": 1
+          },
+          "note": { "type": ["string", "null"], "maxLength": 256 },
+          "isEnabled": { "type": "boolean" }
+        }
+      },
+      "Payout": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "amount": { "type": "integer", "description": "Amount in cents" },
+          "fee": { "type": "integer", "description": "Payout fee in cents" },
+          "status": { "type": "string" },
+          "referenceId": { "type": ["string", "null"] },
+          "payoutMethod": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "isPrimary": { "type": "boolean" },
+              "status": { "type": "string" }
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "BankAccount": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "isPrimary": { "type": "boolean" },
+          "status": { "type": "string" },
+          "last4": { "type": ["string", "null"] },
+          "bankName": { "type": ["string", "null"] },
+          "country": { "type": ["string", "null"] },
+          "routingNumber": { "type": ["string", "null"] },
+          "bankAccountType": {
+            "type": ["string", "null"],
+            "enum": ["checking", "savings", null]
+          },
+          "supportedCurrencies": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "availablePayoutSpeeds": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CustomerSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string" },
+          "firstName": { "type": ["string", "null"] },
+          "lastName": { "type": ["string", "null"] },
+          "guest": { "type": "boolean" },
+          "totalSpent": {
+            "type": "integer",
+            "description": "Total spent in cents"
+          },
+          "orderCount": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CustomerDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string" },
+          "firstName": { "type": ["string", "null"] },
+          "lastName": { "type": ["string", "null"] },
+          "guest": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "billingAddresses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "line1": { "type": "string" },
+                "line2": { "type": ["string", "null"] },
+                "city": { "type": "string" },
+                "state": { "type": "string" },
+                "postalCode": { "type": "string" },
+                "country": { "type": "string" }
+              }
+            }
+          },
+          "totalSpent": { "type": "integer" },
+          "orderCount": { "type": "integer" },
+          "refundCount": { "type": "integer" },
+          "totalRefunded": { "type": "integer" },
+          "recentOrders": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "orderNumber": { "type": "string" },
+                "amount": { "type": "integer" },
+                "currency": { "type": "string" },
+                "status": { "$ref": "#/components/schemas/OrderStatus" },
+                "createdAt": { "type": "string", "format": "date-time" }
+              }
+            }
+          }
+        }
+      },
+      "License": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "key": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["AVAILABLE", "CLAIMED", "REVOKED"]
+          },
+          "productId": { "type": "string" },
+          "variantId": { "type": ["string", "null"] },
+          "orderId": { "type": ["string", "null"] },
+          "customerId": { "type": ["string", "null"] },
+          "claimedAt": { "type": ["string", "null"], "format": "date-time" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Store": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "summary": { "type": "string" },
+          "category": { "type": "array", "items": { "type": "string" } },
+          "handle": { "type": "string" },
+          "slug": { "type": ["string", "null"] },
+          "imageHash": { "type": ["string", "null"] },
+          "originCountry": { "type": "string" },
+          "statementDescriptor": { "type": ["string", "null"] },
+          "supportEmail": { "type": "string" },
+          "plan": { "type": "string" },
+          "type": { "type": "string" },
+          "verified": { "type": "boolean" },
+          "blocked": { "type": "boolean" },
+          "twitterUrl": { "type": ["string", "null"] },
+          "instagramUrl": { "type": ["string", "null"] },
+          "linkedinUrl": { "type": ["string", "null"] },
+          "youtubeUrl": { "type": ["string", "null"] },
+          "tiktokUrl": { "type": ["string", "null"] },
+          "taxBehavior": { "type": ["string", "null"] },
+          "timezone": { "type": ["string", "null"] },
+          "availableBalance": {
+            "type": "integer",
+            "description": "Available balance in cents"
+          },
+          "logo": { "type": ["string", "null"] },
+          "favicon": { "type": ["string", "null"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "WebhookPayload": {
+        "type": "object",
+        "description": "V2 webhook payload delivered to your endpoint",
+        "properties": {
+          "event": { "$ref": "#/components/schemas/WebhookEventType" },
+          "id": { "type": "string", "description": "Event ID (evt_ prefix)" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "order": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "orderNumber": { "type": "string" },
+                  "status": { "$ref": "#/components/schemas/OrderStatus" },
+                  "amount": { "type": "integer" },
+                  "currency": { "type": "string" },
+                  "customFields": { "type": ["object", "null"] },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "productId": { "type": "string" },
+                        "variantId": { "type": ["string", "null"] },
+                        "name": { "type": "string" },
+                        "quantity": { "type": "integer" },
+                        "amount": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              },
+              "customer": {
+                "type": ["object", "null"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "email": { "type": "string" }
+                }
+              },
+              "geo": {
+                "type": ["object", "null"],
+                "properties": {
+                  "ip": { "type": "string" },
+                  "country": { "type": ["string", "null"] },
+                  "city": { "type": ["string", "null"] },
+                  "region": { "type": ["string", "null"] }
+                }
+              }
+            }
+          }
+        }
+      }
     }
-  ]
+  }
 }

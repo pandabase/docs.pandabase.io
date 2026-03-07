@@ -1,48 +1,68 @@
 ---
 title: "Pagination"
-description: "Learn about pagination and how to use them."
+description: "Learn how pagination works across the Pandabase API."
 ---
 
-All resources that use list API methods use page-based pagination.
+All list endpoints use page-based pagination with consistent request parameters and response structure.
 
 ## Request Parameters
 
-The following query parameters should be included in the request:
+Include these query parameters on any list endpoint:
 
-<ParamField query="page" type="number" default="none" required>
-  The page number to retrieve (starting from 1)
+<ParamField query="page" type="integer" default="1">
+  The page number to retrieve (starting from 1).
 </ParamField>
 
-<ParamField query="page_size" type="number" default="10">
-  The number of items to return per page (maximum 100)
+<ParamField query="limit" type="integer" default="25">
+  The number of items to return per page (minimum 1, maximum 100).
 </ParamField>
 
-## Meta Object Properties
+## Response Structure
 
-The API response will include a `meta` object containing pagination information:
+List endpoints return an object with `items` and `pagination`:
 
-<ResponseField name="current_page" type="number" required>
-  The current page number
+```json
+{
+  "ok": true,
+  "data": {
+    "items": [],
+    "pagination": {
+      "page": 1,
+      "limit": 25,
+      "total": 142,
+      "totalPages": 6
+    }
+  }
+}
+```
+
+## Pagination Object
+
+<ResponseField name="page" type="integer" required>
+  The current page number.
 </ResponseField>
 
-<ResponseField name="page_size" type="number" required>
-  The number of items per page
+<ResponseField name="limit" type="integer" required>
+  The number of items per page.
 </ResponseField>
 
-<ResponseField name="total_items" type="number" required>
-  The total number of items across all pages
+<ResponseField name="total" type="integer" required>
+  The total number of items across all pages.
 </ResponseField>
 
-<ResponseField name="total_pages" type="number" required>
-  The total number of pages
+<ResponseField name="totalPages" type="integer" required>
+  The total number of pages.
 </ResponseField>
 
 ## Best Practices
 
-1. Use `page` and `page_size` query parameters when making requests to list endpoints.
-2. Respect the maximum `page_size` limit of 100 items per page.
+1. Use `page` and `limit` query parameters when making requests to list endpoints.
+2. Respect the maximum `limit` of 100 items per page.
+3. Check `totalPages` to know when you've reached the last page.
+4. An empty `items` array with `total: 0` means no results matched your query.
 
 ## Limitations
 
-- The maximum allowed `page_size` is 100 items per page.
-- If a `page_size` greater than 100 is requested, the API will return an error.
+- The maximum allowed `limit` is 100 items per page.
+- If a `limit` greater than 100 is requested, the API will return a validation error.
+- Default `limit` varies by resource (20 or 25) but all cap at 100.

@@ -4,60 +4,14 @@ description: "Keep track of every change that occurs to the Pandabase API."
 rss: true
 ---
 
-<Update label="December 25, 2025" description="Upcoming API Release" tags={["V3"]}>
+<Update label="March 7, 2026" description="Upcoming API Release" tags={["V2"]}>
 ## Breaking Changes
 
-You cannot migrate from `V2` endpoints to V3 directly as it's a breaking change and we've rewritten our entire API from the ground up. It took us a year but it was well worth it for the future of our platform.
-
-All endpoints from `api.pandabase.io/{v1}-{v2}` will be reachable until January 1st, 2026, after which we will fully deprecate the old endpoints.
-
-## New Base URL
-
-The new base URL is `pandabase.io/api`
-
-## API Key Changes
-
-For new V3 API keys, you no longer need to specify `/shops/{shopId}/<object-name>` as the `X-Storefront-Id` header automatically infers that if you use our SDKs.
-
-We have also renamed shop objects to store objects.
-
-**Example V3 API Key:**
-
-```txt
-sk_v3_vTUkUBKIDblpPUXKbTEmqIdgpngsvhvX
-```
-
-## Available Endpoints
-
-The V3 API includes the following endpoints:
-
-- `/payments`
-- `/storefront`
-- `/orders`
-- `/coupons`
-- `/products`
-  - `/licenses` (only available if you use managed licenses)
-- `/customers`
-
-## Webhooks
-
-Webhooks now have a new response format. Here's an example of what you can expect:
-
-```json
-{
-  "id": "wh_",
-  "type": "payment.succeeded",
-  "data": {
-    "id": "pmnt_",
-    "amount": 1000,
-    "status": "succeeded"
-  }
-}
-```
+You cannot migrate from `V1` endpoints to `V2` directly as it's a breaking change.
 
 </Update>
 
-<Update label="November 30, 2024" description="Features and Fixes" tags={["V2"]}>
+<Update label="November 30, 2024" description="Features and Fixes" tags={["V1"]}>
 ## Features
 
 - Introduced stricter moderation policies for specific categories.
@@ -83,9 +37,9 @@ Webhooks now have a new response format. Here's an example of what you can expec
 ## Other
 
 - Refactored several internal services for better maintainability.
-</Update>
+  </Update>
 
-<Update label="October 22, 2024" description="API Schema Updates" tags={["V2"]}>
+<Update label="October 22, 2024" description="API Schema Updates" tags={["V1"]}>
 ## New Properties
 
 - `tax_calculation_enabled`
@@ -141,20 +95,20 @@ Optional capabilities for advanced sorting, filtering and searching has been add
   - Operators: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`, `contains`.
 - `sort` (Defines the sorting criteria for the results)
 - `search` (A search term that looks for matches)
+  </Update>
+
+<Update
+  label="October 5, 2024"
+  description="Beta Features & Performance"
+  tags={["V1"]}
+>
+  - Fixed bugs with File API. - Advanced sorting and filtering capabilities for
+  the following endpoints: - `/products` - `/categories` - `/coupons` - Beta
+  support for subscriptions. - Beta support for new serial keys. - Performance
+  enhancements across the API.
 </Update>
 
-<Update label="October 5, 2024" description="Beta Features & Performance" tags={["V2"]}>
-- Fixed bugs with File API.
-- Advanced sorting and filtering capabilities for the following endpoints:
-  - `/products`
-  - `/categories`
-  - `/coupons`
-- Beta support for subscriptions.
-- Beta support for new serial keys.
-- Performance enhancements across the API.
-</Update>
-
-<Update label="September 20, 2024" description="Major Features Release" tags={["V2"]}>
+<Update label="September 20, 2024" description="Major Features Release" tags={["V1"]}>
 ## New Features
 
 - **MoR Model**: Introduced an optional MoR model for users who wish to opt in.
@@ -178,21 +132,24 @@ Updated responses and requests for the following endpoints:
 - `/disputes`
 - `/carts`
 - `/webhooks`
+  </Update>
+
+<Update
+  label="August 30, 2024"
+  description="Public Endpoints & Deprecations"
+  tags={["V1"]}
+>
+  - Added new `/public` endpoints with multiple options for filtering. - Added
+  new `/onboarding` and `/login` endpoints. - Deprecated support for
+  `transactions[]` and replaced with `payment[]`. - Added `flags` to `shops`.
 </Update>
 
-<Update label="August 30, 2024" description="Public Endpoints & Deprecations" tags={["V2"]}>
-- Added new `/public` endpoints with multiple options for filtering.
-- Added new `/onboarding` and `/login` endpoints.
-- Deprecated support for `transactions[]` and replaced with `payment[]`.
-- Added `flags` to `shops`.
+<Update label="July 29, 2024" description="Cart Improvements" tags={["V1"]}>
+  - Added `/{shopId}/carts` to initiate a new cart. - Added `cartId?` optional
+  param to order intent creation object.
 </Update>
 
-<Update label="July 29, 2024" description="Cart Improvements" tags={["V2"]}>
-- Added `/{shopId}/carts` to initiate a new cart.
-- Added `cartId?` optional param to order intent creation object.
-</Update>
-
-<Update label="June 6, 2024" description="Categories Support" tags={["V2"]}>
+<Update label="June 6, 2024" description="Categories Support" tags={["V1"]}>
 ## Added
 
 - `/categories` route with support for listing categories, creating, getting, deleting, and updating.
@@ -205,9 +162,9 @@ Renamed response payloads for the following endpoints:
 - POST `/products`: Now returns `{ product: { ... } }` instead of directly returning the product object.
 - GET `/products`: Now returns `{ products: [{ ... }] }` instead of directly returning the product list.
 - GET `/products/{id}`: Now returns `{ product: { ... } }` instead of directly returning the product object.
-</Update>
+  </Update>
 
-<Update label="May 13, 2024" description="Payouts & KYC" tags={["V2"]}>
+<Update label="May 13, 2024" description="Payouts & KYC" tags={["V1"]}>
 ## Changed
 
 - Renamed `shop` route to `shops`.
@@ -234,9 +191,9 @@ Renamed response payloads for the following endpoints:
 - `image_hash` returned on public endpoints.
 - `coupon.enabled` added to coupons.
 - `payments` route for payment flow creation.
-</Update>
+  </Update>
 
-<Update label="April 3, 2024" description="Event Terminology Changes" tags={["V2"]}>
+<Update label="April 3, 2024" description="Event Terminology Changes" tags={["V1"]}>
 ## Updated
 
 - Event terminology from `transaction` to `order` object.
@@ -253,9 +210,9 @@ New event types related to payments:
   - `payment.paid`: Denotes a successfully processed payment.
   - `payment.success`: Signifies a successfully completed payment transaction.
   - `payment.failed`: Indicates a failed payment transaction.
-</Update>
+    </Update>
 
-<Update label="March 12, 2024" description="Property Additions" tags={["V2"]}>
+<Update label="March 12, 2024" description="Property Additions" tags={["V1"]}>
 ## Added Properties
 
 ### Account Object
@@ -327,12 +284,17 @@ New event types related to payments:
 
 - `address["state"]` to the `shipping_address` and `billing_address` objects.
 - `analytics["dispute"]` to the `analytics` object.
-</Update>
+  </Update>
 
-<Update label="February 20, 2024" description="General Team Release" tags={["V1"]}>
-- General Team release
+<Update
+  label="February 20, 2024"
+  description="General Team Release"
+  tags={["V1"]}
+>
+  - General Team release
 </Update>
 
 <Update label="February 15, 2024" description="Query Parameters" tags={["V1"]}>
-- Implemented support for `sortBy.status`, and `sortBy.date` query parameters in the List Orders route.
+  - Implemented support for `sortBy.status`, and `sortBy.date` query parameters
+  in the List Orders route.
 </Update>

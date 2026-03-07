@@ -1,173 +1,239 @@
 ---
 title: "Events"
-description: "Types of possible events that Pandabase can send to your application."
+description: "Types of events Pandabase sends to your webhook endpoints and how to handle them."
 ---
 
-This is a list of all the types of events we currently send. Each event is delivered to your configured webhook URL with a JSON payload.
+This is a list of all event types Pandabase can send to your configured webhook endpoints. Each event is delivered as a `POST` request with a JSON payload.
 
 ## Webhook structure
 
-Every webhook delivery is a `POST` request with a JSON body. The top-level structure contains an `object` field and an `event` object with the event `type`, the order `id`, a `created_at` timestamp, and a `data` object with the event-specific payload.
+Every webhook delivery contains the event type, a unique event ID, a timestamp, and a `data` object with order, customer, and geo information.
 
 <CodeGroup>
 
-```json Example Event
+```json Example Payload
 {
-  "object": "payment",
-  "event": {
-    "type": "payment.success",
-    "id": "ord_abc123",
-    "created_at": 1707400000000,
-    "data": {
-      "order": {
-        "id": "ord_abc123",
-        "order_number": "inv_xyz789",
-        "status": "PROCESSING",
-        "amount": 2999,
-        "currency": "USD",
-        "gateway": "STRIPE",
-        "custom_fields": [
-          {
-            "key": "discord_username",
-            "label": { "type": "custom", "custom": "Discord Username" },
-            "type": "text",
-            "optional": false,
-            "text": { "minimum_length": 2, "maximum_length": 50 },
-            "value": "johndoe"
-          }
-        ]
+  "event": "PAYMENT_COMPLETED",
+  "id": "evt_cm5x7k2a000001j0g8h3f9d2e",
+  "timestamp": "2026-03-07T12:00:00.000Z",
+  "data": {
+    "order": {
+      "id": "ord_cm5x7k2a000001j0g8h3f9d2e",
+      "orderNumber": "cs_cm5x7k2a000001j0g8h3f9d2e",
+      "status": "COMPLETED",
+      "amount": 5000,
+      "currency": "USD",
+      "customFields": {
+        "discord": "johndoe#1234"
       },
-      "transaction": {
-        "id": "txn_def456",
-        "transaction_id": "pi_stripe_xxx",
-        "status": "SUCCESS",
-        "amount": 3199,
-        "fee": 200,
-        "currency": "USD",
-        "method": "STRIPE"
-      }
+      "items": [
+        {
+          "productId": "prd_cm5x7k2a000001j0g8h3f9d2e",
+          "variantId": null,
+          "name": "Pro Plan",
+          "quantity": 1,
+          "amount": 5000
+        }
+      ]
+    },
+    "customer": {
+      "id": "cus_cm5x7k2a000001j0g8h3f9d2e",
+      "email": "buyer@example.com"
+    },
+    "geo": {
+      "ip": "1.2.3.4",
+      "country": "US",
+      "city": "Miami",
+      "region": "FL"
     }
   }
 }
 ```
 
 ```typescript Type Definition
-type WebhookPayload = {
-  object: "payment";
-  event: {
-    type: WebhookEventType;
-    id: string;
-    created_at: number;
-    data: {
-      order?: {
-        id: string;
-        order_number: string;
-        status: string;
-        amount: number;
-        currency: string;
-        gateway: string;
-        custom_fields?: CustomField[];
-      };
-      transaction?: {
-        id: string;
-        transaction_id: string;
-        status: string;
-        amount: number;
-        fee: number;
-        currency: string;
-        method: string;
-      };
-      customer?: {
-        email: string;
-      };
-    };
-  };
-};
+type WebhookEvent =
+  | "PAYMENT_PENDING"
+  | "PAYMENT_COMPLETED"
+  | "PAYMENT_FAILED"
+  | "PAYMENT_REFUNDED"
+  | "PAYMENT_DISPUTED"
+  | "PAYMENT_DISPUTE_WON"
+  | "PAYMENT_DISPUTE_LOST";
 
-type WebhookEventType =
-  | "payment.pending"
-  | "payment.success"
-  | "payment.paid"
-  | "payment.not_paid"
-  | "payment.refunded"
-  | "payment.disputed";
+interface WebhookPayload {
+  event: WebhookEvent;
+  id: string; // evt_ prefixed unique ID
+  timestamp: string; // ISO 8601
+  data: {
+    order: {
+      id: string;
+      orderNumber: string;
+      status: string;
+      amount: number; // in cents
+      currency: string;
+      customFields: Record<string, unknown> | null;
+      items: Array<{
+        productId: string;
+        variantId: string | null;
+        name: string;
+        quantity: number;
+        amount: number; // unit price in cents
+      }>;
+    };
+    customer: {
+      id: string;
+      email: string;
+    } | null;
+    geo: {
+      ip: string;
+      country: string | null;
+      city: string | null;
+      region: string | null;
+    } | null;
+  };
+}
 ```
 
 </CodeGroup>
 
 ## Webhook headers
 
-Every webhook delivery includes the following headers:
+Every delivery includes these headers for verification and deduplication:
 
-| Header | Description |
-|--------|-------------|
-| `X-Pandabase-Signature` | HMAC-SHA256 hex digest of the JSON body, signed with your webhook secret |
-| `X-Pandabase-Timestamp` | Unix timestamp (milliseconds) of when the delivery was sent |
-| `X-Pandabase-Idempotency` | Unique delivery identifier for deduplication |
-| `Content-Type` | Always `application/json` |
-| `User-Agent` | `Pandabase (https://pandabase.io)` |
+| Header                    | Description                                                              |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `X-Pandabase-Signature`   | HMAC-SHA256 hex digest of the JSON body, signed with your webhook secret |
+| `X-Pandabase-Timestamp`   | Unix timestamp (milliseconds) of when the delivery was sent              |
+| `X-Pandabase-Idempotency` | Unique delivery identifier — use this to deduplicate retried deliveries  |
+| `Content-Type`            | Always `application/json`                                                |
+| `User-Agent`              | `Pandabase (https://pandabase.io)`                                       |
 
 ## Verifying signatures
 
-Verify the `X-Pandabase-Signature` header to ensure the webhook was sent by Pandabase and not tampered with.
+Always verify the `X-Pandabase-Signature` header to confirm the webhook was sent by Pandabase and hasn't been tampered with.
 
-```typescript
+<CodeGroup>
+
+```typescript Node.js
 import crypto from "crypto";
 
-function verifySignature(body: string, signature: string, secret: string): boolean {
+function verifyWebhook(
+  rawBody: string,
+  signature: string,
+  secret: string,
+): boolean {
   const expected = crypto
     .createHmac("sha256", secret)
-    .update(body)
+    .update(rawBody)
     .digest("hex");
 
-  return expected === signature;
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+}
+
+// In your handler:
+const signature = request.headers["x-pandabase-signature"];
+if (!verifyWebhook(request.rawBody, signature, WEBHOOK_SECRET)) {
+  return response.status(401).send("Invalid signature");
 }
 ```
 
+```python Python
+import hmac
+import hashlib
+
+def verify_webhook(raw_body: bytes, signature: str, secret: str) -> bool:
+    expected = hmac.new(
+        secret.encode(),
+        raw_body,
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
+```
+
+```go Go
+package main
+
+import (
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/hex"
+)
+
+func verifyWebhook(body []byte, signature string, secret string) bool {
+    mac := hmac.New(sha256.New, []byte(secret))
+    mac.Write(body)
+    expected := hex.EncodeToString(mac.Sum(nil))
+    return hmac.Equal([]byte(expected), []byte(signature))
+}
+```
+
+</CodeGroup>
+
+<Warning>
+  Always use constant-time comparison (e.g. `timingSafeEqual`,
+  `hmac.compare_digest`) when verifying signatures to prevent timing attacks.
+</Warning>
+
 ## Retries
 
-Failed webhook deliveries are retried up to **5 times** with exponential backoff starting at 1 second. Your endpoint should return a `2xx` status code to acknowledge receipt. Any other status code or a timeout (15 seconds) is treated as a failure.
+Failed deliveries are retried up to **5 times** with exponential backoff starting at 1 second (1s, 2s, 4s, 8s, 16s). Your endpoint should return a `2xx` status code to acknowledge receipt. Any other status code or a timeout (15 seconds) is treated as a failure and triggers a retry.
 
-## Payment events
+Use the `X-Pandabase-Idempotency` header to deduplicate deliveries — the same event may be delivered more than once due to retries.
 
-### `payment.pending`
+## Event types
 
-Occurs when a payment intent is created and awaiting customer action. This is the first event fired when a customer proceeds to pay.
+### `PAYMENT_PENDING`
 
-**Data included:** `order`, `transaction`, `customer`
-
-### `payment.success`
-
-Occurs when a payment is successfully processed. This is the primary event to listen for when fulfilling orders.
-
-**Data included:** `order`, `transaction`
+Fired when a customer initiates payment at checkout. The order has been created and a payment intent is awaiting confirmation.
 
 <Note>
-  The `order.custom_fields` array is included in the `payment.success` event if
-  the checkout session had custom fields defined. Each field contains both the
-  definition and the customer's submitted `value`.
+  At this stage, geo data (`city`, `region`, `country`) may be `null` — it is
+  enriched asynchronously after checkout. Subsequent events will include full
+  geo data.
 </Note>
 
-### `payment.paid`
+---
 
-Occurs when a payment has been confirmed as paid by the payment provider.
+### `PAYMENT_COMPLETED`
 
-**Data included:** `transaction`
+Fired when a payment is successfully collected. This is the primary event to listen for when fulfilling orders.
 
-### `payment.not_paid`
+The order status will be `PROCESSING` (if fulfillment is in progress) or `COMPLETED` (if already fulfilled). The `items` array contains all purchased products, and `customFields` includes any data the customer submitted at checkout.
 
-Occurs when a payment fails or expires without being completed.
+---
 
-**Data included:** `order`, `transaction`
+### `PAYMENT_FAILED`
 
-### `payment.refunded`
+Fired when a payment fails, is canceled by the customer, or expires without being completed. The order is moved to `CANCELLED` status. If a coupon was applied, its usage count is automatically restored.
 
-Occurs when a payment is refunded, either partially or in full.
+---
 
-**Data included:** `transaction`
+### `PAYMENT_REFUNDED`
 
-### `payment.disputed`
+Fired when a charge is refunded, whether initiated through the Pandabase dashboard or detected from an external Stripe refund. The order status is set to `REFUNDED`.
 
-Occurs when a customer opens a dispute (chargeback) on a payment.
+---
 
-**Data included:** `transaction`
+### `PAYMENT_DISPUTED`
+
+Fired when a customer opens a chargeback dispute on a payment. The order moves to `CHARGEBACK` status and the disputed amount plus a $20.00 dispute fee is deducted from the store's available balance.
+
+---
+
+### `PAYMENT_DISPUTE_WON`
+
+Fired when a dispute is resolved in the merchant's favor. The disputed amount and fee are restored to the store's available balance and the order returns to `COMPLETED` status.
+
+---
+
+### `PAYMENT_DISPUTE_LOST`
+
+Fired when a dispute is resolved against the merchant. The deducted funds remain lost and the order stays in `CHARGEBACK` status.
+
+## Best practices
+
+1. **Return 200 quickly.** Process webhook logic asynchronously if it takes more than a few seconds. Pandabase times out after 15 seconds.
+2. **Deduplicate with idempotency keys.** Store the `X-Pandabase-Idempotency` header value and skip events you've already processed.
+3. **Verify signatures.** Always validate `X-Pandabase-Signature` before processing the payload.
+4. **Use event filtering.** Subscribe only to the events you need to reduce noise and processing overhead.
+5. **Handle out-of-order delivery.** In rare cases, events may arrive out of order (e.g. `PAYMENT_COMPLETED` before `PAYMENT_PENDING`). Use the `timestamp` field and order status to handle this gracefully.
