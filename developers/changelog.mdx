@@ -1,300 +1,194 @@
 ---
 title: Changelog
-description: "Keep track of every change that occurs to the Pandabase API."
+description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
-<Update label="March 7, 2026" description="Upcoming API Release" tags={["V2"]}>
-## Breaking Changes
+<Update label="March 9, 2026" description="Metadata & Docs" tags={["V2"]}>
+## Features
 
-You cannot migrate from `V1` endpoints to `V2` directly as it's a breaking change.
+- **Checkout metadata**: Attach arbitrary key-value string pairs (`metadata`) when creating checkout sessions. Metadata flows through orders, webhook payloads, and fulfillment webhooks. Max 20 keys, key max 40 chars, value max 500 chars.
+- **Product soft delete**: Products are now soft-deleted via `deleted_at` field. Soft-deleted products are excluded from storefront listings, checkout item resolution, and all product queries. Order history is preserved.
+
+## Fixes
+
+- Fixed platform fee from 5% to 6% + 20¢ per transaction.
+- Fixed soft-deleted products still appearing in checkout item resolution.
+- Added GB (United Kingdom) as a supported merchant country.
+
+</Update>
+
+<Update label="March 7, 2026" description="V2 API Launch" tags={["V2"]}>
+## V2 API
+
+The V2 API is a complete rewrite of the Pandabase API with breaking changes. You cannot migrate from V1 endpoints to V2 directly.
+
+**Key changes from V1:**
+- New response format: `{ ok: true, data }` / `{ ok: false, error }` (replaces raw response objects)
+- New pagination format: `{ items, pagination: { page, limit, total, totalPages } }` (replaces `meta` object)
+- TypeBox schema validation (replaces Yup)
+- Magic link authentication (no passwords)
+- All monetary values in cents (integers, no floats)
+
+### New Modules
+
+- **Checkouts**: Redis-backed sessions with custom fields (text, numeric, dropdown), coupon/tax support, and pay-what-you-want pricing
+- **Storefront**: Public read-only API for store info, products (with variants/options), and categories — no authentication required
+- **Store API**: Token-authenticated programmatic API with granular permissions (Bearer or HMAC authentication)
+- **Licenses**: Encrypted license key management with verification endpoint and activation tracking
+- **API Logs**: Request audit logging with 30-day retention for Store API requests
+- **Customers**: Read-only customer management (customers created automatically during checkout)
+
+### New Webhook Events
+
+Webhook event names are now uppercase enum values:
+
+| V1 Event | V2 Event |
+|----------|----------|
+| `payment.pending` | `PAYMENT_PENDING` |
+| `payment.success` | `PAYMENT_COMPLETED` |
+| `payment.failed` | `PAYMENT_FAILED` |
+| `payment.refunded` | `PAYMENT_REFUNDED` |
+| `payment.disputed` | `PAYMENT_DISPUTED` |
+| — | `PAYMENT_DISPUTE_WON` |
+| — | `PAYMENT_DISPUTE_LOST` |
+
+### New Webhook Payload
+
+V2 webhook payloads include `order`, `customer`, and `geo` data in a structured format. See the [webhook events reference](/developers/webhooks/events) for full details.
+
+### Products
+
+- Variants with options, slug, description, SKU, stock tracking, and positioning
+- Product options (e.g. Size, Color) with values array
+- Fulfillment modes: `MANAGED_LICENSE`, `LICENSE_POOL`, `LICENSE_WEBHOOK`, `INSTANT_DOWNLOAD`, `REDIRECT`, `MANUAL`
+- Pricing models: `STANDARD`, `PAY_WHAT_YOU_WANT`, `FREE`
+- Product status: `DRAFT` / `ACTIVE`
+- Availability windows (`available_from`, `available_until`)
+- Max per customer limits
+- Unique handles per store (auto-generated from title)
+
+### Orders
+
+- Timeline events for full payment/refund/dispute/fulfillment audit trail
+- Dispute evidence submission with auto-filled MoR data
+- Fulfillment retry for failed webhook deliveries
+- Order receipts with license key delivery via email
+
+### Payouts
+
+- Bank account management via global payouts
+- Payout requests with minimum $5 threshold
+- Distributed locking (Redlock) for safe concurrent payout processing
+
+### Teams
+
+- Role-based access control: `VIEWER`, `MODERATOR`, `DEVELOPER`, `ADMINSTRATOR`
+- Team member CRUD (admin only)
+
+### Authentication
+
+- Magic link auth (passwordless) with 10-minute TTL
+- Session management with IP binding, device/browser/OS tracking
+- TOTP-based 2FA
+- Phone verification via Twilio
+- KYC verification via SumSub
+
+### Supported Countries
+
+Merchants can now onboard from: US, GB, AT, BE, CY, EE, FI, FR, DE, GR, IE, IT, LV, LT, LU, MT, NL, PT, SK, SI, ES, BG, HR, DK, HU, RO, SE, NO, CH, CZ, PL.
+
+## Deprecations
+
+- V1 API endpoints are deprecated and will be removed on **April 1st, 2026**
+- V1 webhook event format (`payment.success`, `payment.paid`, etc.) replaced by V2 uppercase events
+- V1 `Transaction` model replaced by `InboundPayment` in V2
+- V1 `Recipient` and `Payout` models replaced by `OutboundPayoutMethod` and `OutboundPayout`
 
 </Update>
 
 <Update label="November 30, 2024" description="Features and Fixes" tags={["V1"]}>
 ## Features
 
-- Introduced stricter moderation policies for specific categories.
-- Enhanced support for moderation on multiple types of content.
 - Added support for applying coupons during checkout.
-- Enhanced validation and error handling for smoother payment experiences.
-- Introduced support for additional currencies, including `EUR` for European customers.
-- New schema improvements to support advanced use cases.
-- Added features for guest and authenticated customer management.
+- Introduced support for additional currencies (EUR, GBP).
+- Added guest and authenticated customer management.
 - Improved session management and user lifecycle handling.
 
 ## Fixes
 
-- Resolved issues with file validation and error handling during uploads.
-- Improved the accuracy of category and slug validations.
-- Addressed bugs in session retrieval and pagination.
+- Resolved issues with file validation during uploads.
+- Improved category and slug validations.
+- Fixed bugs in session retrieval and pagination.
 
-## Performance
-
-- Enhanced database performance with optimized queries.
-- Improved system efficiency by reducing unnecessary computations.
-
-## Other
-
-- Refactored several internal services for better maintainability.
-  </Update>
+</Update>
 
 <Update label="October 22, 2024" description="API Schema Updates" tags={["V1"]}>
 ## New Properties
 
-- `tax_calculation_enabled`
-- `localized_pricing_enabled`
-- `regional_pricing_enabled`
-- `checkout_collect_phone_enabled`
-- `checkout_verify_email_enabled`
-- `plan`
-
-## Endpoints Affected
-
-- `/shops`
-- `/shops/flags`
-- `/products`
-- `/categories`
-- `/coupons`
-
-## Renamed Property
-
-- `cash_app` has been renamed to `cashapp` in the `PaymentMethod[]` flag object.
-
-## Added Payment Methods
-
-- `venmo`
-- `paypal`
-- `multiple_cards` (supporting Visa, MasterCard, etc.)
-
-## Removed Property
-
-- `stripe_connect` has been removed from the `Flag` object.
-
-## Products
-
-- Added `images[{ id, hash, path, preview_url, resolution }]` to `Product[]` and the `Product` object.
-- Added `categories[]` to `Product[]` and the `Product` object.
-
-## Shops
-
-- Added `icon_url` to `Shop[]` and the `Shop` object.
+- `tax_calculation_enabled`, `localized_pricing_enabled`, `regional_pricing_enabled` on shop flags
+- `checkout_collect_phone_enabled`, `checkout_verify_email_enabled` on shop flags
+- `images[]` and `categories[]` on product objects
+- `icon_url` on shop objects
 
 ## Pagination
 
-List request responses now include a [`meta`](/developers/pagination#meta-object-properties) object with pagination information. The default values are:
-
-- `page_size`: `10`
-- `page`: `1`
+List responses now include a `meta` object with `page_size` (default 10) and `page` (default 1).
 
 ## Filtering and Sorting
 
-Optional capabilities for advanced sorting, filtering and searching has been added to list endpoints.
+Added optional `filter`, `sort`, and `search` query parameters to list endpoints.
 
-- `filter` (Applies filters to the query using defined operators)
-  - Operators: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`, `contains`.
-- `sort` (Defines the sorting criteria for the results)
-- `search` (A search term that looks for matches)
-  </Update>
-
-<Update
-  label="October 5, 2024"
-  description="Beta Features & Performance"
-  tags={["V1"]}
->
-  - Fixed bugs with File API. - Advanced sorting and filtering capabilities for
-  the following endpoints: - `/products` - `/categories` - `/coupons` - Beta
-  support for subscriptions. - Beta support for new serial keys. - Performance
-  enhancements across the API.
 </Update>
 
 <Update label="September 20, 2024" description="Major Features Release" tags={["V1"]}>
 ## New Features
 
-- **MoR Model**: Introduced an optional MoR model for users who wish to opt in.
-- **Advanced Analytics**: Added support for advanced analytics.
-- **Dynamic Payments**: Implemented support for dynamic payments.
-- **Idempotency Support**: Added idempotency support for `POST`, `PUT`, and `PATCH` requests.
-- **Payments Endpoint**: Launched a new `/payments` endpoint to support finite-based payments.
-- **Intent-Based Flags**: Introduced new intent-based flags.
-- **File API**: Added a new intent-based file API at `/files`.
+- **MoR Model**: Pandabase as Merchant of Record.
+- **Advanced Analytics**: Store analytics endpoints.
+- **Dynamic Payments**: Custom fields during checkout.
+- **Idempotency**: Support for `POST`, `PUT`, and `PATCH` requests.
+- **File API**: Intent-based file uploads at `/files`.
 
-## Updated Endpoints
-
-Updated responses and requests for the following endpoints:
-
-- `/shops`
-- `/products`
-- `/categories`
-- `/coupons`
-- `/orders`
-- `/refunds`
-- `/disputes`
-- `/carts`
-- `/webhooks`
-  </Update>
-
-<Update
-  label="August 30, 2024"
-  description="Public Endpoints & Deprecations"
-  tags={["V1"]}
->
-  - Added new `/public` endpoints with multiple options for filtering. - Added
-  new `/onboarding` and `/login` endpoints. - Deprecated support for
-  `transactions[]` and replaced with `payment[]`. - Added `flags` to `shops`.
 </Update>
 
-<Update label="July 29, 2024" description="Cart Improvements" tags={["V1"]}>
-  - Added `/{shopId}/carts` to initiate a new cart. - Added `cartId?` optional
-  param to order intent creation object.
+<Update label="August 30, 2024" description="Public Endpoints" tags={["V1"]}>
+- Added `/public` endpoints with filtering support.
+- Added `/onboarding` and `/login` endpoints.
+- Added `flags` to shops.
+
 </Update>
 
 <Update label="June 6, 2024" description="Categories Support" tags={["V1"]}>
-## Added
+- Added `/categories` route with full CRUD support.
+- Added `categories` field to product model.
 
-- `/categories` route with support for listing categories, creating, getting, deleting, and updating.
-- `categories` field to the product model.
-
-## Changed
-
-Renamed response payloads for the following endpoints:
-
-- POST `/products`: Now returns `{ product: { ... } }` instead of directly returning the product object.
-- GET `/products`: Now returns `{ products: [{ ... }] }` instead of directly returning the product list.
-- GET `/products/{id}`: Now returns `{ product: { ... } }` instead of directly returning the product object.
-  </Update>
-
-<Update label="May 13, 2024" description="Payouts & KYC" tags={["V1"]}>
-## Changed
-
-- Renamed `shop` route to `shops`.
-
-## Added
-
-- `payout` route with support for `page` and `pageSize` parameters.
-- `recipients` route for adding payout information.
-- `flags.requirements.payouts` and `flags.requirements.kyc{status, checked_at}` to the `/user` object.
-- `customer` route with support for auth tokens of types `["login", "register", "token"]` (action-based auth).
-- Sending of payout emails.
-- `documents` route for KYC-related tasks.
-
-## Removed
-
-- `paid_at` attribute from the payout object.
-
-## Updated
-
-- `recipient.compliance.status` added to `/user`.
-- Successful API operations now return `OK` status instead of `SUCCESS`.
-- Supported Stripe Express accounts.
-- New health check message on `/healthcheck` route.
-- `image_hash` returned on public endpoints.
-- `coupon.enabled` added to coupons.
-- `payments` route for payment flow creation.
-  </Update>
-
-<Update label="April 3, 2024" description="Event Terminology Changes" tags={["V1"]}>
-## Updated
-
-- Event terminology from `transaction` to `order` object.
-- The event type previously referred to as `transaction` has been standardized as `order` object. The associated identifier now returns as `order.id`.
-- Renamed all `transaction` event types to `order` for consistency.
-
-## Added
-
-New event types related to payments:
-
-- `payment` event type.
-- New status events under `payment`:
-  - `payment.pending`: Indicates a pending payment.
-  - `payment.paid`: Denotes a successfully processed payment.
-  - `payment.success`: Signifies a successfully completed payment transaction.
-  - `payment.failed`: Indicates a failed payment transaction.
-    </Update>
-
-<Update label="March 12, 2024" description="Property Additions" tags={["V1"]}>
-## Added Properties
-
-### Account Object
-
-- `account["flags"]["verified"]`
-- `account["flags"]["two_fa_enabled"]`
-- `account["flags"]["deleted"]`
-- `account["flags"]["requirements"]{"activated"}`
-
-### Shop Object
-
-- `shop["analytics"]["total_sales"]`
-- `shop["analytics"]["total_earned"]`
-- `shop["analytics"]["pending_balance"]`
-- `shop["analytics"]["dispute_rate"]`
-- `shop["flags"]["statement_descriptor"]`
-- `shop["flags"]["features"]["pmp_enabled"]`
-- `shop["flags"]["features"]["chargeback_protection_enabled"]`
-- `shop["flags"]["features"]["storefront_enabled"]`
-- `shop["flags"]["features"]["checkout_api_enabled"]`
-- `shop["flags"]["features"]["domain_enabled"]`
-- `shop["flags"]["features"]["ssl_enabled"]`
-- `shop["flags"]["connect"]{"id", "enabled", "type"}`
-
-### Transaction Object
-
-- `transactions["fee"]`
-- `transactions["early_fraud_warning"]`
-
-### Order Object
-
-- `order["discounted"]`
-- `order["discount_code"]`
-- `order["customer"]["customer_id"]`
-- `order["customer"]["shipping_address_id"]`
-- `order["customer"]["billing_address_id"]`
-
-### Order Item
-
-- `product["name"]` as `order_item["name"]`
-- `product["id"]` as `order_item["product_id"]`
-- `order_itemp["quantity"]`
-
-### Refund Object
-
-- `refund["reason"]`
-- `refund["status"]`
-
-### Dispute Object
-
-- `dispute["dispute_id"]`
-- `dispute["reason"]`
-- `dispute["status"]`
-- `dispute["method"]`
-- `dispute["amount"]`
-- `dispute["total_amount"]`
-- `dispute["fee"]`
-
-### Coupon Object
-
-- `coupon["name"]`
-- `coupon["code"]`
-- `coupon["type"]`
-- `coupon["value"]`
-- `coupon["limit"]`
-- `coupon["limit_enabled"]`
-
-### Address Objects
-
-- `address["state"]` to the `shipping_address` and `billing_address` objects.
-- `analytics["dispute"]` to the `analytics` object.
-  </Update>
-
-<Update
-  label="February 20, 2024"
-  description="General Team Release"
-  tags={["V1"]}
->
-  - General Team release
 </Update>
 
-<Update label="February 15, 2024" description="Query Parameters" tags={["V1"]}>
-  - Implemented support for `sortBy.status`, and `sortBy.date` query parameters
-  in the List Orders route.
+<Update label="May 13, 2024" description="Payouts & KYC" tags={["V1"]}>
+- Added `payout` and `recipients` routes.
+- Added KYC verification support.
+- Added customer auth tokens.
+
+</Update>
+
+<Update label="April 3, 2024" description="Event Changes" tags={["V1"]}>
+- Renamed `transaction` event types to `order`.
+- Added `payment.pending`, `payment.paid`, `payment.success`, `payment.failed` event types.
+
+</Update>
+
+<Update label="March 12, 2024" description="Property Additions" tags={["V1"]}>
+- Added analytics properties to shop objects (`total_sales`, `total_earned`, `pending_balance`, `dispute_rate`).
+- Added feature flags (`pmp_enabled`, `chargeback_protection_enabled`, `storefront_enabled`, etc.).
+- Added `fee` and `early_fraud_warning` to transaction objects.
+- Added `discounted` and `discount_code` to order objects.
+- Added `reason` and `status` to refund and dispute objects.
+
+</Update>
+
+<Update label="February 15, 2024" description="Initial Release" tags={["V1"]}>
+- Initial V1 API release with stores, products, orders, coupons, webhooks, and payments.
+- Sort and filter support for List Orders route.
+
 </Update>
