@@ -51,7 +51,7 @@ The Pandabase API uses a hybrid versioning system that combines major versions w
 
 2. **Date-Based Increments** (YYYY/MM/DD): Added to major versions for non-breaking updates
    - Non-breaking changes include new features, additional fields, bug fixes, and performance improvements
-   - Format: `YYYY/MM/DD-{VERSION}` (e.g., `2024/12/25-v3`)
+   - Format: `YYYY/MM/DD-v2` (e.g., `2026/03/09-v2`)
    - These updates are backward compatible within the same major version
 
 **Version Header:**
@@ -65,8 +65,13 @@ Every API response includes the current version in the `X-API-Version` header, a
 
 ### Request IDs
 
-Every API request you make is assigned a unique request identifier for easy
-tracking and troubleshooting. This identifier can be found in the response
-headers under `X-Request-Id`. In the rare event if you encounter an issue with
-our service, providing this request identifier to our support team will expedite
-the resolution process.
+Every API response includes the following headers:
+
+| Header | Description |
+|--------|-------------|
+| `X-Request-ID` | Unique request identifier for tracking and troubleshooting |
+| `X-API-Version` | Current API version in `YYYY/MM/DD-v2` format |
+| `X-Version-Commit` | Git commit SHA of the deployed version |
+| `X-Served-By` | Region and machine that served the request |
+
+If you encounter an issue with our service, providing the `X-Request-ID` to our support team will expedite the resolution process.
