@@ -57,6 +57,10 @@
           {
             "group": "Storefront API",
             "openapi": "developers/storefront-openapi.json"
+          },
+          {
+            "group": "Checkout API",
+            "openapi": "developers/checkout-openapi.json"
           }
         ]
       }
