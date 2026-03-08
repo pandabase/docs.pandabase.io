@@ -53,6 +53,10 @@
           {
             "group": "API reference",
             "openapi": "developers/openapi.json"
+          },
+          {
+            "group": "Storefront API",
+            "openapi": "developers/storefront-openapi.json"
           }
         ]
       }
