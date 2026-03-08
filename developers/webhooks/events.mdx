@@ -26,6 +26,10 @@ Every webhook delivery contains the event type, a unique event ID, a timestamp, 
       "customFields": {
         "discord": "johndoe#1234"
       },
+      "metadata": {
+        "campaign": "spring_sale",
+        "ref": "partner_abc"
+      },
       "items": [
         {
           "productId": "prd_cm5x7k2a000001j0g8h3f9d2e",
@@ -72,6 +76,7 @@ interface WebhookPayload {
       amount: number; // in cents
       currency: string;
       customFields: Record<string, unknown> | null;
+      metadata: Record<string, string> | null;
       items: Array<{
         productId: string;
         variantId: string | null;
@@ -198,7 +203,7 @@ Fired when a customer initiates payment at checkout. The order has been created 
 
 Fired when a payment is successfully collected. This is the primary event to listen for when fulfilling orders.
 
-The order status will be `PROCESSING` (if fulfillment is in progress) or `COMPLETED` (if already fulfilled). The `items` array contains all purchased products, and `customFields` includes any data the customer submitted at checkout.
+The order status will be `PROCESSING` (if fulfillment is in progress) or `COMPLETED` (if already fulfilled). The `items` array contains all purchased products, `customFields` includes any data the customer submitted at checkout, and `metadata` contains any developer-defined key-value pairs set when creating the checkout session.
 
 ---
 
