@@ -24,15 +24,15 @@ rss: true
 The V2 API is a complete rewrite of the Pandabase API with breaking changes. You cannot migrate from V1 endpoints to V2 directly.
 
 **Key changes from V1:**
-- New response format: `{ ok: true, data }` / `{ ok: false, error }` (replaces raw response objects)
-- New pagination format: `{ items, pagination: { page, limit, total, totalPages } }` (replaces `meta` object)
-- TypeBox schema validation (replaces Yup)
+- New response format: `{ ok: true, data }` / `{ ok: false, error }`
+- New pagination format: `{ items, pagination: { page, limit, total, totalPages } }`
+- Stricter request validation with better error messages
 - Magic link authentication (no passwords)
 - All monetary values in cents (integers, no floats)
 
 ### New Modules
 
-- **Checkouts**: Redis-backed sessions with custom fields (text, numeric, dropdown), coupon/tax support, and pay-what-you-want pricing
+- **Checkouts**: Stateful checkout sessions with custom fields (text, numeric, dropdown), coupon/tax support, and pay-what-you-want pricing
 - **Storefront**: Public read-only API for store info, products (with variants/options), and categories — no authentication required
 - **Store API**: Token-authenticated programmatic API with granular permissions (Bearer or HMAC authentication)
 - **Licenses**: Encrypted license key management with verification endpoint and activation tracking
@@ -79,7 +79,7 @@ V2 webhook payloads include `order`, `customer`, and `geo` data in a structured 
 
 - Bank account management via global payouts
 - Payout requests with minimum $5 threshold
-- Distributed locking (Redlock) for safe concurrent payout processing
+- Safe concurrent payout processing
 
 ### Teams
 
