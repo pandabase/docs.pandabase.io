@@ -4,6 +4,22 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 10, 2026" description="Checkouts & Storefront" tags={["V2"]}>
+## Features
+
+- **Partial customer prefill**: Create checkout sessions with just `name` and `email` — billing address can be added later via `PATCH`. Tax is calculated once billing is provided.
+- **Lower item minimums**: Dynamic checkout items can now be as low as $0.01 per unit. The total checkout amount must still be at least $1.00.
+- **Storefront store resolution**: New `GET /v2/storefront/resolve/:handle` endpoint to look up a store by its handle — useful for subdomain-based routing.
+- **Storefront product by handle**: New `GET /v2/storefront/stores/:storeId/products/by-handle/:handle` endpoint to fetch a product by its URL-friendly handle.
+
+## Fixes
+
+- Total minimum is now enforced unconditionally on all checkout endpoints (estimate, create, update). Previously, the check was skipped when no billing address was provided.
+- Fixed storefront routes returning `500` errors instead of proper JSON error responses.
+- Fixed storefront resolve endpoint failing when `storeId` was not present in the URL.
+
+</Update>
+
 <Update label="March 9, 2026" description="Metadata & Docs" tags={["V2"]}>
 ## Features
 
