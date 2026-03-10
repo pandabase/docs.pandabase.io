@@ -4,6 +4,24 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 10, 2026" description="Fraud Protection & Teams" tags={["V2"]}>
+## Features
+
+- **Early fraud protection**: Payments flagged with early fraud warnings are now automatically refunded for low-value orders or flagged for manual review. Merchants are notified via email.
+- **Dispute status tracking**: Disputes now transition to `UNDER_REVIEW` when evidence is submitted to the card network.
+- **Team notifications**: All team actions (add, remove, role update) now send email notifications to both the affected member and the store owner.
+- **Role update notifications**: Changing a team member's role now sends a notification showing the previous and new role with permission details.
+- **Improved order timeline**: Added fulfillment started and payment failed events to the order timeline.
+
+## Fixes
+
+- Fixed refund response returning incorrect amount.
+- Fixed dispute won incorrectly restoring the non-refundable dispute fee to merchant balance.
+- Fixed coupon usage not rolling back when refunds are initiated externally.
+- Fixed refund confirmation emails not being sent on certain refund paths.
+
+</Update>
+
 <Update label="March 10, 2026" description="Checkouts & Storefront" tags={["V2"]}>
 ## Features
 
