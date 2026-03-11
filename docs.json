@@ -15,11 +15,11 @@
         "groups": [
           {
             "group": "Getting started",
-            "pages": ["index", "quickstart", "development"]
+            "pages": ["index", "quickstart", "pricing", "development"]
           },
           {
             "group": "Guides",
-            "pages": ["payments", "products", "checkouts", "stores", "payouts", "refunds", "disputes", "webhooks"]
+            "pages": ["payments", "products", "checkouts", "stores", "payouts", "refunds", "disputes", "webhooks", "api-tokens", "accounts"]
           }
         ]
       },

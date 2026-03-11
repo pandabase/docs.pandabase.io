@@ -38,6 +38,15 @@ A dispute (also called a chargeback) happens when a customer contacts their bank
 | Unrecognized         | Customer doesn't recognize the charge on their statement |
 | General              | Other or unspecified reason                              |
 
+## Early fraud protection
+
+Pandabase monitors all payments for early fraud signals from card networks. When a payment is flagged:
+
+- **Low-value orders** (under $20) are automatically refunded to prevent a costly dispute. You'll receive an email notification.
+- **Higher-value orders** are flagged for manual review so you can decide whether to refund or wait.
+
+This happens before the customer files a formal dispute, so no $20 dispute fee is charged. Early fraud refunds are the cheapest way to handle suspicious transactions.
+
 ## Reducing disputes
 
 - Use a clear statement descriptor so customers recognize the charge

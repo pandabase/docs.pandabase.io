@@ -1,0 +1,78 @@
+---
+title: "Accounts & Verification"
+description: "Setting up your account, identity verification, and security."
+---
+
+## Creating an account
+
+Sign up with your email address. Pandabase uses **magic link authentication** — no passwords. Every time you log in, we send a one-time link to your email that expires after 10 minutes.
+
+## Verification requirements
+
+Before your store can accept payments, you need to complete these steps:
+
+<Steps>
+  <Step title="Email verification">
+    Confirmed automatically when you sign up via magic link.
+  </Step>
+  <Step title="Profile information">
+    Add your first name, last name, and country. Your country determines which
+    payout methods are available.
+  </Step>
+  <Step title="Phone verification">
+    Verify your phone number via SMS code. Your phone number's country must
+    match your account country.
+  </Step>
+  <Step title="Identity verification (KYC)">
+    Complete identity verification through our KYC provider. This typically
+    involves uploading a government-issued ID and a selfie. Verification usually
+    takes a few minutes.
+  </Step>
+</Steps>
+
+Once all steps are complete, you can create stores and start accepting payments.
+
+## Two-factor authentication
+
+Add an extra layer of security with **TOTP-based 2FA** using any authenticator app (Google Authenticator, Authy, 1Password, etc.).
+
+When enabled, you'll need to enter a 6-digit code from your authenticator app each time you log in.
+
+<Note>
+  We strongly recommend enabling 2FA on all accounts, especially those with
+  active stores and balances.
+</Note>
+
+## Sessions
+
+Each login creates a session tied to your device and IP address. You can view all active sessions and revoke any session from the dashboard.
+
+Sessions track:
+
+- Device type and operating system
+- Browser
+- IP address
+- Last active time
+
+## Account limits
+
+| Limit              | Value     |
+| ------------------ | --------- |
+| Stores per account | 3         |
+| Team memberships   | Unlimited |
+
+## Supported countries
+
+Pandabase is available to merchants in the following countries:
+
+**Americas**: United States, Canada
+
+**United Kingdom**: Great Britain
+
+**Eurozone**: Austria, Belgium, Cyprus, Germany, Estonia, Spain, Finland, France, Greece, Croatia, Ireland, Italy, Lithuania, Luxembourg, Latvia, Malta, Netherlands, Portugal, Slovenia, Slovakia
+
+**EU (non-Eurozone)**: Czech Republic, Denmark, Hungary, Poland, Sweden
+
+**EEA**: Norway
+
+**Other**: Singapore, Turkiye
