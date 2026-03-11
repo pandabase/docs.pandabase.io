@@ -4,6 +4,15 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 12, 2026" description="Local Currency Payments & Balance Ledger" tags={["V2"]}>
+## Features
+
+- **Local currency payments**: Customers are now charged in their local currency when checking out from a supported country. This enables payment methods like PIX, iDEAL, SEPA Debit, Bancontact, Naver Pay, Kakao Pay, and more. Settlements remain in USD.
+- **Balance ledger**: New `GET /v2/stores/:storeId/payouts/ledger` endpoint for a full audit trail of balance changes — payments, refunds, disputes, and payouts.
+- **Presentment data on orders**: Order and payment responses now include `presentmentCurrency`, `presentmentAmount`, and `exchangeRate` when a local currency was used.
+
+</Update>
+
 <Update label="March 11, 2026" description="Payouts Expansion & New Countries" tags={["V2"]}>
 ## Features
 

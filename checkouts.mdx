@@ -66,6 +66,24 @@ tax = calculated on (subtotal - discount) based on billing address
 total = subtotal - discount + tax
 ```
 
+## Local currency
+
+When a customer provides a billing address in a supported country, the checkout total is automatically converted to their local currency. This enables region-specific payment methods like PIX, iDEAL, and SEPA Debit.
+
+The exchange rate is locked when billing info is provided and does not change during the session. Products remain priced in USD — the conversion only affects what the customer is charged.
+
+The checkout session response includes a `presentment` object when local currency is active:
+
+```json
+{
+  "presentment": {
+    "currency": "EUR",
+    "amount": 2569,
+    "rate": 0.86348
+  }
+}
+```
+
 <Note>
   No authentication is required to create or pay for a checkout session.
   Customers are created automatically during checkout if they don't already
