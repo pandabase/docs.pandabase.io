@@ -1,0 +1,73 @@
+---
+title: "Checkouts"
+description: "How checkout sessions work."
+---
+
+## Overview
+
+Checkout sessions are how customers pay for products on Pandabase. A session is a temporary, stateful object that holds the customer's cart, billing info, and payment details. Sessions expire after **6 hours**.
+
+## Checkout flow
+
+<Steps>
+  <Step title="Create a session">
+    Create a checkout session with one or more items. Items can be existing
+    products from your catalog (by product ID) or dynamic items (by name and
+    amount).
+  </Step>
+  <Step title="Customer fills in details">
+    The customer provides their name, email, and billing address. Tax is
+    calculated automatically once billing info is provided.
+  </Step>
+  <Step title="Apply coupons (optional)">
+    Customers can apply a coupon code for a discount. Both percentage and fixed
+    amount coupons are supported.
+  </Step>
+  <Step title="Pay">
+    The customer submits payment. On success, an order is created and
+    fulfillment begins automatically.
+  </Step>
+</Steps>
+
+## Items
+
+Checkout sessions support two types of items:
+
+**Catalog items** — reference a product by ID. Price, name, and stock are resolved from your product catalog. Supports variant selection.
+
+**Dynamic items** — specify a name and amount directly. Useful for one-off charges, tips, or custom pricing. Minimum $0.01 per unit, but the total checkout amount must be at least $1.00.
+
+## Custom fields
+
+You can add custom fields to collect additional information during checkout.
+
+| Type     | Description                    |
+| -------- | ------------------------------ |
+| Text     | Free-form text input           |
+| Numeric  | Number input                   |
+| Dropdown | Select from predefined options |
+
+Custom fields are included in the order data and forwarded in webhook payloads.
+
+## Metadata
+
+Attach arbitrary key-value pairs to a checkout session. Metadata is set at creation and cannot be changed after. It flows through to the order, webhook payloads, and fulfillment webhooks.
+
+Limits: max 20 keys, key max 40 characters, value max 500 characters.
+
+## Pricing
+
+The checkout total is calculated as:
+
+```
+subtotal = sum of (item price × quantity)
+discount = coupon discount (if applied)
+tax = calculated on (subtotal - discount) based on billing address
+total = subtotal - discount + tax
+```
+
+<Note>
+  No authentication is required to create or pay for a checkout session.
+  Customers are created automatically during checkout if they don't already
+  exist.
+</Note>

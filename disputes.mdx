@@ -1,0 +1,51 @@
+---
+title: "Disputes & Chargebacks"
+description: "What happens when a customer disputes a charge."
+---
+
+## Overview
+
+A dispute (also called a chargeback) happens when a customer contacts their bank to reverse a charge. When this happens, the disputed amount plus a **$20 dispute fee** is deducted from your store's available balance immediately.
+
+## Dispute lifecycle
+
+<Steps>
+  <Step title="Dispute opened">
+    The customer's bank notifies us of the dispute. The order moves to **CHARGEBACK** status and the funds are held.
+  </Step>
+  <Step title="Submit evidence">
+    You have a limited window to submit evidence that the charge was legitimate. Pandabase automatically includes customer details, IP address, and billing information since we're the merchant of record — you only need to provide an access or activity log showing the customer used the product.
+  </Step>
+  <Step title="Bank reviews">
+    The card network reviews the evidence. This typically takes 60–90 days.
+  </Step>
+  <Step title="Resolution">
+    **Won** — the funds and dispute fee are restored to your balance, and the order returns to **COMPLETED**.
+
+    **Lost** — the funds stay deducted and the order remains in **CHARGEBACK** status.
+
+  </Step>
+</Steps>
+
+## Dispute reasons
+
+| Reason               | Description                                              |
+| -------------------- | -------------------------------------------------------- |
+| Fraudulent           | Customer claims they didn't authorize the charge         |
+| Product not received | Customer claims they didn't receive the product          |
+| Product unacceptable | Customer claims the product wasn't as described          |
+| Duplicate charge     | Customer was charged more than once                      |
+| Unrecognized         | Customer doesn't recognize the charge on their statement |
+| General              | Other or unspecified reason                              |
+
+## Reducing disputes
+
+- Use a clear statement descriptor so customers recognize the charge
+- Deliver products immediately after payment
+- Respond to customer support requests quickly
+- Offer refunds proactively when customers are unhappy — a refund is always cheaper than a dispute
+
+<Warning>
+  Disputes are expensive. Each dispute costs $20 regardless of the outcome. A
+  high dispute rate can also result in your store being reviewed or suspended.
+</Warning>

@@ -1,0 +1,62 @@
+---
+title: "Products"
+description: "Product types, fulfillment, pricing models, and variants."
+---
+
+## Product types
+
+| Type             | Description                                |
+| ---------------- | ------------------------------------------ |
+| Digital download | Files delivered after purchase             |
+| License key      | Software licenses with activation tracking |
+| Subscription     | Recurring billing products                 |
+
+## Fulfillment modes
+
+When a customer completes a purchase, Pandabase automatically fulfills the order based on the product's fulfillment mode.
+
+| Mode             | How it works                                                                                                  |
+| ---------------- | ------------------------------------------------------------------------------------------------------------- |
+| Managed license  | Pandabase auto-generates a license key in your chosen format (alphanumeric, UUID, or custom prefix)           |
+| License pool     | You upload a pool of license keys. Pandabase claims one per purchase and delivers it to the customer          |
+| License webhook  | Pandabase sends a fulfillment webhook to your server so you can generate and return a license key dynamically |
+| Instant download | Customer receives a download link immediately after payment                                                   |
+| Redirect         | Customer is redirected to a URL after payment                                                                 |
+| Manual           | No automatic fulfillment — you handle delivery yourself                                                       |
+
+## Pricing models
+
+| Model             | Description                                          |
+| ----------------- | ---------------------------------------------------- |
+| Standard          | Fixed price set by you                               |
+| Pay what you want | Customer chooses the price, with an optional minimum |
+| Free              | No charge — useful for lead magnets or free tiers    |
+
+## Variants and options
+
+Products can have **variants** and **options** to represent different versions of the same product.
+
+**Options** define the dimensions (e.g., "Plan", "License Type") with a set of values (e.g., "Basic", "Pro", "Enterprise").
+
+**Variants** are specific combinations of options, each with their own price, SKU, stock quantity, and images.
+
+For example, a software product might have:
+
+- Option: "Plan" with values ["Personal", "Team", "Enterprise"]
+- 3 variants, one per plan, each with a different price
+
+## Product status
+
+| Status | Description                                                      |
+| ------ | ---------------------------------------------------------------- |
+| Draft  | Not visible to customers. Use this while setting up your product |
+| Active | Live and available for purchase on your storefront               |
+
+Deleting a product soft-deletes it — existing orders are preserved, but the product is removed from your storefront and can't be purchased again.
+
+## Other settings
+
+- **Availability windows**: Set `available_from` and `available_until` to limit when a product can be purchased
+- **Max per customer**: Limit how many times a single customer can buy a product
+- **Stock tracking**: Enable per-variant stock tracking with low stock threshold alerts
+- **Categories**: Organize products into categories and subcategories for your storefront

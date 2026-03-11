@@ -1,0 +1,65 @@
+---
+title: "Payments"
+description: "How payments work on Pandabase."
+---
+
+## Merchant of Record
+
+Pandabase acts as the **Merchant of Record (MoR)** for all transactions. This means we process payments, handle tax collection, manage disputes, and issue refunds on your behalf. Your customers pay Pandabase — we settle funds to your available balance after deducting fees.
+
+## Currency
+
+All settlements are in **USD**. Regardless of where your store or customers are located, your balance and payouts are always in US dollars.
+
+## Payment Methods
+
+Customers can pay with:
+
+- Credit and debit cards (Visa, Mastercard, American Express, Discover)
+- Apple Pay and Google Pay
+- Additional methods depending on the customer's region
+
+## Fees
+
+| Fee          | Amount                                              |
+| ------------ | --------------------------------------------------- |
+| Platform fee | 5.9% + $0.20 per transaction                        |
+| Dispute fee  | $20.00 per dispute                                  |
+| Payout fee   | $1.50 base + [country-specific fees](/payouts#fees) |
+
+<Note>
+  There are no monthly fees, setup fees, or hidden charges. You only pay when
+  you make a sale.
+</Note>
+
+## How a payment works
+
+<Steps>
+  <Step title="Customer checks out">
+    A customer adds items to a checkout session and enters their payment
+    details.
+  </Step>
+  <Step title="Payment is processed">
+    The customer's card is charged and the payment is verified.
+  </Step>
+  <Step title="Order is created">
+    On successful payment, an order is created and fulfillment is triggered
+    automatically (license keys, downloads, webhooks, etc.).
+  </Step>
+  <Step title="Balance is updated">
+    The sale amount (minus platform fees) is added to your store's available
+    balance. You can request a [payout](/payouts) at any time.
+  </Step>
+</Steps>
+
+## Order statuses
+
+| Status     | Description                                              |
+| ---------- | -------------------------------------------------------- |
+| PENDING    | Payment intent created, waiting for customer             |
+| PROCESSING | Payment is being processed                               |
+| COMPLETED  | Payment succeeded, order fulfilled                       |
+| FAILED     | Payment failed (card declined, insufficient funds, etc.) |
+| CANCELLED  | Payment was cancelled before completion                  |
+| REFUNDED   | Order was refunded                                       |
+| CHARGEBACK | Customer filed a dispute with their bank                 |
