@@ -1,0 +1,463 @@
+---
+title: "Storefront API"
+description: "Public read-only API for displaying store information, products, and categories on your frontend."
+---
+
+The Storefront API provides public, read-only access to your store's data. It requires **no authentication** — just your Store ID in the URL. Use it to build custom storefronts, product pages, and category browsing experiences.
+
+## Base URL
+
+```
+https://api.pandabase.io/v2/storefront/stores/{storeId}
+```
+
+All endpoints are prefixed with `/v2/storefront/stores/{storeId}`.
+
+## Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/v2/storefront/stores/:storeId` | Store info |
+| GET | `/v2/storefront/stores/:storeId/products` | List products (paginated) |
+| GET | `/v2/storefront/stores/:storeId/products/:productId` | Product detail |
+| GET | `/v2/storefront/stores/:storeId/categories` | List categories (paginated) |
+| GET | `/v2/storefront/stores/:storeId/categories/:categoryId` | Category detail |
+
+---
+
+## Get Store
+
+Returns public store information including branding, description, and social links.
+
+```
+GET /v2/storefront/stores/{storeId}
+```
+
+<CodeGroup>
+
+```json Response
+{
+  "ok": true,
+  "data": {
+    "id": "shp_abc123",
+    "name": "My Store",
+    "handle": "my-store",
+    "slug": "my-store",
+    "description": "We sell digital products.",
+    "summary": "Digital goods marketplace",
+    "logo": "https://cdn.pandabase.io/stores/logo.png",
+    "favicon": "https://cdn.pandabase.io/stores/favicon.png",
+    "accentColor": "#07C983",
+    "primaryColor": "#0b7031",
+    "supportEmail": "support@mystore.com",
+    "category": ["SOFTWARE", "DIGITAL_PRODUCTS"],
+    "twitterUrl": "https://x.com/mystore",
+    "instagramUrl": null,
+    "linkedinUrl": null,
+    "youtubeUrl": null,
+    "tiktokUrl": null
+  }
+}
+```
+
+```typescript Type
+interface Storefront {
+  id: string;
+  name: string;
+  handle: string;
+  slug: string | null;
+  description: string;
+  summary: string | null;
+  logo: string | null;
+  favicon: string | null;
+  accentColor: string | null;
+  primaryColor: string | null;
+  supportEmail: string | null;
+  category: string[];
+  twitterUrl: string | null;
+  instagramUrl: string | null;
+  linkedinUrl: string | null;
+  youtubeUrl: string | null;
+  tiktokUrl: string | null;
+}
+```
+
+</CodeGroup>
+
+---
+
+## List Products
+
+Returns a paginated list of active products. Supports filtering, searching, and sorting.
+
+```
+GET /v2/storefront/stores/{storeId}/products
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page` | integer | `1` | Page number (min: 1) |
+| `limit` | integer | `25` | Items per page (1-100) |
+| `search` | string | — | Full-text search on product title |
+| `categoryId` | string | — | Filter by category ID |
+| `productType` | string | — | Filter by type: `SERIAL`, `SERVICE`, `ONE_TIME`, `PHYSICAL`, `SUBSCRIPTION`, `DIGITAL_DOWNLOAD`, `LICENSE_KEY` |
+| `pricingModel` | string | — | Filter by pricing: `STANDARD`, `PAY_WHAT_YOU_WANT`, `FREE` |
+| `sortBy` | string | `createdAt` | Sort field: `title`, `price`, `createdAt` |
+| `sortOrder` | string | `desc` | Sort direction: `asc`, `desc` |
+
+<CodeGroup>
+
+```bash cURL
+curl "https://api.pandabase.io/v2/storefront/stores/shp_abc123/products?limit=10&sortBy=price&sortOrder=asc"
+```
+
+```json Response
+{
+  "ok": true,
+  "data": {
+    "items": [
+      {
+        "id": "prd_abc123",
+        "title": "Pro Plan",
+        "subtitle": "Everything you need",
+        "handle": "pro-plan",
+        "price": 2999,
+        "compareAtPrice": 4999,
+        "images": ["https://cdn.pandabase.io/products/pro.png"],
+        "inStock": true,
+        "currency": "USD",
+        "productType": "LICENSE_KEY",
+        "pricingModel": "STANDARD",
+        "status": "ACTIVE",
+        "minimumPrice": null,
+        "categories": [
+          { "id": "ctg_abc123", "name": "Software", "slug": "software" }
+        ]
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 42,
+      "totalPages": 5
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+<Note>
+  Only active products are returned. Draft and deleted products are never
+  included in storefront responses.
+</Note>
+
+---
+
+## Get Product
+
+Returns full product details including variants, options, and categories.
+
+```
+GET /v2/storefront/stores/{storeId}/products/{productId}
+```
+
+<CodeGroup>
+
+```json Response
+{
+  "ok": true,
+  "data": {
+    "id": "prd_abc123",
+    "title": "Pro Plan",
+    "subtitle": "Everything you need",
+    "description": "Full access to all features.",
+    "handle": "pro-plan",
+    "price": 2999,
+    "compareAtPrice": 4999,
+    "images": ["https://cdn.pandabase.io/products/pro.png"],
+    "inStock": true,
+    "currency": "USD",
+    "productType": "LICENSE_KEY",
+    "message": "Thanks for purchasing!",
+    "pricingModel": "STANDARD",
+    "status": "ACTIVE",
+    "minimumPrice": null,
+    "maxPerCustomer": 3,
+    "fulfillmentMode": "MANAGED_LICENSE",
+    "availableFrom": null,
+    "availableUntil": null,
+    "billingInterval": null,
+    "billingAnchor": null,
+    "trialDays": null,
+    "options": [
+      {
+        "id": "opt_abc123",
+        "name": "License Type",
+        "values": ["Personal", "Commercial"],
+        "position": 0
+      }
+    ],
+    "variants": [
+      {
+        "id": "var_abc123",
+        "title": "Personal License",
+        "slug": "personal-license",
+        "description": "For individual use",
+        "sku": "PRO-PERSONAL",
+        "options": { "License Type": "Personal" },
+        "price": 2999,
+        "compareAtPrice": 4999,
+        "images": [],
+        "inStock": true,
+        "quantity": null,
+        "trackStock": false,
+        "position": 0
+      }
+    ],
+    "categories": [
+      { "id": "ctg_abc123", "name": "Software", "slug": "software" }
+    ]
+  }
+}
+```
+
+```typescript Type
+interface StorefrontProduct {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  handle: string;
+  price: number;
+  compareAtPrice: number | null;
+  images: string[];
+  inStock: boolean;
+  currency: string;
+  productType: string;
+  message: string | null;
+  pricingModel: string;
+  status: string;
+  minimumPrice: number | null;
+  maxPerCustomer: number | null;
+  fulfillmentMode: string | null;
+  availableFrom: string | null;
+  availableUntil: string | null;
+  billingInterval: string | null;
+  billingAnchor: string | null;
+  trialDays: number | null;
+  options: Array<{
+    id: string;
+    name: string;
+    values: string[];
+    position: number;
+  }>;
+  variants: Array<{
+    id: string;
+    title: string;
+    slug: string | null;
+    description: string | null;
+    sku: string | null;
+    options: Record<string, string>;
+    price: number;
+    compareAtPrice: number | null;
+    images: string[];
+    inStock: boolean;
+    quantity: number | null;
+    trackStock: boolean;
+    position: number;
+  }>;
+  categories: Array<{
+    id: string;
+    name: string;
+    slug: string;
+  }>;
+}
+```
+
+</CodeGroup>
+
+<Note>
+  The product detail response includes fields not shown in the list view:
+  `description`, `message`, `fulfillmentMode`, `maxPerCustomer`,
+  `availableFrom`/`availableUntil`, subscription fields, `options`, and
+  `variants`.
+</Note>
+
+---
+
+## List Categories
+
+Returns a paginated list of categories. Supports filtering by featured status and parent category.
+
+```
+GET /v2/storefront/stores/{storeId}/categories
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page` | integer | `1` | Page number (min: 1) |
+| `limit` | integer | `25` | Items per page (1-100) |
+| `featured` | boolean | — | Filter by featured status |
+| `parentId` | string | — | Filter by parent category ID (for subcategories) |
+
+<CodeGroup>
+
+```bash cURL
+curl "https://api.pandabase.io/v2/storefront/stores/shp_abc123/categories?featured=true"
+```
+
+```json Response
+{
+  "ok": true,
+  "data": {
+    "items": [
+      {
+        "id": "ctg_abc123",
+        "name": "Software",
+        "slug": "software",
+        "description": "Software products and licenses",
+        "icon": "code",
+        "parentId": null,
+        "displayOrder": 0,
+        "featured": true
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 25,
+      "total": 5,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+---
+
+## Get Category
+
+Returns category details including subcategories and up to 50 active products.
+
+```
+GET /v2/storefront/stores/{storeId}/categories/{categoryId}
+```
+
+<CodeGroup>
+
+```json Response
+{
+  "ok": true,
+  "data": {
+    "id": "ctg_abc123",
+    "name": "Software",
+    "slug": "software",
+    "description": "Software products and licenses",
+    "icon": "code",
+    "parentId": null,
+    "displayOrder": 0,
+    "featured": true,
+    "metaTitle": "Software Products",
+    "metaDescription": "Browse our software collection",
+    "showInNavigation": true,
+    "children": [
+      { "id": "ctg_def456", "name": "Plugins", "slug": "plugins" }
+    ],
+    "products": [
+      {
+        "id": "prd_abc123",
+        "title": "Pro Plan",
+        "handle": "pro-plan",
+        "price": 2999,
+        "images": ["https://cdn.pandabase.io/products/pro.png"],
+        "inStock": true
+      }
+    ]
+  }
+}
+```
+
+```typescript Type
+interface StorefrontCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string | null;
+  parentId: string | null;
+  displayOrder: number;
+  featured: boolean;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  showInNavigation: boolean;
+  children: Array<{ id: string; name: string; slug: string }>;
+  products: Array<{
+    id: string;
+    title: string;
+    handle: string;
+    price: number;
+    images: string[];
+    inStock: boolean;
+  }>;
+}
+```
+
+</CodeGroup>
+
+<Note>
+  The category detail endpoint returns up to **50 products**. For full
+  product listings within a category, use the
+  [List Products](#list-products) endpoint with the `categoryId` filter.
+</Note>
+
+---
+
+## Error Responses
+
+All error responses follow the standard format:
+
+```json
+{
+  "ok": false,
+  "error": "Store not found"
+}
+```
+
+| Status | Error | When |
+|--------|-------|------|
+| `404` | Store not found | Invalid or blocked store ID |
+| `404` | Product not found | Product doesn't exist, is draft, or is deleted |
+| `404` | Category not found | Category doesn't exist in this store |
+
+## Example: Building a Product Page
+
+```typescript
+const STORE_ID = "shp_abc123";
+const API = `https://api.pandabase.io/v2/storefront/stores/${STORE_ID}`;
+
+// Fetch store branding
+const store = await fetch(`${API}`).then((r) => r.json());
+
+// Fetch featured products
+const products = await fetch(
+  `${API}/products?limit=12&sortBy=createdAt&sortOrder=desc`,
+).then((r) => r.json());
+
+// Fetch a single product with variants
+const product = await fetch(`${API}/products/prd_abc123`).then((r) =>
+  r.json(),
+);
+
+// Fetch categories for navigation
+const categories = await fetch(`${API}/categories?featured=true`).then((r) =>
+  r.json(),
+);
+```
+
+All monetary values are in **cents** (integers). Divide by 100 for display (e.g., `2999` = `$29.99`).

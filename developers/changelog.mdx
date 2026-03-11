@@ -4,6 +4,21 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 11, 2026" description="Payouts Expansion & New Countries" tags={["V2"]}>
+## Features
+
+- **New payout countries**: Added Canada, Singapore, Turkiye, Hungary, Sweden, Denmark, and Norway.
+- **SWIFT transfers**: Merchants in countries without local rail support can now receive payouts via SWIFT.
+- **Country-specific bank accounts**: Sort codes (GB), transit/institution numbers (CA), bank/branch codes (SG), SWIFT/BIC codes (TR), and IBAN (EU/EEA).
+- **Bank account verification**: UK bank accounts are now verified against the bank's records before being accepted.
+- **Payout emails**: Merchants now receive an email when a payout is requested with estimated processing timeline.
+
+## Fixes
+
+- Platform fee adjusted from 6% to 5.9% per transaction.
+
+</Update>
+
 <Update label="March 10, 2026" description="Checkouts, Storefront, Fraud Protection & Teams" tags={["V2"]}>
 ## Features
 
@@ -120,7 +135,7 @@ V2 webhook payloads include `order`, `customer`, and `geo` data in a structured 
 
 ### Supported Countries
 
-Merchants can now onboard from: US, GB, AT, BE, CY, EE, FI, FR, DE, GR, IE, IT, LV, LT, LU, MT, NL, PT, SK, SI, ES, BG, HR, DK, HU, RO, SE, NO, CH, CZ, PL.
+Merchants can now onboard from: US, GB, AT, BE, CY, CZ, DE, EE, ES, FI, FR, GR, HR, IE, IT, LT, LU, LV, MT, NL, PL, PT, SI, SK.
 
 ## Deprecations
 
