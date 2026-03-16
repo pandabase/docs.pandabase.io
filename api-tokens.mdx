@@ -25,11 +25,12 @@ Simple and straightforward. Best for server-side integrations where the token is
 
 ### HMAC
 
-Sign each request with your token's secret using HMAC-SHA256. The request includes:
+Sign each request using a key derived from your secret. First hash your secret with SHA-256 to get the signing key, then compute HMAC-SHA256 of the request body. The request includes:
 
-- `X-Pandabase-Token` — your token ID
-- `X-Pandabase-Timestamp` — current Unix timestamp
-- `X-Pandabase-Signature` — HMAC-SHA256 signature of the request
+- `Authorization: Bearer stk_...` — your token ID
+- `X-Signature` — HMAC-SHA256 signature of the request body
+
+Your raw secret never leaves your server. See the [developer guide](/developers/learn/api-tokens) for full code examples.
 
 Best for environments where you want to verify request integrity and prevent replay attacks.
 

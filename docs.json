@@ -40,7 +40,9 @@
             "group": "Learn",
             "pages": [
               "developers/learn/lifecycle",
-              "developers/learn/dynamic-payments"
+              "developers/learn/dynamic-payments",
+              "developers/learn/hosted-checkout",
+              "developers/learn/api-tokens"
             ]
           },
           {
