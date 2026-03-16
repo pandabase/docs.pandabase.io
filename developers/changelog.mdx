@@ -4,6 +4,18 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 16, 2026" description="Checkout Customization & Store Onboarding" tags={["V2"]}>
+## Features
+
+- **Checkout title & description**: Customize the heading and description shown on the checkout page. Title defaults to your store name. Description is only shown when explicitly set.
+- **Store questionnaire**: New onboarding questionnaire for stores. Required before accepting payments — collects business type, description, country, and expected volume. Companies and nonprofits also provide legal entity name, tax ID, and registered address.
+- **Localized payment toggle**: Merchants can now enable or disable local currency payments per store via `PATCH /v2/stores/:storeId`.
+- **Improved payout error messages**: Payout requests now show a detailed breakdown when balance is insufficient, including the total needed and fee breakdown.
+- **Receipt support email**: Order receipt emails now show the merchant's support email instead of a generic address.
+- **Max stores increased**: Accounts can now create up to 10 stores (previously 3).
+
+</Update>
+
 <Update label="March 12, 2026" description="Local Currency Payments & Balance Ledger" tags={["V2"]}>
 ## Features
 

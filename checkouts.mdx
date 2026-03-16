@@ -37,6 +37,18 @@ Checkout sessions support two types of items:
 
 **Dynamic items** — specify a name and amount directly. Useful for one-off charges, tips, or custom pricing. Minimum $0.01 per unit, but the total checkout amount must be at least $1.00.
 
+## Title & description
+
+Customize the checkout page heading and description. If not provided, the title defaults to your store name and the description is omitted.
+
+```json
+{
+  "title": "Premium Membership",
+  "description": "Get access to exclusive content and features",
+  "items": [...]
+}
+```
+
 ## Custom fields
 
 You can add custom fields to collect additional information during checkout.
