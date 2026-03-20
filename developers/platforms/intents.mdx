@@ -18,14 +18,12 @@ sequenceDiagram
     participant Customer
     participant Platform
     participant Pandabase
-    participant Stripe
 
     Platform->>Pandabase: POST /v2/platforms/intents
     Pandabase-->>Platform: { clientSecret, intentId }
     Platform->>Customer: Render payment form
     Customer->>Pandabase: Confirm payment
-    Pandabase->>Stripe: Process charge
-    Stripe-->>Pandabase: Payment succeeded
+    Pandabase->>Pandabase: Process charge
     Pandabase-->>Platform: Webhook: INTENT_COMPLETED
     Pandabase->>Platform: Settlement (T+2)
 ```
