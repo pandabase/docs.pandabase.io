@@ -245,7 +245,77 @@ Fired when a dispute is resolved against the merchant. The deducted funds remain
 
 ## Subscription events
 
-Subscription events follow the same payload structure as payment events. They are fired alongside (not instead of) payment events — for example, a successful renewal triggers both `PAYMENT_COMPLETED` and `SUBSCRIPTION_RENEWED`.
+Subscription events include the same `order`, `customer`, and `geo` fields as payment events, plus a `subscription` object with the current subscription state.
+
+They are fired alongside (not instead of) payment events — for example, a successful renewal triggers both `PAYMENT_COMPLETED` and `SUBSCRIPTION_RENEWED`.
+
+<CodeGroup>
+
+```json Example Payload (SUBSCRIPTION_RENEWED)
+{
+  "event": "SUBSCRIPTION_RENEWED",
+  "id": "evt_cm5x7k2a000001j0g8h3f9d2e",
+  "timestamp": "2026-04-18T00:00:00.000Z",
+  "data": {
+    "order": {
+      "id": "ord_cm5x7k2a000001j0g8h3f9d2e",
+      "orderNumber": "cs_cm5x7k2a000001j0g8h3f9d2e",
+      "status": "COMPLETED",
+      "amount": 1999,
+      "currency": "USD",
+      "customFields": null,
+      "metadata": null,
+      "items": [
+        {
+          "productId": "prd_cm5x7k2a000001j0g8h3f9d2e",
+          "variantId": null,
+          "name": "Pro Plan",
+          "quantity": 1,
+          "amount": 1999
+        }
+      ]
+    },
+    "customer": {
+      "id": "cus_cm5x7k2a000001j0g8h3f9d2e",
+      "email": "buyer@example.com"
+    },
+    "geo": null,
+    "subscription": {
+      "id": "sub_cm5x7k2a000001j0g8h3f9d2e",
+      "status": "ACTIVE",
+      "billingInterval": "MONTHLY",
+      "amount": 1999,
+      "currency": "USD",
+      "currentPeriodStart": "2026-04-18T00:00:00.000Z",
+      "currentPeriodEnd": "2026-05-18T00:00:00.000Z",
+      "nextChargeAt": "2026-05-18T00:00:00.000Z",
+      "trialEnd": null,
+      "cancelledAt": null
+    }
+  }
+}
+```
+
+```typescript Subscription Object Type
+interface WebhookSubscription {
+  id: string;                    // sub_ prefixed
+  status: "TRIALING" | "ACTIVE" | "PAST_DUE" | "PAUSED" | "CANCELLED";
+  billingInterval: "WEEKLY" | "MONTHLY" | "YEARLY";
+  amount: number;                // in cents
+  currency: string;
+  currentPeriodStart: string;    // ISO 8601
+  currentPeriodEnd: string;      // ISO 8601
+  nextChargeAt: string | null;   // null when cancelled/paused
+  trialEnd: string | null;       // null if no trial
+  cancelledAt: string | null;    // null if active
+}
+```
+
+</CodeGroup>
+
+<Note>
+  The `subscription` field is only present on `SUBSCRIPTION_*` events. Payment events (`PAYMENT_COMPLETED`, etc.) do not include it.
+</Note>
 
 ### `SUBSCRIPTION_CREATED`
 
