@@ -242,20 +242,20 @@ curl -X POST https://api.pandabase.io/v2/core/stores/shp_xxx/products \
 
 Tokens use granular permissions. Only grant what your integration needs.
 
-```
-PRODUCTS_READ    PRODUCTS_WRITE
-ORDERS_READ      ORDERS_WRITE
-CUSTOMERS_READ   CUSTOMERS_WRITE
-CATEGORIES_READ  CATEGORIES_WRITE
-COUPONS_READ     COUPONS_WRITE
-WEBHOOKS_READ    WEBHOOKS_WRITE
-ANALYTICS_READ
-PAYOUTS_READ     PAYOUTS_WRITE
-LICENSES_READ    LICENSES_WRITE
-REFUNDS_READ     REFUNDS_WRITE
-SUBSCRIPTIONS_READ  SUBSCRIPTIONS_WRITE
-STORE_READ       STORE_WRITE
-```
+| Resource | Read | Write |
+|----------|------|-------|
+| Products | `PRODUCTS_READ` | `PRODUCTS_WRITE` |
+| Orders | `ORDERS_READ` | `ORDERS_WRITE` |
+| Customers | `CUSTOMERS_READ` | `CUSTOMERS_WRITE` |
+| Categories | `CATEGORIES_READ` | `CATEGORIES_WRITE` |
+| Coupons | `COUPONS_READ` | `COUPONS_WRITE` |
+| Webhooks | `WEBHOOKS_READ` | `WEBHOOKS_WRITE` |
+| Analytics | `ANALYTICS_READ` | — |
+| Payouts | `PAYOUTS_READ` | `PAYOUTS_WRITE` |
+| Licenses | `LICENSES_READ` | `LICENSES_WRITE` |
+| Refunds | `REFUNDS_READ` | `REFUNDS_WRITE` |
+| Subscriptions | `SUBSCRIPTIONS_READ` | `SUBSCRIPTIONS_WRITE` |
+| Store | `STORE_READ` | `STORE_WRITE` |
 
 If a request requires a permission the token doesn't have, the API returns `403 Forbidden` with the missing permissions listed in the error message.
 
