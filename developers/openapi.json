@@ -31,7 +31,8 @@
     { "name": "Analytics", "description": "Store analytics" },
     { "name": "Payouts", "description": "Payout management" },
     { "name": "Customers", "description": "Customer management" },
-    { "name": "Licenses", "description": "License management" }
+    { "name": "Licenses", "description": "License management" },
+    { "name": "Subscriptions", "description": "Subscription management (Beta)" }
   ],
   "paths": {
     "/stores/{storeId}": {
@@ -1343,6 +1344,123 @@
           "400": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
+    },
+    "/stores/{storeId}/subscriptions": {
+      "get": {
+        "operationId": "listSubscriptions",
+        "summary": "List subscriptions",
+        "tags": ["Subscriptions"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 25 } },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["TRIALING", "ACTIVE", "PAST_DUE", "PAUSED", "CANCELLED"] } },
+          { "name": "product_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "customer_id", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": { "type": "array", "items": { "$ref": "#/components/schemas/Subscription" } },
+                        "pagination": { "$ref": "#/components/schemas/Pagination" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/subscriptions/{subscriptionId}": {
+      "get": {
+        "operationId": "getSubscription",
+        "summary": "Get subscription details",
+        "tags": ["Subscriptions"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/SubscriptionId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/subscriptions/{subscriptionId}/cancel": {
+      "post": {
+        "operationId": "cancelSubscription",
+        "summary": "Cancel a subscription",
+        "description": "Cancel at period end (default) or immediately. Immediate cancellation revokes access and licenses.",
+        "tags": ["Subscriptions"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/SubscriptionId" }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "immediate": { "type": "boolean", "default": false, "description": "If true, cancel immediately and revoke access. If false, cancel at end of current billing period." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/subscriptions/{subscriptionId}/pause": {
+      "post": {
+        "operationId": "pauseSubscription",
+        "summary": "Pause a subscription",
+        "description": "Pause billing. No charges until resumed. Only active subscriptions can be paused.",
+        "tags": ["Subscriptions"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/SubscriptionId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/subscriptions/{subscriptionId}/resume": {
+      "post": {
+        "operationId": "resumeSubscription",
+        "summary": "Resume a subscription",
+        "description": "Resume billing on a paused subscription. Charges resume at end of current period or immediately if the period has ended.",
+        "tags": ["Subscriptions"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/SubscriptionId" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SuccessResponse" },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
     }
   },
   "components": {
@@ -1429,6 +1547,13 @@
         "required": true,
         "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
         "description": "License ID (lic_ prefix)"
+      },
+      "SubscriptionId": {
+        "name": "subscriptionId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Subscription ID (sub_ prefix)"
       }
     },
     "responses": {
@@ -2448,6 +2573,50 @@
               }
             }
           }
+        }
+      },
+      "Subscription": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Subscription ID (sub_ prefix)" },
+          "status": { "type": "string", "enum": ["TRIALING", "ACTIVE", "PAST_DUE", "PAUSED", "CANCELLED"] },
+          "billingInterval": { "type": "string", "enum": ["WEEKLY", "MONTHLY", "YEARLY"] },
+          "amount": { "type": "integer", "description": "Recurring charge amount in cents" },
+          "currency": { "type": "string" },
+          "currentPeriodStart": { "type": "string", "format": "date-time" },
+          "currentPeriodEnd": { "type": "string", "format": "date-time" },
+          "nextChargeAt": { "type": ["string", "null"], "format": "date-time", "description": "Next automatic charge date. Null when cancelled or paused." },
+          "trialEnd": { "type": ["string", "null"], "format": "date-time", "description": "Trial end date. Null if no trial." },
+          "cancelledAt": { "type": ["string", "null"], "format": "date-time" },
+          "pausedAt": { "type": ["string", "null"], "format": "date-time" },
+          "endsAt": { "type": ["string", "null"], "format": "date-time", "description": "When access ends for cancelled-at-period-end subscriptions." },
+          "retryCount": { "type": "integer", "description": "Number of failed payment retry attempts." },
+          "product": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "price": { "type": "integer" }
+            }
+          },
+          "customer": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" }
+            }
+          },
+          "paymentMethod": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": { "type": "string" },
+              "brand": { "type": ["string", "null"] },
+              "lastFour": { "type": ["string", "null"] },
+              "expMonth": { "type": ["integer", "null"] },
+              "expYear": { "type": ["integer", "null"] }
+            }
+          },
+          "createdAt": { "type": "string", "format": "date-time" }
         }
       },
       "License": {
