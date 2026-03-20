@@ -62,7 +62,13 @@ type WebhookEvent =
   | "PAYMENT_REFUNDED"
   | "PAYMENT_DISPUTED"
   | "PAYMENT_DISPUTE_WON"
-  | "PAYMENT_DISPUTE_LOST";
+  | "PAYMENT_DISPUTE_LOST"
+  | "SUBSCRIPTION_CREATED"
+  | "SUBSCRIPTION_RENEWED"
+  | "SUBSCRIPTION_PAST_DUE"
+  | "SUBSCRIPTION_CANCELLED"
+  | "SUBSCRIPTION_PAUSED"
+  | "SUBSCRIPTION_RESUMED";
 
 interface WebhookPayload {
   event: WebhookEvent;
@@ -235,6 +241,146 @@ Fired when a dispute is resolved in the merchant's favor. The disputed amount an
 
 Fired when a dispute is resolved against the merchant. The deducted funds remain lost and the order stays in `CHARGEBACK` status.
 
+---
+
+## Subscription events
+
+Subscription events follow the same payload structure as payment events. They are fired alongside (not instead of) payment events — for example, a successful renewal triggers both `PAYMENT_COMPLETED` and `SUBSCRIPTION_RENEWED`.
+
+### `SUBSCRIPTION_CREATED`
+
+Fired when a new subscription is activated. This happens when:
+- A customer completes checkout for a subscription product (first payment collected)
+- A customer starts a free trial (card saved, no charge)
+
+The `order` in the payload is the initial order that created the subscription.
+
+<Note>
+  For trial subscriptions, the initial order has an amount of `$0.00`. The first charge happens when the trial ends.
+</Note>
+
+---
+
+### `SUBSCRIPTION_RENEWED`
+
+Fired when a recurring payment is successfully collected. This event is sent on every billing cycle — weekly, monthly, or yearly depending on the subscription's billing interval.
+
+The `order` in the payload is the renewal order for this billing period. Use this event to extend access, deliver license keys, or update entitlements.
+
+---
+
+### `SUBSCRIPTION_PAST_DUE`
+
+Fired when a renewal payment fails or requires additional authentication (3D Secure). The subscription moves to `PAST_DUE` status.
+
+This can happen when:
+- The customer's card is declined
+- The card requires 3DS verification (customer is emailed an authentication link)
+- The payment method has expired
+
+Failed payments are automatically retried up to 3 times over 3 days (24h, 48h, 72h). If all retries fail, the subscription is cancelled and a `SUBSCRIPTION_CANCELLED` event is fired.
+
+<Warning>
+  Do not revoke access on `SUBSCRIPTION_PAST_DUE` — the customer may still authenticate or the retry may succeed. Wait for `SUBSCRIPTION_CANCELLED` before revoking.
+</Warning>
+
+---
+
+### `SUBSCRIPTION_CANCELLED`
+
+Fired when a subscription is cancelled. This can happen when:
+- The merchant cancels the subscription (immediately or at period end)
+- The customer cancels from the customer portal (always at period end)
+- All automatic payment retries are exhausted
+
+If cancelled at period end, the customer retains access until the current billing period ends. Check the order's metadata or the subscription API for the `endsAt` date.
+
+---
+
+### `SUBSCRIPTION_PAUSED`
+
+Fired when a merchant pauses a subscription. No further charges are made until the subscription is resumed. The customer retains access during the pause.
+
+---
+
+### `SUBSCRIPTION_RESUMED`
+
+Fired when a merchant resumes a previously paused subscription. Billing resumes at the end of the current period (or immediately if the period has already ended).
+
+---
+
+## Integrating subscription webhooks
+
+Here's an example of handling subscription events in a webhook handler:
+
+<CodeGroup>
+
+```typescript Node.js
+app.post("/webhooks/pandabase", (req, res) => {
+  const signature = req.headers["x-pandabase-signature"];
+  if (!verifyWebhook(req.rawBody, signature, WEBHOOK_SECRET)) {
+    return res.status(401).send("invalid signature");
+  }
+
+  const { event, data } = req.body;
+
+  switch (event) {
+    case "SUBSCRIPTION_CREATED":
+      // grant initial access
+      await grantAccess(data.customer.email, data.order.items);
+      break;
+
+    case "SUBSCRIPTION_RENEWED":
+      // extend access for the next billing period
+      await extendAccess(data.customer.email, data.order.items);
+      break;
+
+    case "SUBSCRIPTION_CANCELLED":
+      // schedule access revocation (check endsAt via API)
+      await scheduleRevocation(data.customer.email);
+      break;
+
+    case "SUBSCRIPTION_PAST_DUE":
+      // optionally notify your system, but don't revoke access yet
+      await flagSubscriptionAtRisk(data.customer.email);
+      break;
+
+    case "SUBSCRIPTION_PAUSED":
+    case "SUBSCRIPTION_RESUMED":
+      // update internal subscription state
+      await syncSubscriptionStatus(data.customer.email, event);
+      break;
+  }
+
+  res.status(200).send({ received: true });
+});
+```
+
+```python Python
+@app.route("/webhooks/pandabase", methods=["POST"])
+def handle_webhook():
+    signature = request.headers.get("X-Pandabase-Signature")
+    if not verify_webhook(request.data, signature, WEBHOOK_SECRET):
+        return "invalid signature", 401
+
+    payload = request.json
+    event = payload["event"]
+    data = payload["data"]
+
+    if event == "SUBSCRIPTION_CREATED":
+        grant_access(data["customer"]["email"], data["order"]["items"])
+    elif event == "SUBSCRIPTION_RENEWED":
+        extend_access(data["customer"]["email"], data["order"]["items"])
+    elif event == "SUBSCRIPTION_CANCELLED":
+        schedule_revocation(data["customer"]["email"])
+    elif event == "SUBSCRIPTION_PAST_DUE":
+        flag_subscription_at_risk(data["customer"]["email"])
+
+    return {"received": True}, 200
+```
+
+</CodeGroup>
+
 ## Best practices
 
 1. **Return 200 quickly.** Process webhook logic asynchronously if it takes more than a few seconds. Pandabase times out after 15 seconds.
@@ -242,3 +388,4 @@ Fired when a dispute is resolved against the merchant. The deducted funds remain
 3. **Verify signatures.** Always validate `X-Pandabase-Signature` before processing the payload.
 4. **Use event filtering.** Subscribe only to the events you need to reduce noise and processing overhead.
 5. **Handle out-of-order delivery.** In rare cases, events may arrive out of order (e.g. `PAYMENT_COMPLETED` before `PAYMENT_PENDING`). Use the `timestamp` field and order status to handle this gracefully.
+6. **Don't revoke on PAST_DUE.** For subscriptions, only revoke access on `SUBSCRIPTION_CANCELLED`. The `PAST_DUE` state is temporary — the payment may still succeed via retry or 3DS authentication.
