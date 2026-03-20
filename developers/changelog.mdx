@@ -4,6 +4,26 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 20, 2026" description="Subscriptions & Recurring Billing (Beta)" tags={["V2"]}>
+## Features
+
+- **Recurring billing**: Merchants can now sell subscription products with automatic recurring charges. Supports weekly, monthly, and yearly billing intervals.
+- **Free trials**: Subscription products can offer a free trial period. Customers save their card during checkout and are charged automatically when the trial ends.
+- **Subscription management**: New endpoints to list, view, cancel, pause, and resume subscriptions. Available via the dashboard, Store API, and customer portal.
+  - `GET /v2/stores/:storeId/subscriptions`
+  - `GET /v2/stores/:storeId/subscriptions/:subscriptionId`
+  - `POST /v2/stores/:storeId/subscriptions/:subscriptionId/cancel`
+  - `POST /v2/stores/:storeId/subscriptions/:subscriptionId/pause`
+  - `POST /v2/stores/:storeId/subscriptions/:subscriptionId/resume`
+- **Customer portal subscriptions**: Customers can view and cancel their subscriptions across all stores from the customer portal at mypandabase.com.
+- **Subscription invoices**: Customers receive a PDF invoice via email on every successful renewal charge.
+- **3D Secure on renewals**: When a renewal payment requires additional authentication, customers receive an email with a secure link to verify the payment.
+- **Subscription webhooks**: Six new webhook events — `SUBSCRIPTION_CREATED`, `SUBSCRIPTION_RENEWED`, `SUBSCRIPTION_PAST_DUE`, `SUBSCRIPTION_CANCELLED`, `SUBSCRIPTION_PAUSED`, `SUBSCRIPTION_RESUMED`.
+- **Store API support**: Subscription endpoints available via token-authenticated Store API with `SUBSCRIPTIONS_READ` and `SUBSCRIPTIONS_WRITE` permissions.
+- **Merchant dashboard**: Full subscription management UI with list view, detail page, and pause/resume/cancel actions.
+
+</Update>
+
 <Update label="March 16, 2026" description="Checkout Customization & Store Onboarding" tags={["V2"]}>
 ## Features
 
