@@ -68,6 +68,16 @@
           {
             "group": "Checkout API",
             "openapi": "developers/checkout-openapi.json"
+          },
+          {
+            "group": "Platforms (Private Beta)",
+            "pages": [
+              "developers/platforms/overview",
+              "developers/platforms/intents",
+              "developers/platforms/merchants",
+              "developers/platforms/settlements",
+              "developers/platforms/compliance"
+            ]
           }
         ]
       }

@@ -1,0 +1,179 @@
+---
+title: "Compliance"
+description: "Requirements and responsibilities for maintaining Platform Partner status."
+---
+
+<Warning>
+  Platform Partners are subject to ongoing compliance requirements. Failure to
+  maintain these standards may result in suspension or termination of your
+  platform account.
+</Warning>
+
+## Shared responsibility model
+
+As a Platform Partner, compliance responsibilities are split between your platform and Pandabase:
+
+| Responsibility | Your Platform | Pandabase |
+|---------------|:---:|:---:|
+| Customer payment processing | | ✓ |
+| Tax calculation and remittance | | ✓ |
+| Chargeback management | | ✓ |
+| PCI DSS compliance | ✓ | ✓ |
+| Merchant identity verification (KYB) | ✓ | ✓ |
+| Customer identity (KYC) | | ✓ |
+| Transaction monitoring | ✓ | ✓ |
+| Sanctions screening | | ✓ |
+| Merchant due diligence | ✓ | |
+| Platform-level fraud prevention | ✓ | |
+| Dispute evidence SLA | ✓ | |
+| Data retention (7 years) | ✓ | ✓ |
+
+## Merchant onboarding requirements
+
+Your platform must collect and verify the following before provisioning a merchant:
+
+### Individual merchants
+
+- Full legal name
+- Email address (verified)
+- Country of residence
+- Date of birth (for age verification)
+- Government-issued ID (for `ENHANCED` tier+)
+
+### Business merchants
+
+- Legal entity name
+- Business registration number
+- Country of incorporation
+- Beneficial owner information (25%+ ownership)
+- Business address
+- Business description and website
+- Government-issued ID of authorized representative (for `ENHANCED` tier+)
+
+<Note>
+  Pandabase performs additional screening on all merchants, but your platform is
+  responsible for the initial collection and verification of this information.
+</Note>
+
+## Transaction monitoring
+
+Platforms must implement real-time transaction monitoring for:
+
+- **Unusual volume spikes**: Merchants exceeding 3x their average daily volume
+- **High-value transactions**: Transactions above the merchant's typical average
+- **Rapid velocity**: Multiple transactions from the same customer in a short window
+- **Geographic anomalies**: Transactions from unexpected countries
+- **Refund patterns**: Merchants with refund rates exceeding 10%
+
+### Reporting obligations
+
+When suspicious activity is detected:
+
+1. Flag the merchant in your system
+2. Notify Pandabase via `POST /v2/platforms/merchants/{merchantId}/flag`
+3. Provide supporting evidence within 48 hours
+4. Cooperate with any subsequent investigation
+
+```bash
+POST /v2/platforms/merchants/{merchantId}/flag
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+
+{
+  "reason": "SUSPICIOUS_ACTIVITY",
+  "description": "Merchant volume increased 10x in 24 hours with high refund rate",
+  "evidence": {
+    "dailyVolume": 50000,
+    "averageDailyVolume": 5000,
+    "refundRate": 0.15,
+    "flaggedTransactions": ["pti_xxx", "pti_yyy"]
+  }
+}
+```
+
+## PCI compliance
+
+| Integration type | PCI requirement |
+|-----------------|----------------|
+| Hosted payment page (redirect) | SAQ-A |
+| Pandabase.js (iframe embed) | SAQ-A |
+| Custom payment form (Pandabase.js Elements) | SAQ-A-EP |
+| Direct API (raw card data) | Not supported |
+
+<Warning>
+  Pandabase does not support direct card data handling via API. All card data
+  must flow through Pandabase.js or the hosted payment page. Platforms found
+  handling raw card data will be immediately terminated.
+</Warning>
+
+## Dispute management
+
+Platforms are responsible for ensuring merchants respond to disputes within the required SLA:
+
+| Dispute type | Evidence deadline | Platform responsibility |
+|-------------|-------------------|----------------------|
+| Fraud | 7 days | Facilitate merchant evidence submission |
+| Product not received | 7 days | Provide delivery/fulfillment proof |
+| Not as described | 7 days | Provide product documentation |
+| Duplicate | 7 days | Provide transaction records |
+
+If a merchant fails to submit evidence, Pandabase submits available MoR data automatically, but the dispute is more likely to be lost.
+
+### Dispute rate monitoring
+
+| Dispute rate | Action |
+|-------------|--------|
+| < 0.5% | No action |
+| 0.5% – 0.75% | Platform warning |
+| 0.75% – 1.0% | Merchant restricted, platform notified |
+| > 1.0% | Merchant suspended, platform review triggered |
+
+## Data retention
+
+Platforms must retain the following for **7 years**:
+
+- Merchant onboarding records (KYB documentation)
+- Transaction records and metadata
+- Dispute evidence and correspondence
+- Refund records and reasons
+- Platform fee records
+- Compliance flags and investigation records
+
+## Annual review
+
+All Platform Partners undergo an annual compliance review:
+
+1. **Self-assessment questionnaire** — Sent in Q4 each year
+2. **Documentation review** — Pandabase reviews your KYB procedures, monitoring systems, and dispute handling
+3. **Volume review** — Analysis of transaction patterns, dispute rates, and refund rates across your merchant base
+4. **Certification** — Upon passing, your platform is re-certified for another year
+
+Platforms that fail the annual review enter a **90-day remediation period**. Failure to remediate results in platform suspension.
+
+## Prohibited activities
+
+Platforms must not onboard merchants engaged in:
+
+- Illegal goods or services
+- Counterfeit or IP-infringing products
+- Unregulated financial services
+- Gambling (without proper licensing)
+- Adult content (without age verification)
+- Pyramid or multi-level marketing schemes
+- Cryptocurrency exchange (without proper licensing)
+- Weapons, ammunition, or explosives
+- Controlled substances
+
+<Warning>
+  If your platform is found onboarding merchants engaged in prohibited
+  activities, your platform account will be suspended immediately and pending
+  settlements will be held pending investigation.
+</Warning>
+
+## Support
+
+For compliance questions or to report issues:
+
+- **Email**: [compliance@pandabase.io](mailto:compliance@pandabase.io)
+- **Urgent**: [platforms@pandabase.io](mailto:platforms@pandabase.io) with subject line `[URGENT]`
+- **Response SLA**: 24 hours for standard inquiries, 4 hours for urgent
