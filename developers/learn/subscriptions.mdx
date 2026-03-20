@@ -40,23 +40,23 @@ stateDiagram-v2
 Set `type` to `SUBSCRIPTION` and configure the billing interval:
 
 ```bash
-curl -X POST https://api.pandabase.io/v2/stores/{storeId}/products \
+curl -X POST https://api.pandabase.io/v2/core/stores/{storeId}/products \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Pro Plan",
     "price": 1999,
     "type": "SUBSCRIPTION",
-    "billing_interval": "MONTHLY",
+    "billingInterval": "MONTHLY",
     "status": "ACTIVE",
-    "fulfillment_mode": "MANUAL"
+    "fulfillmentMode": "MANUAL"
   }'
 ```
 
 | Field | Options | Description |
 |-------|---------|-------------|
-| `billing_interval` | `WEEKLY`, `MONTHLY`, `YEARLY` | How often the customer is charged |
-| `trial_days` | `0`–`365` | Free trial period before first charge (optional) |
+| `billingInterval` | `WEEKLY`, `MONTHLY`, `YEARLY` | How often the customer is charged |
+| `trialDays` | `0`–`365` | Free trial period before first charge (optional) |
 
 ## Checkout flow
 
@@ -87,10 +87,6 @@ curl -X POST https://api.pandabase.io/v2/stores/{storeId}/checkouts \
   }'
 ```
 
-<Note>
-  Subscriptions are not supported for connected stores (Stripe Connect). Only
-  Merchant of Record (MoR) mode is supported.
-</Note>
 
 ## Subscription statuses
 
@@ -111,8 +107,8 @@ Set `trial_days` on the product to offer a free trial:
   "title": "Pro Plan",
   "price": 1999,
   "type": "SUBSCRIPTION",
-  "billing_interval": "MONTHLY",
-  "trial_days": 7,
+  "billingInterval": "MONTHLY",
+  "trialDays": 7,
   "status": "ACTIVE"
 }
 ```
@@ -147,34 +143,26 @@ No action is needed from you — Pandabase handles the authentication flow autom
 
 ### Via API
 
+Use `SUBSCRIPTIONS_READ` and `SUBSCRIPTIONS_WRITE` permissions on your API token:
+
 ```bash
 # list subscriptions
-GET /v2/stores/{storeId}/subscriptions
+GET /v2/core/stores/{storeId}/subscriptions
 
 # get subscription detail
-GET /v2/stores/{storeId}/subscriptions/{subscriptionId}
+GET /v2/core/stores/{storeId}/subscriptions/{subscriptionId}
 
 # cancel (at period end by default)
-POST /v2/stores/{storeId}/subscriptions/{subscriptionId}/cancel
+POST /v2/core/stores/{storeId}/subscriptions/{subscriptionId}/cancel
 # cancel immediately
-POST /v2/stores/{storeId}/subscriptions/{subscriptionId}/cancel
+POST /v2/core/stores/{storeId}/subscriptions/{subscriptionId}/cancel
   -d '{ "immediate": true }'
 
 # pause billing
-POST /v2/stores/{storeId}/subscriptions/{subscriptionId}/pause
+POST /v2/core/stores/{storeId}/subscriptions/{subscriptionId}/pause
 
 # resume billing
-POST /v2/stores/{storeId}/subscriptions/{subscriptionId}/resume
-```
-
-### Via Store API (token-authenticated)
-
-Use `SUBSCRIPTIONS_READ` and `SUBSCRIPTIONS_WRITE` permissions on your Store API token:
-
-```bash
-GET  /v2/core/stores/{storeId}/subscriptions
-GET  /v2/core/stores/{storeId}/subscriptions/{subscriptionId}
-POST /v2/core/stores/{storeId}/subscriptions/{subscriptionId}/cancel
+POST /v2/core/stores/{storeId}/subscriptions/{subscriptionId}/resume
 ```
 
 ### Via Customer Portal
@@ -218,5 +206,4 @@ Invoices include the product name, amount, billing period, tax breakdown, and ne
 - Only one subscription item per checkout (no mixing with one-time items)
 - Billing is in USD only (multicurrency renewals are a future enhancement)
 - Price is locked at creation — changing the product price does not affect existing subscriptions
-- Connected stores (Stripe Connect) are not supported
 - Subscription upgrades/downgrades are not yet supported — cancel and re-subscribe
