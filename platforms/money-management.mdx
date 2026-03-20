@@ -1,0 +1,457 @@
+---
+title: "Money Management"
+description: "Manage merchant balances, transfers, holds, and payouts programmatically."
+---
+
+<Warning>
+  The Money Management API is in **private beta**. Requires an approved Platform
+  Partner account.
+</Warning>
+
+## Overview
+
+The Money Management API gives your platform programmatic control over how funds flow between Pandabase, your merchants, and your platform. You can query balances, place and release holds, initiate transfers between merchant accounts, and trigger on-demand payouts.
+
+This API is designed for platforms that need fine-grained financial control beyond the default settlement pipeline.
+
+## Merchant balances
+
+Every merchant has two balance components:
+
+| Balance     | Description                                                                                                                                  |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `available` | Funds that can be paid out or transferred. This is the merchant's cleared balance after all holds and pending settlements.                   |
+| `pending`   | Funds from completed intents that are still in the compliance hold period (T+0 to T+2). These will move to `available` once the hold clears. |
+
+### Retrieving a merchant's balance
+
+```bash
+GET /v2/platforms/merchants/{merchantId}/balance
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "merchantId": "shp_provisioned_xxx",
+    "currency": "USD",
+    "available": 125000,
+    "pending": 34500,
+    "held": 0,
+    "total": 159500,
+    "updatedAt": "2026-03-20T12:00:00.000Z"
+  }
+}
+```
+
+| Field       | Description                                                      |
+| ----------- | ---------------------------------------------------------------- |
+| `available` | Cleared funds ready for payout or transfer (in cents)            |
+| `pending`   | Funds in the settlement pipeline, not yet available (in cents)   |
+| `held`      | Funds placed on hold by your platform or by Pandabase (in cents) |
+| `total`     | Sum of available + pending + held (in cents)                     |
+
+### Listing balances across all merchants
+
+```bash
+GET /v2/platforms/balances?page=1&limit=50
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "items": [
+      {
+        "merchantId": "shp_xxx",
+        "businessName": "Coffee Shop Co",
+        "currency": "USD",
+        "available": 125000,
+        "pending": 34500,
+        "held": 0,
+        "total": 159500
+      },
+      {
+        "merchantId": "shp_yyy",
+        "businessName": "Design Studio",
+        "currency": "USD",
+        "available": 48200,
+        "pending": 12000,
+        "held": 5000,
+        "total": 65200
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 50,
+      "total": 48,
+      "totalPages": 1
+    },
+    "summary": {
+      "totalAvailable": 173200,
+      "totalPending": 46500,
+      "totalHeld": 5000,
+      "grandTotal": 224700
+    }
+  }
+}
+```
+
+## Balance holds
+
+Holds let your platform temporarily reserve a portion of a merchant's available balance. Held funds cannot be paid out or transferred until the hold is released. This is useful for dispute reserves, performance guarantees, or compliance investigations.
+
+### Placing a hold
+
+```bash
+POST /v2/platforms/merchants/{merchantId}/holds
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+X-Idempotency-Key: hold_abc123
+
+{
+  "amount": 5000,
+  "reason": "Dispute reserve for pti_xxx",
+  "expiresAt": "2026-04-20T00:00:00.000Z",
+  "metadata": {
+    "disputeId": "dsp_xxx",
+    "intentId": "pti_xxx"
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "holdId": "hld_xxx",
+    "merchantId": "shp_provisioned_xxx",
+    "amount": 5000,
+    "reason": "Dispute reserve for pti_xxx",
+    "status": "ACTIVE",
+    "expiresAt": "2026-04-20T00:00:00.000Z",
+    "createdAt": "2026-03-20T12:00:00.000Z"
+  }
+}
+```
+
+### Hold fields
+
+| Field       | Type    | Required | Description                                                                                                |
+| ----------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `amount`    | integer | Yes      | Amount to hold in cents. Cannot exceed the merchant's available balance.                                   |
+| `reason`    | string  | Yes      | Human-readable reason for the hold. Max 500 characters.                                                    |
+| `expiresAt` | string  | No       | ISO 8601 expiry date. If set, the hold is automatically released at this time. Max 180 days from creation. |
+| `metadata`  | object  | No       | Arbitrary key-value pairs. Max 20 keys.                                                                    |
+
+### Releasing a hold
+
+```bash
+POST /v2/platforms/holds/{holdId}/release
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+
+{
+  "reason": "Dispute resolved in merchant's favor"
+}
+```
+
+Released funds are returned to the merchant's available balance immediately.
+
+### Listing holds
+
+```bash
+GET /v2/platforms/merchants/{merchantId}/holds?status=ACTIVE
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+```
+
+### Hold statuses
+
+| Status     | Description                                            |
+| ---------- | ------------------------------------------------------ |
+| `ACTIVE`   | Hold is in effect. Funds are reserved.                 |
+| `RELEASED` | Hold was released by the platform or by expiry.        |
+| `CONSUMED` | Hold was consumed by a deduction (e.g., dispute loss). |
+
+## Transfers
+
+Transfer funds between merchant accounts on your platform. This is useful for marketplace scenarios where a single order involves multiple merchants, or for platform-level adjustments and corrections.
+
+### Creating a transfer
+
+```bash
+POST /v2/platforms/transfers
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+X-Idempotency-Key: transfer_abc123
+
+{
+  "from": "shp_xxx",
+  "to": "shp_yyy",
+  "amount": 10000,
+  "description": "Revenue share for order_12345",
+  "metadata": {
+    "orderId": "order_12345",
+    "splitType": "revenue_share"
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "transferId": "txf_xxx",
+    "from": "shp_xxx",
+    "to": "shp_yyy",
+    "amount": 10000,
+    "description": "Revenue share for order_12345",
+    "status": "COMPLETED",
+    "createdAt": "2026-03-20T12:00:00.000Z"
+  }
+}
+```
+
+### Transfer rules
+
+- The source merchant must have sufficient available balance
+- Both merchants must be in `ACTIVE` status
+- Transfers are instant and irreversible
+- There is no fee for inter-merchant transfers
+- Maximum transfer amount is $50,000 per transaction
+- Maximum 100 transfers per merchant per day
+
+### Listing transfers
+
+```bash
+GET /v2/platforms/transfers?merchantId=shp_xxx&from=2026-03-01&to=2026-03-31
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+```
+
+The `merchantId` filter returns transfers where the specified merchant is either the sender or recipient.
+
+## On-demand payouts
+
+By default, merchant settlements follow the T+2 schedule. The on-demand payout API lets your platform trigger immediate payouts from a merchant's available balance to their bank account.
+
+### Initiating a payout
+
+```bash
+POST /v2/platforms/merchants/{merchantId}/payouts
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+X-Idempotency-Key: payout_abc123
+
+{
+  "amount": 50000,
+  "description": "On-demand payout requested by merchant",
+  "priority": "standard"
+}
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "payoutId": "mpo_xxx",
+    "merchantId": "shp_provisioned_xxx",
+    "amount": 50000,
+    "description": "On-demand payout requested by merchant",
+    "priority": "standard",
+    "status": "PROCESSING",
+    "bankAccount": {
+      "last4": "7890",
+      "bankName": "Chase",
+      "type": "ACH"
+    },
+    "estimatedArrival": "2026-03-22T08:00:00.000Z",
+    "createdAt": "2026-03-20T12:00:00.000Z"
+  }
+}
+```
+
+### Payout options
+
+| Field         | Type    | Required | Description                                                                                      |
+| ------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `amount`      | integer | Yes      | Amount in cents. Must be at least $1.00 and cannot exceed the merchant's available balance.      |
+| `description` | string  | No       | Human-readable description. Max 500 characters.                                                  |
+| `priority`    | string  | No       | `standard` (1 to 3 business days) or `express` (same day, where available). Default: `standard`. |
+
+### Priority pricing
+
+| Priority   | Processing time                                   | Additional fee    |
+| ---------- | ------------------------------------------------- | ----------------- |
+| `standard` | 1 to 3 business days                              | No additional fee |
+| `express`  | Same business day (if initiated before 14:00 UTC) | $2.50 per payout  |
+
+Express payouts are only available for merchants with bank accounts that support same-day ACH or SEPA Instant. If express is not available for the merchant's bank, the request falls back to standard processing.
+
+### Payout statuses
+
+| Status       | Description                                          |
+| ------------ | ---------------------------------------------------- |
+| `PROCESSING` | Payout initiated, funds being transferred            |
+| `COMPLETED`  | Funds delivered to the merchant's bank account       |
+| `FAILED`     | Payout failed (invalid bank details, bank rejection) |
+| `CANCELLED`  | Payout cancelled before processing completed         |
+
+### Listing merchant payouts
+
+```bash
+GET /v2/platforms/merchants/{merchantId}/payouts?status=COMPLETED&from=2026-03-01&to=2026-03-31
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+```
+
+## Balance transactions
+
+Query a detailed ledger of all balance-affecting events for a merchant. This includes intent completions, refunds, disputes, transfers, holds, and payouts.
+
+```bash
+GET /v2/platforms/merchants/{merchantId}/transactions?page=1&limit=50
+Authorization: Platform plt_xxx
+X-Platform-Signature: {signature}
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "items": [
+      {
+        "id": "btx_001",
+        "type": "INTENT_SETTLEMENT",
+        "amount": 4184,
+        "direction": "credit",
+        "balance": 129184,
+        "description": "Settlement for pti_xxx",
+        "intentId": "pti_xxx",
+        "createdAt": "2026-03-20T12:00:00.000Z"
+      },
+      {
+        "id": "btx_002",
+        "type": "TRANSFER_OUT",
+        "amount": -10000,
+        "direction": "debit",
+        "balance": 119184,
+        "description": "Revenue share for order_12345",
+        "transferId": "txf_xxx",
+        "createdAt": "2026-03-20T12:05:00.000Z"
+      },
+      {
+        "id": "btx_003",
+        "type": "PAYOUT",
+        "amount": -50000,
+        "direction": "debit",
+        "balance": 69184,
+        "description": "On-demand payout",
+        "payoutId": "mpo_xxx",
+        "createdAt": "2026-03-20T12:10:00.000Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 50,
+      "total": 312,
+      "totalPages": 7
+    }
+  }
+}
+```
+
+### Transaction types
+
+| Type                | Direction    | Description                                           |
+| ------------------- | ------------ | ----------------------------------------------------- |
+| `INTENT_SETTLEMENT` | Credit       | Funds from a completed Platform Intent (net of fees)  |
+| `REFUND`            | Debit        | Refund issued for a Platform Intent                   |
+| `DISPUTE_HOLD`      | Debit        | Funds held for an active dispute                      |
+| `DISPUTE_REVERSAL`  | Credit       | Funds returned after winning a dispute                |
+| `TRANSFER_IN`       | Credit       | Incoming transfer from another merchant               |
+| `TRANSFER_OUT`      | Debit        | Outgoing transfer to another merchant                 |
+| `HOLD_PLACED`       | Debit        | Funds moved to held balance                           |
+| `HOLD_RELEASED`     | Credit       | Funds returned from held balance                      |
+| `PAYOUT`            | Debit        | Funds paid out to the merchant's bank account         |
+| `ADJUSTMENT`        | Credit/Debit | Manual adjustment by Pandabase (corrections, credits) |
+
+### Query parameters
+
+| Parameter   | Type    | Default | Description                   |
+| ----------- | ------- | ------- | ----------------------------- |
+| `type`      | string  | All     | Filter by transaction type    |
+| `direction` | string  | All     | Filter by `credit` or `debit` |
+| `from`      | string  |         | Start date (ISO 8601)         |
+| `to`        | string  |         | End date (ISO 8601)           |
+| `page`      | integer | 1       | Page number                   |
+| `limit`     | integer | 50      | Items per page (max 100)      |
+
+## Webhooks
+
+| Event                        | Description                                    |
+| ---------------------------- | ---------------------------------------------- |
+| `BALANCE_UPDATED`            | Merchant balance changed (any credit or debit) |
+| `HOLD_PLACED`                | A hold was placed on a merchant's balance      |
+| `HOLD_RELEASED`              | A hold was released                            |
+| `HOLD_CONSUMED`              | A hold was consumed by a deduction             |
+| `HOLD_EXPIRED`               | A hold expired and was automatically released  |
+| `TRANSFER_COMPLETED`         | An inter-merchant transfer completed           |
+| `MERCHANT_PAYOUT_PROCESSING` | On-demand merchant payout initiated            |
+| `MERCHANT_PAYOUT_COMPLETED`  | On-demand merchant payout delivered            |
+| `MERCHANT_PAYOUT_FAILED`     | On-demand merchant payout failed               |
+
+### Example webhook payload
+
+```json
+{
+  "event": "TRANSFER_COMPLETED",
+  "platformId": "plt_xxx",
+  "timestamp": "2026-03-20T12:00:00.000Z",
+  "data": {
+    "transferId": "txf_xxx",
+    "from": {
+      "merchantId": "shp_xxx",
+      "newBalance": 119184
+    },
+    "to": {
+      "merchantId": "shp_yyy",
+      "newBalance": 58200
+    },
+    "amount": 10000,
+    "description": "Revenue share for order_12345"
+  }
+}
+```
+
+## Error codes
+
+| Code                      | Status | Description                                                         |
+| ------------------------- | ------ | ------------------------------------------------------------------- |
+| `INSUFFICIENT_BALANCE`    | 400    | The merchant's available balance is insufficient for this operation |
+| `HOLD_NOT_FOUND`          | 404    | No hold found with the given ID                                     |
+| `HOLD_ALREADY_RELEASED`   | 409    | The hold has already been released or consumed                      |
+| `HOLD_EXPIRED`            | 409    | The hold has expired and was automatically released                 |
+| `TRANSFER_LIMIT_EXCEEDED` | 400    | Transfer exceeds the $50,000 per-transaction limit                  |
+| `TRANSFER_DAILY_LIMIT`    | 429    | Merchant has exceeded the 100 transfers per day limit               |
+| `MERCHANT_NOT_ACTIVE`     | 403    | One or both merchants are not in `ACTIVE` status                    |
+| `PAYOUT_MINIMUM`          | 400    | Payout amount is below the $1.00 minimum                            |
+| `EXPRESS_NOT_AVAILABLE`   | 400    | Express payout is not supported for this merchant's bank account    |
+| `PAYOUT_IN_PROGRESS`      | 409    | A payout is already processing for this merchant                    |

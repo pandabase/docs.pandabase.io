@@ -19,7 +19,36 @@
           },
           {
             "group": "Guides",
-            "pages": ["payments", "products", "checkouts", "stores", "payouts", "refunds", "disputes", "webhooks", "api-tokens", "accounts"]
+            "pages": [
+              "guides/accounts",
+              "guides/api-tokens",
+              "guides/checkouts",
+              "guides/disputes",
+              "guides/payments",
+              "guides/payouts",
+              "guides/products",
+              "guides/refunds",
+              "guides/stores",
+              "guides/webhooks"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Platforms",
+        "groups": [
+          {
+            "group": "Basics",
+            "pages": [
+              "platforms/overview",
+              "platforms/merchants",
+              "platforms/intents",
+              "platforms/settlements",
+              "platforms/money-management",
+              "platforms/compliance",
+              "platforms/errors",
+              "platforms/migration"
+            ]
           }
         ]
       },
@@ -68,16 +97,6 @@
           {
             "group": "Checkout API",
             "openapi": "developers/checkout-openapi.json"
-          },
-          {
-            "group": "Platforms (Private Beta)",
-            "pages": [
-              "developers/platforms/overview",
-              "developers/platforms/intents",
-              "developers/platforms/merchants",
-              "developers/platforms/settlements",
-              "developers/platforms/compliance"
-            ]
           }
         ]
       }

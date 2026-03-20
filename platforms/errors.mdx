@@ -1,0 +1,207 @@
+---
+title: "Error Reference"
+description: "Complete reference of Platform API error codes, HTTP statuses, and troubleshooting guidance."
+---
+
+## Error format
+
+All Platform API errors follow a consistent response format:
+
+```json
+{
+  "ok": false,
+  "error": {
+    "code": "MERCHANT_NOT_ACTIVE",
+    "message": "The merchant shp_xxx is not in ACTIVE status",
+    "status": 403,
+    "requestId": "req_cm5x7k2a000001j0g8h3f9d2e"
+  }
+}
+```
+
+| Field       | Type    | Description                                                                                             |
+| ----------- | ------- | ------------------------------------------------------------------------------------------------------- |
+| `code`      | string  | Machine-readable error code. Stable across API versions. Use this for programmatic error handling.      |
+| `message`   | string  | Human-readable description of the error. May change between versions. Do not match against this string. |
+| `status`    | integer | HTTP status code                                                                                        |
+| `requestId` | string  | Unique identifier for the request. Include this when contacting support.                                |
+
+## HTTP status codes
+
+| Status | Meaning               | When it occurs                                                            |
+| ------ | --------------------- | ------------------------------------------------------------------------- |
+| `200`  | OK                    | Request succeeded                                                         |
+| `201`  | Created               | Resource created successfully                                             |
+| `400`  | Bad Request           | Invalid parameters, missing required fields, or business rule violation   |
+| `401`  | Unauthorized          | Invalid or missing credentials, expired timestamp, or signature mismatch  |
+| `403`  | Forbidden             | Valid credentials but insufficient permissions for this action            |
+| `404`  | Not Found             | The requested resource does not exist                                     |
+| `409`  | Conflict              | The request conflicts with the current state of the resource              |
+| `422`  | Unprocessable Entity  | The request is well-formed but cannot be processed due to semantic errors |
+| `429`  | Too Many Requests     | Rate limit exceeded                                                       |
+| `500`  | Internal Server Error | Something went wrong on our end. Retry with exponential backoff.          |
+| `503`  | Service Unavailable   | The API is temporarily unavailable. Retry with exponential backoff.       |
+
+## Authentication errors
+
+| Code                    | Status | Description                                                     | Resolution                                                                                                                    |
+| ----------------------- | ------ | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `MISSING_AUTHORIZATION` | 401    | The `Authorization` header is missing                           | Include `Authorization: Platform plt_xxx` in the request                                                                      |
+| `INVALID_PLATFORM_ID`   | 401    | The platform ID in the `Authorization` header is not recognized | Verify you are using the correct `plt_` credential for the environment (sandbox vs production)                                |
+| `SIGNATURE_MISMATCH`    | 401    | The `X-Platform-Signature` does not match the expected value    | Verify you are signing with HMAC-SHA512 (not SHA-256) using your raw `psk_` secret. Check the canonical request construction. |
+| `TIMESTAMP_EXPIRED`     | 401    | The `X-Request-Timestamp` is older than 5 minutes               | Use the current Unix timestamp in milliseconds. Check for clock drift on your server.                                         |
+| `TIMESTAMP_MISSING`     | 401    | The `X-Request-Timestamp` header is missing                     | Include the current Unix timestamp in milliseconds                                                                            |
+| `PLATFORM_SUSPENDED`    | 403    | Your platform account is suspended                              | Contact [platforms@pandabase.io](mailto:platforms@pandabase.io)                                                               |
+| `PLATFORM_TERMINATED`   | 403    | Your platform account has been terminated                       | Contact [platforms@pandabase.io](mailto:platforms@pandabase.io)                                                               |
+| `ENVIRONMENT_MISMATCH`  | 401    | Sandbox credentials used against production, or vice versa      | Use the correct credentials for the target environment                                                                        |
+
+### Debugging signature errors
+
+Signature mismatches are the most common integration issue. Verify the following:
+
+1. **Algorithm**: Use HMAC-SHA512, not HMAC-SHA256
+2. **Secret**: Use the raw `psk_` string. Do not hash or encode it before use.
+3. **Canonical request format**: The signed string must be four lines joined by newline characters:
+   ```
+   METHOD\n
+   PATH\n
+   TIMESTAMP\n
+   SHA256(BODY)
+   ```
+4. **Method**: Must be uppercase (`POST`, `GET`, `PATCH`)
+5. **Path**: Must include the leading slash and exclude query parameters (`/v2/platforms/intents`, not `https://api.pandabase.io/v2/platforms/intents`)
+6. **Body hash**: SHA-256 hash of the raw request body. For requests with no body (GET, DELETE), hash an empty string.
+7. **Timestamp**: Must match the `X-Request-Timestamp` header exactly
+
+## Merchant errors
+
+| Code                       | Status | Description                                                              | Resolution                                                                                                                             |
+| -------------------------- | ------ | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `MERCHANT_NOT_FOUND`       | 404    | No merchant found with the given ID                                      | Verify the merchant ID. Check that it belongs to your platform.                                                                        |
+| `MERCHANT_ALREADY_EXISTS`  | 409    | A merchant with this `externalId` already exists on your platform        | Use the existing merchant or choose a different `externalId`                                                                           |
+| `MERCHANT_NOT_ACTIVE`      | 403    | The merchant is not in `ACTIVE` status                                   | Check the merchant's status. Merchants in `PENDING_REVIEW`, `RESTRICTED`, `SUSPENDED`, or `TERMINATED` status cannot process payments. |
+| `MERCHANT_TERMINATED`      | 403    | Cannot perform actions on a terminated merchant                          | Terminated merchants are permanently removed and cannot be reactivated                                                                 |
+| `MERCHANT_RESTRICTED`      | 403    | The merchant's capabilities are currently restricted                     | Wait for the restriction to be lifted, or contact compliance                                                                           |
+| `INVALID_COUNTRY`          | 400    | The country code is not supported for merchant provisioning              | Check the list of [supported countries](/guides/payouts)                                                                               |
+| `INVALID_CATEGORY`         | 400    | The merchant category is not recognized                                  | Use one of the supported [merchant categories](/platforms/merchants#merchant-categories)                                               |
+| `TIER_UPGRADE_IN_PROGRESS` | 409    | A tier upgrade is already pending for this merchant                      | Wait for the current upgrade to complete before requesting another                                                                     |
+| `CAPABILITY_NOT_AVAILABLE` | 400    | The requested capability is not available for this merchant's tier       | Upgrade the merchant's tier before requesting this capability                                                                          |
+| `MERCHANT_CONTEXT_MISSING` | 400    | The `X-Merchant-Context` header is missing                               | Include the merchant's store ID in the header                                                                                          |
+| `MERCHANT_CONTEXT_INVALID` | 400    | The merchant ID in `X-Merchant-Context` does not belong to your platform | Verify the merchant ID belongs to your platform                                                                                        |
+| `DOCUMENT_TOO_LARGE`       | 400    | The uploaded document exceeds the 10 MB limit                            | Reduce the file size and retry                                                                                                         |
+| `DOCUMENT_INVALID_FORMAT`  | 400    | The document format is not supported                                     | Upload in PDF, PNG, or JPG format                                                                                                      |
+
+## Intent errors
+
+| Code                            | Status | Description                                                                      | Resolution                                                                                               |
+| ------------------------------- | ------ | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `INTENT_NOT_FOUND`              | 404    | No intent found with the given ID                                                | Verify the intent ID                                                                                     |
+| `AMOUNT_TOO_LOW`                | 400    | The intent amount is below the $1.00 minimum                                     | Set `amount` to at least 100 (cents)                                                                     |
+| `AMOUNT_TOO_HIGH`               | 400    | The intent amount exceeds the merchant's per-transaction limit                   | Check the merchant's `limits.maxTransactionAmount` and reduce the amount, or upgrade the merchant's tier |
+| `PLATFORM_FEE_TOO_HIGH`         | 400    | The platform fee exceeds 30% of the intent amount                                | Reduce the `platformFee` to 30% or less of `amount`                                                      |
+| `LINE_ITEMS_MISMATCH`           | 400    | The sum of line item amounts does not equal the intent amount                    | Ensure `sum(lineItem.amount * lineItem.quantity)` equals `amount`                                        |
+| `LINE_ITEMS_REQUIRED`           | 400    | No line items were provided                                                      | Include at least one line item                                                                           |
+| `INVALID_RETURN_URL`            | 400    | The `returnUrl` is not a valid HTTPS URL                                         | Provide a fully qualified HTTPS URL                                                                      |
+| `INTENT_NOT_CANCELLABLE`        | 409    | The intent is not in a cancellable status                                        | Only intents in `REQUIRES_PAYMENT` or `REQUIRES_CAPTURE` can be cancelled                                |
+| `INTENT_ALREADY_CAPTURED`       | 409    | The intent has already been captured                                             | This intent has already moved past the authorization stage                                               |
+| `INTENT_CAPTURE_EXPIRED`        | 409    | The 7-day capture window has passed                                              | Authorized intents must be captured within 7 days. The authorization has been voided.                    |
+| `INTENT_EXPIRED`                | 409    | The intent has expired                                                           | Create a new intent. Expired intents cannot be resumed.                                                  |
+| `MERCHANT_VOLUME_EXCEEDED`      | 400    | This intent would cause the merchant to exceed their daily or monthly volume cap | Wait for the next period or upgrade the merchant's tier for higher limits                                |
+| `CURRENCY_NOT_SUPPORTED`        | 400    | The specified currency is not supported for platform intents                     | Currently only `USD` is supported                                                                        |
+| `CAPTURE_EXCEEDS_AUTHORIZATION` | 400    | The capture amount exceeds the authorized amount                                 | Capture an amount equal to or less than the original authorization                                       |
+| `METADATA_KEY_TOO_LONG`         | 400    | A metadata key exceeds 40 characters                                             | Shorten the key to 40 characters or fewer                                                                |
+| `METADATA_VALUE_TOO_LONG`       | 400    | A metadata value exceeds 500 characters                                          | Shorten the value to 500 characters or fewer                                                             |
+| `METADATA_TOO_MANY_KEYS`        | 400    | More than 20 metadata keys were provided                                         | Reduce to 20 keys or fewer                                                                               |
+
+## Refund errors
+
+| Code                    | Status | Description                                               | Resolution                                                                  |
+| ----------------------- | ------ | --------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `REFUND_EXCEEDS_AMOUNT` | 400    | The refund amount exceeds the remaining refundable amount | Check how much has already been refunded and adjust the amount              |
+| `REFUND_WINDOW_EXPIRED` | 400    | The 180-day refund window has passed                      | Refunds can only be issued within 180 days of the original payment          |
+| `INSUFFICIENT_BALANCE`  | 400    | The merchant's available balance cannot cover the refund  | Wait for additional settlements or fund the merchant's balance via transfer |
+| `INTENT_NOT_REFUNDABLE` | 409    | The intent is not in a refundable status                  | Only `COMPLETED` and `PARTIALLY_REFUNDED` intents can be refunded           |
+| `REFUND_IN_PROGRESS`    | 409    | A refund is already processing for this intent            | Wait for the current refund to complete                                     |
+
+## Settlement errors
+
+| Code                   | Status | Description                                | Resolution               |
+| ---------------------- | ------ | ------------------------------------------ | ------------------------ |
+| `SETTLEMENT_NOT_FOUND` | 404    | No settlement found with the given ID      | Verify the settlement ID |
+| `PAYOUT_NOT_FOUND`     | 404    | No platform payout found with the given ID | Verify the payout ID     |
+| `INVALID_DATE_RANGE`   | 400    | The `from` date is after the `to` date     | Swap the date parameters |
+
+## Money Management errors
+
+| Code                      | Status | Description                                                         | Resolution                                                                |
+| ------------------------- | ------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `INSUFFICIENT_BALANCE`    | 400    | The merchant's available balance is insufficient for this operation | Check the merchant's balance before attempting the operation              |
+| `HOLD_NOT_FOUND`          | 404    | No hold found with the given ID                                     | Verify the hold ID                                                        |
+| `HOLD_ALREADY_RELEASED`   | 409    | The hold has already been released or consumed                      | No action needed. The funds are already available.                        |
+| `HOLD_EXPIRED`            | 409    | The hold expired and was automatically released                     | No action needed. The funds were returned to available balance on expiry. |
+| `HOLD_EXCEEDS_BALANCE`    | 400    | The hold amount exceeds the merchant's available balance            | Reduce the hold amount or wait for additional settlements                 |
+| `TRANSFER_LIMIT_EXCEEDED` | 400    | The transfer amount exceeds the $50,000 per-transaction limit       | Split the transfer into multiple smaller transactions                     |
+| `TRANSFER_DAILY_LIMIT`    | 429    | The merchant has exceeded the 100 transfers per day limit           | Wait until the next day or contact support for a limit increase           |
+| `TRANSFER_SAME_MERCHANT`  | 400    | The source and destination merchant are the same                    | Transfers require two different merchants                                 |
+| `PAYOUT_MINIMUM`          | 400    | The payout amount is below the $1.00 minimum                        | Set the amount to at least 100 (cents)                                    |
+| `EXPRESS_NOT_AVAILABLE`   | 400    | Express payout is not supported for this merchant's bank account    | Use `standard` priority instead                                           |
+| `PAYOUT_IN_PROGRESS`      | 409    | A payout is already processing for this merchant                    | Wait for the current payout to complete                                   |
+| `BANK_ACCOUNT_MISSING`    | 400    | The merchant has not configured a bank account for payouts          | The merchant must add bank account details before receiving payouts       |
+
+## Rate limit errors
+
+| Code                  | Status | Description       | Resolution                                                                                  |
+| --------------------- | ------ | ----------------- | ------------------------------------------------------------------------------------------- |
+| `RATE_LIMIT_EXCEEDED` | 429    | Too many requests | Check the `X-RateLimit-Reset` header for when you can retry. Implement exponential backoff. |
+
+When you receive a 429 response, the following headers indicate your limit status:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1679000060
+Retry-After: 12
+```
+
+| Header                  | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| `X-RateLimit-Limit`     | Maximum requests allowed in the current window |
+| `X-RateLimit-Remaining` | Requests remaining in the current window       |
+| `X-RateLimit-Reset`     | Unix timestamp when the window resets          |
+| `Retry-After`           | Seconds to wait before retrying                |
+
+## Idempotency errors
+
+| Code                       | Status | Description                                                         | Resolution                                                                                            |
+| -------------------------- | ------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `IDEMPOTENCY_CONFLICT`     | 409    | A different request body was sent with the same `X-Idempotency-Key` | Each idempotency key must be paired with the same request body. Use a new key for different requests. |
+| `IDEMPOTENCY_KEY_TOO_LONG` | 400    | The idempotency key exceeds 128 characters                          | Shorten the key to 128 characters or fewer                                                            |
+
+Idempotency keys are scoped to your platform and persist for 24 hours. After 24 hours, the same key can be reused with a different request body.
+
+## Webhook delivery errors
+
+These errors appear in the webhook delivery logs, not in API responses.
+
+| Code                   | Description                                             | Resolution                                                                                                           |
+| ---------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `ENDPOINT_UNREACHABLE` | Your webhook endpoint did not respond within 10 seconds | Ensure your endpoint is publicly accessible and responds quickly. Return 200 immediately and process asynchronously. |
+| `ENDPOINT_ERROR`       | Your endpoint returned a non-2xx status code            | Return a 200 status to acknowledge receipt. Non-2xx responses trigger retries.                                       |
+| `SSL_ERROR`            | TLS handshake failed with your endpoint                 | Verify your SSL certificate is valid and not expired                                                                 |
+| `ENDPOINT_BLOCKED`     | Your endpoint resolved to a private IP address          | Webhook URLs must resolve to public IP addresses. Localhost and private ranges are rejected.                         |
+
+## Retry guidance
+
+For transient errors (5xx status codes, network timeouts), implement exponential backoff:
+
+| Attempt   | Wait time  |
+| --------- | ---------- |
+| 1st retry | 1 second   |
+| 2nd retry | 2 seconds  |
+| 3rd retry | 4 seconds  |
+| 4th retry | 8 seconds  |
+| 5th retry | 16 seconds |
+
+Add random jitter (0 to 500ms) to each wait time to avoid thundering herd problems. Stop retrying after 5 attempts and log the failure for investigation.
+
+For 4xx errors, do not retry. These indicate a problem with the request that must be fixed before retrying.
