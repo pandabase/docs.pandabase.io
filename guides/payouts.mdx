@@ -48,7 +48,34 @@ You can preview the exact fees before requesting a payout using the **estimate**
 | AT, BE, CY, DE, EE, ES, FI, FR, GR, HR, IE, IT, LT, LU, LV, MT, NL, PT, SI, SK | SEPA            | EUR      | IBAN                                                             |
 | CZ, DK, HU, NO, PL, SE                                                         | SEPA            | EUR      | IBAN                                                             |
 
-## Payout Timeline
+## New bank accounts
+
+When you add a bank account for the first time, it enters an **In Review** status for 2 to 3 business days. During this period, Pandabase verifies your bank details and runs compliance checks. You cannot request payouts until the review is complete.
+
+You will receive an email when your bank account is approved and ready to accept payouts.
+
+### First payout waiting period
+
+After your bank account is approved, there is a **7 to 14 day waiting period** before your first payout is settled. This delay is necessary for risk mitigation and cannot be waived under any circumstances.
+
+| Event | Timeline |
+| ----- | -------- |
+| Bank account added | Day 0 |
+| Bank account approved (In Review clears) | Day 2 to 3 |
+| First payout requested | Day 3+ |
+| First payout settled | 7 to 14 days after the payout request |
+
+After your first payout settles successfully, all future payouts follow the standard timeline below.
+
+<Warning>
+  The first payout waiting period applies to every new bank account, even if you
+  have previously received payouts to a different account. Changing your bank
+  details resets the waiting period.
+</Warning>
+
+## Payout timeline
+
+Once your bank account has completed the first payout, subsequent payouts follow these timelines:
 
 - **US (ACH)**: 1–2 business days
 - **GB (Faster Payments)**: Same day or next business day
