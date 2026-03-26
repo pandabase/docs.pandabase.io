@@ -4,6 +4,16 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 26, 2026" description="Product-Scoped Coupons" tags={["V2"]}>
+## Features
+
+- **Product-scoped coupons**: Coupons can now be restricted to specific products. When a coupon has products assigned, the discount only applies to those items in the cart. Coupons without product scoping continue to apply to the entire cart.
+  - Set `productIds` when creating or updating a coupon to scope it to specific products.
+  - Pass `null` or an empty array to remove the product scope.
+  - Available via the dashboard, Store API, and all coupon endpoints.
+
+</Update>
+
 <Update label="March 20, 2026" description="Subscriptions & Recurring Billing (Beta)" tags={["V2"]}>
 ## Features
 
