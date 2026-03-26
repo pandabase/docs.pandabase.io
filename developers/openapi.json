@@ -2119,6 +2119,11 @@
           "expiresAt": { "type": ["string", "null"], "format": "date-time" },
           "enabled": { "type": "boolean" },
           "timesUsed": { "type": "integer" },
+          "productIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Product IDs this coupon is scoped to. Empty array means the coupon applies to all products."
+          },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }
         }
@@ -2143,7 +2148,13 @@
           "firstPurchaseOnly": { "type": "boolean", "default": false },
           "startsAt": { "type": "string", "format": "date-time" },
           "expiresAt": { "type": "string", "format": "date-time" },
-          "enabled": { "type": "boolean", "default": true }
+          "enabled": { "type": "boolean", "default": true },
+          "productIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 50,
+            "description": "Product IDs to scope this coupon to. Omit to apply to all products."
+          }
         }
       },
       "UpdateCouponBody": {
@@ -2160,7 +2171,13 @@
           "firstPurchaseOnly": { "type": "boolean" },
           "startsAt": { "type": ["string", "null"], "format": "date-time" },
           "expiresAt": { "type": ["string", "null"], "format": "date-time" },
-          "enabled": { "type": "boolean" }
+          "enabled": { "type": "boolean" },
+          "productIds": {
+            "type": ["array", "null"],
+            "items": { "type": "string" },
+            "maxItems": 50,
+            "description": "Product IDs to scope this coupon to. Pass null or empty array to remove scoping. Omit to leave unchanged."
+          }
         }
       },
       "Order": {
