@@ -4,6 +4,20 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="March 29, 2026" description="Inclusive Tax, Coupon Restrictions & Async Payment Support" tags={["V2"]}>
+## Features
+
+- **Inclusive tax support**: Stores can now set their tax behavior to `INCLUSIVE` via store settings. When enabled, product prices are treated as tax-inclusive and the tax portion is back-calculated for invoices and accounting. Configure via `PATCH /v2/stores/:storeId` with `taxBehavior: "INCLUSIVE"`.
+- **Async payment method support**: Payments via ACH, SEPA, and other bank transfer methods now show a `PROCESSING` status while the payment clears. Customers receive an email confirming their payment is in progress.
+- **Coupon customer restrictions enforced**: `firstPurchaseOnly` and `maxUsesPerCustomer` coupon settings are now validated at checkout. Previously these were stored but not enforced.
+- **Max coupons per store**: Increased from 100 to 1,000.
+
+## Fixes
+
+- Checkout now rejects email addresses in the customer name field.
+
+</Update>
+
 <Update label="March 26, 2026" description="Product-Scoped Coupons" tags={["V2"]}>
 ## Features
 
