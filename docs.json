@@ -29,6 +29,7 @@
               "guides/products",
               "guides/refunds",
               "guides/stores",
+              "guides/shield",
               "guides/webhooks"
             ]
           }
