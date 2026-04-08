@@ -88,6 +88,15 @@
             ]
           },
           {
+            "group": "Onchain Payments",
+            "pages": [
+              "developers/onchain/overview",
+              "developers/onchain/supported-chains",
+              "developers/onchain/integration",
+              "developers/onchain/api"
+            ]
+          },
+          {
             "group": "API reference",
             "openapi": "developers/openapi.json"
           },
