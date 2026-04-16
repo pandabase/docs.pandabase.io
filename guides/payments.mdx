@@ -5,16 +5,17 @@ description: "How payments work on Pandabase."
 
 ## Merchant of Record
 
-Pandabase acts as the **Merchant of Record (MoR)** for all transactions. This means we process payments, handle tax collection, manage disputes, and issue refunds on your behalf. Your customers pay Pandabase — we settle funds to your available balance after deducting fees.
+Pandabase acts as the **Merchant of Record (MoR)** for all transactions. This means we process payments, handle tax collection, manage disputes, and issue refunds on your behalf. Your customers pay us and we settle funds to your available balance after deducting fees.
 
 ## Currency
 
-All settlements are in **USD**. Regardless of where your store or customers are located, your balance and payouts are always in US dollars.
+All settlements are in **USD**. Regardless of where your store or customers are located, your balance and payouts are always in **United States** dollars.
 
 When a customer checks out from a supported country, the payment is automatically charged in their local currency. This unlocks region-specific payment methods and provides a familiar checkout experience. Exchange rates are locked at checkout time, and Pandabase handles the conversion — you always receive USD.
 
 <Note>
-  Final charge amounts may vary slightly due to exchange rate fluctuations between checkout and settlement. Your USD settlement amount is unaffected.
+  Final charge amounts may vary slightly due to exchange rate fluctuations
+  between checkout and settlement. Your USD settlement amount is unaffected.
 </Note>
 
 ## Payment Methods
@@ -24,7 +25,6 @@ Customers can pay with:
 - Credit and debit cards (Visa, Mastercard, American Express, Discover)
 - Apple Pay and Google Pay
 - iDEAL / Wero (Netherlands)
-- SEPA Debit (EU)
 - Bancontact (Belgium)
 - Multibanco (Portugal)
 - MB WAY (Portugal)
@@ -41,13 +41,6 @@ Customers can pay with:
 Available methods depend on the customer's country and currency. Local payment methods appear automatically when the checkout is in a supported local currency.
 
 ## Fees
-
-| Fee                    | Amount                                              |
-| ---------------------- | --------------------------------------------------- |
-| Platform fee           | 5.9% + $0.20 per transaction                        |
-| Payment processing fee | Dynamic on each transaction                         |
-| Dispute fee            | $20.00 per dispute                                  |
-| Payout fee             | $1.50 base + [country-specific fees](/payouts#fees) |
 
 See [pricing](/pricing) for a full breakdown with examples.
 
@@ -78,12 +71,12 @@ See [pricing](/pricing) for a full breakdown with examples.
 
 ## Order statuses
 
-| Status     | Description                                              |
-| ---------- | -------------------------------------------------------- |
-| PENDING    | Payment intent created, waiting for customer             |
-| PROCESSING | Payment is being processed                               |
-| COMPLETED  | Payment succeeded, order fulfilled                       |
-| FAILED     | Payment failed (card declined, insufficient funds, etc.) |
-| CANCELLED  | Payment was cancelled before completion                  |
-| REFUNDED   | Order was refunded                                       |
-| CHARGEBACK | Customer filed a dispute with their bank                 |
+| Status     | Description                                                                            |
+| ---------- | -------------------------------------------------------------------------------------- |
+| Pending    | Payment intent created, waiting for customer or awaiting confirmation from the network |
+| Processing | Payment is being processed                                                             |
+| Completed  | Payment succeeded, order fulfilled                                                     |
+| Failed     | Payment failed (card declined, insufficient funds, etc.)                               |
+| Cancelled  | Payment was cancelled before completion                                                |
+| REfunded   | Order was refunded                                                                     |
+| Chargeback | Customer filed a dispute with their bank                                               |

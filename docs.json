@@ -21,7 +21,6 @@
             "group": "Guides",
             "pages": [
               "guides/accounts",
-              "guides/api-tokens",
               "guides/checkouts",
               "guides/disputes",
               "guides/payments",
@@ -29,26 +28,7 @@
               "guides/products",
               "guides/refunds",
               "guides/stores",
-              "guides/shield",
-              "guides/webhooks"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Platforms",
-        "groups": [
-          {
-            "group": "Basics",
-            "pages": [
-              "platforms/overview",
-              "platforms/merchants",
-              "platforms/intents",
-              "platforms/settlements",
-              "platforms/money-management",
-              "platforms/compliance",
-              "platforms/errors",
-              "platforms/migration"
+              "guides/shield"
             ]
           }
         ]
@@ -88,7 +68,7 @@
             ]
           },
           {
-            "group": "Onchain Payments",
+            "group": "Onchain Payments (Beta)",
             "pages": [
               "developers/onchain/overview",
               "developers/onchain/supported-chains",

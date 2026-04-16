@@ -9,7 +9,7 @@ Pandabase handles payouts to your bank account directly. Once you've verified yo
 
 ## Minimum Payout
 
-The minimum payout amount is **$50.00** for all countries.
+The minimum payout amount is **$50.00** for all countries and three times a week.
 
 ## Fees
 
@@ -19,25 +19,25 @@ You can preview the exact fees before requesting a payout using the **estimate**
 
 ### Fee breakdown by country
 
-| Country                                    | Base Fee | Cross-Border | FX   | Example ($100 payout) |
-| ------------------------------------------ | -------- | ------------ | ---- | --------------------- |
-| United States                              | $1.50    | —            | —    | $1.50 total           |
-| Great Britain                              | $1.50    | 0.25%        | 0.5% | $2.25 total           |
-| Eurozone                                   | $1.50    | 0.25%        | 0.5% | $2.25 total           |
-| Canada                                     | $1.50    | 0.25%        | 1%   | $2.75 total           |
-| Sweden, Norway, Czech Republic, Hungary    | $1.50    | 0.25%        | 1%   | $2.75 total           |
-| Switzerland                                | $1.50    | 0.25%        | 1%   | $2.75 total           |
-| Denmark, Poland                            | $1.50    | 0.5%         | 1%   | $3.00 total           |
-| Singapore                                  | $1.50    | 0.5%         | 1%   | $3.00 total           |
-| New Zealand                                | $1.50    | 0.5%         | 1%   | $3.00 total           |
-| Thailand                                   | $1.50    | 0.5%         | 1%   | $3.00 total           |
-| Turkiye                                    | $1.50    | 0.75%        | 1%   | $3.25 total           |
-| India                                      | $1.50    | 0.75%        | 1%   | $3.25 total           |
-| Australia                                  | $1.50    | 1%           | 1%   | $3.50 total           |
-| United Arab Emirates                       | $1.50    | 1%           | 1%   | $3.50 total           |
-| Qatar                                      | $1.50    | 1%           | 1%   | $3.50 total           |
-| Taiwan                                     | $1.50    | 1%           | 1%   | $3.50 total           |
-| Vietnam                                    | $1.50    | 1%           | 1%   | $3.50 total           |
+| Country                                 | Base Fee | Cross-Border | FX   | Example ($100 payout) |
+| --------------------------------------- | -------- | ------------ | ---- | --------------------- |
+| United States                           | $1.50    | —            | —    | $1.50 total           |
+| Great Britain                           | $1.50    | 0.25%        | 0.5% | $2.25 total           |
+| Eurozone                                | $1.50    | 0.25%        | 0.5% | $2.25 total           |
+| Canada                                  | $1.50    | 0.25%        | 1%   | $2.75 total           |
+| Sweden, Norway, Czech Republic, Hungary | $1.50    | 0.25%        | 1%   | $2.75 total           |
+| Switzerland                             | $1.50    | 0.25%        | 1%   | $2.75 total           |
+| Denmark, Poland                         | $1.50    | 0.5%         | 1%   | $3.00 total           |
+| Singapore                               | $1.50    | 0.5%         | 1%   | $3.00 total           |
+| New Zealand                             | $1.50    | 0.5%         | 1%   | $3.00 total           |
+| Thailand                                | $1.50    | 0.5%         | 1%   | $3.00 total           |
+| Turkiye                                 | $1.50    | 0.75%        | 1%   | $3.25 total           |
+| India                                   | $1.50    | 0.75%        | 1%   | $3.25 total           |
+| Australia                               | $1.50    | 1%           | 1%   | $3.50 total           |
+| United Arab Emirates                    | $1.50    | 1%           | 1%   | $3.50 total           |
+| Qatar                                   | $1.50    | 1%           | 1%   | $3.50 total           |
+| Taiwan                                  | $1.50    | 1%           | 1%   | $3.50 total           |
+| Vietnam                                 | $1.50    | 1%           | 1%   | $3.50 total           |
 
 <Note>
   Cross-border and FX fees are percentage-based and calculated on the payout
@@ -47,24 +47,24 @@ You can preview the exact fees before requesting a payout using the **estimate**
 
 ## Supported Countries
 
-| Country                                                                                                                                                                                          | Method          | Currency | Bank Fields                                                      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | -------- | ---------------------------------------------------------------- |
-| United States                                                                                                                                                                                    | ACH             | USD      | Routing number, account number, account type                     |
-| Great Britain                                                                                                                                                                                    | Faster Payments | GBP      | Sort code, account number                                        |
-| Canada                                                                                                                                                                                           | EFT             | CAD      | Transit number, institution number, account number, account type |
-| Austria, Belgium, Cyprus, Germany, Estonia, Spain, Finland, France, Greece, Croatia, Ireland, Italy, Lithuania, Luxembourg, Latvia, Malta, Netherlands, Portugal, Slovenia, Slovakia               | SEPA            | EUR      | IBAN                                                             |
-| Czech Republic, Denmark, Hungary, Norway, Poland, Sweden                                                                                                                                         | SEPA            | EUR      | IBAN                                                             |
-| Switzerland                                                                                                                                                                                      | SEPA            | CHF      | IBAN                                                             |
-| Australia                                                                                                                                                                                        | BECS            | AUD      | BSB number, account number                                       |
-| New Zealand                                                                                                                                                                                      | Local transfer  | NZD      | Bank code, branch code, account number                           |
-| India                                                                                                                                                                                            | NEFT/IMPS       | INR      | IFSC code, account number                                        |
-| Singapore                                                                                                                                                                                        | Local transfer  | SGD      | Bank code, branch code, account number                           |
-| Thailand                                                                                                                                                                                         | Local transfer  | THB      | Bank code, account number                                        |
-| Turkiye                                                                                                                                                                                          | SWIFT           | TRY      | SWIFT/BIC code, IBAN, account type                               |
-| Vietnam                                                                                                                                                                                          | SWIFT           | VND      | SWIFT/BIC code, account number                                   |
-| United Arab Emirates                                                                                                                                                                             | SWIFT           | AED      | SWIFT/BIC code, IBAN                                             |
-| Qatar                                                                                                                                                                                            | SWIFT           | QAR      | SWIFT/BIC code, IBAN                                             |
-| Taiwan                                                                                                                                                                                           | SWIFT           | TWD      | SWIFT/BIC code, account number                                   |
+| Country                                                                                                                                                                              | Method          | Currency | Bank Fields                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | -------- | ---------------------------------------------------------------- |
+| United States                                                                                                                                                                        | ACH             | USD      | Routing number, account number, account type                     |
+| Great Britain                                                                                                                                                                        | Faster Payments | GBP      | Sort code, account number                                        |
+| Canada                                                                                                                                                                               | EFT             | CAD      | Transit number, institution number, account number, account type |
+| Austria, Belgium, Cyprus, Germany, Estonia, Spain, Finland, France, Greece, Croatia, Ireland, Italy, Lithuania, Luxembourg, Latvia, Malta, Netherlands, Portugal, Slovenia, Slovakia | SEPA            | EUR      | IBAN                                                             |
+| Czech Republic, Denmark, Hungary, Norway, Poland, Sweden                                                                                                                             | SEPA            | EUR      | IBAN                                                             |
+| Switzerland                                                                                                                                                                          | SEPA            | CHF      | IBAN                                                             |
+| Australia                                                                                                                                                                            | BECS            | AUD      | BSB number, account number                                       |
+| New Zealand                                                                                                                                                                          | Local transfer  | NZD      | Bank code, branch code, account number                           |
+| India                                                                                                                                                                                | NEFT/IMPS       | INR      | IFSC code, account number                                        |
+| Singapore                                                                                                                                                                            | Local transfer  | SGD      | Bank code, branch code, account number                           |
+| Thailand                                                                                                                                                                             | Local transfer  | THB      | Bank code, account number                                        |
+| Turkiye                                                                                                                                                                              | SWIFT           | TRY      | SWIFT/BIC code, IBAN, account type                               |
+| Vietnam                                                                                                                                                                              | SWIFT           | VND      | SWIFT/BIC code, account number                                   |
+| United Arab Emirates                                                                                                                                                                 | SWIFT           | AED      | SWIFT/BIC code, IBAN                                             |
+| Qatar                                                                                                                                                                                | SWIFT           | QAR      | SWIFT/BIC code, IBAN                                             |
+| Taiwan                                                                                                                                                                               | SWIFT           | TWD      | SWIFT/BIC code, account number                                   |
 
 ## New bank accounts
 
@@ -76,12 +76,12 @@ You will receive an email when your bank account is approved and ready to accept
 
 After your bank account is approved, there is a **7 to 14 day waiting period** before your first payout is settled. This delay is necessary for risk mitigation and cannot be waived under any circumstances.
 
-| Event | Timeline |
-| ----- | -------- |
-| Bank account added | Day 0 |
-| Bank account approved (In Review clears) | Day 2 to 3 |
-| First payout requested | Day 3+ |
-| First payout settled | 7 to 14 days after the payout request |
+| Event                                    | Timeline                              |
+| ---------------------------------------- | ------------------------------------- |
+| Bank account added                       | Day 0                                 |
+| Bank account approved (In Review clears) | Day 2 to 3                            |
+| First payout requested                   | Day 3+                                |
+| First payout settled                     | 7 to 14 days after the payout request |
 
 After your first payout settles successfully, all future payouts follow the standard timeline below.
 
@@ -97,19 +97,19 @@ Once your bank account has completed the first payout, subsequent payouts follow
 
 ### Local bank transfer
 
-| Country                                                                                                                                                                                          | Network   | Timeline                      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ----------------------------- |
-| United States                                                                                                                                                                                    | ACH       | 1–2 business days             |
-| Great Britain                                                                                                                                                                                    | FPS       | Same day or next business day |
-| Austria, Belgium, Cyprus, Germany, Estonia, Spain, Finland, France, Greece, Croatia, Ireland, Italy, Lithuania, Luxembourg, Latvia, Malta, Netherlands, Portugal, Slovenia, Slovakia               | SEPA      | 1–2 business days             |
-| Czech Republic, Denmark, Hungary, Poland, Sweden                                                                                                                                                 | SEPA      | 1–2 business days             |
-| Norway                                                                                                                                                                                           | SEPA      | 1–2 business days             |
-| Canada                                                                                                                                                                                           | EFT       | 2–3 business days             |
-| Australia                                                                                                                                                                                        | BECS      | 1–2 business days             |
-| New Zealand                                                                                                                                                                                      | Local     | 1–2 business days             |
-| India                                                                                                                                                                                            | NEFT/IMPS | 1–2 business days             |
-| Singapore                                                                                                                                                                                        | Local     | 1–2 business days             |
-| Switzerland                                                                                                                                                                                      | SEPA      | 1–2 business days             |
+| Country                                                                                                                                                                              | Network   | Timeline                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ----------------------------- |
+| United States                                                                                                                                                                        | ACH       | 1–2 business days             |
+| Great Britain                                                                                                                                                                        | FPS       | Same day or next business day |
+| Austria, Belgium, Cyprus, Germany, Estonia, Spain, Finland, France, Greece, Croatia, Ireland, Italy, Lithuania, Luxembourg, Latvia, Malta, Netherlands, Portugal, Slovenia, Slovakia | SEPA      | 1–2 business days             |
+| Czech Republic, Denmark, Hungary, Poland, Sweden                                                                                                                                     | SEPA      | 1–2 business days             |
+| Norway                                                                                                                                                                               | SEPA      | 1–2 business days             |
+| Canada                                                                                                                                                                               | EFT       | 2–3 business days             |
+| Australia                                                                                                                                                                            | BECS      | 1–2 business days             |
+| New Zealand                                                                                                                                                                          | Local     | 1–2 business days             |
+| India                                                                                                                                                                                | NEFT/IMPS | 1–2 business days             |
+| Singapore                                                                                                                                                                            | Local     | 1–2 business days             |
+| Switzerland                                                                                                                                                                          | SEPA      | 1–2 business days             |
 
 ### Wire (SWIFT)
 
