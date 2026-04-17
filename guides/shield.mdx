@@ -35,13 +35,13 @@ Lists are reusable collections of values that you reference in rules. Instead of
 
 ### List types
 
-| Type       | Description                        | Example values                       |
-| ---------- | ---------------------------------- | ------------------------------------ |
-| `email`    | Customer email addresses           | `fraud@example.com`, `*@tempmail.io` |
-| `ip`       | IPv4 or IPv6 addresses             | `192.168.1.1`, `10.0.0.0/8`         |
-| `country`  | ISO 3166-1 alpha-2 country codes   | `US`, `NG`, `RU`                     |
-| `card_bin` | First 6–8 digits of a card number  | `411111`, `55000000`                 |
-| `string`   | Arbitrary string values            | Custom field values, user IDs        |
+| Type       | Description                       | Example values                       |
+| ---------- | --------------------------------- | ------------------------------------ |
+| `email`    | Customer email addresses          | `fraud@example.com`, `*@tempmail.io` |
+| `ip`       | IPv4 or IPv6 addresses            | `192.168.1.1`, `10.0.0.0/8`          |
+| `country`  | ISO 3166-1 alpha-2 country codes  | `US`, `NG`, `RU`                     |
+| `card_bin` | First 6–8 digits of a card number | `411111`, `55000000`                 |
+| `string`   | Arbitrary string values           | Custom field values, user IDs        |
 
 ### Managing lists
 
@@ -68,21 +68,21 @@ You can add or remove values from a list at any time. Changes take effect on the
 
 Email and string lists support wildcard patterns:
 
-| Pattern             | Matches                              |
-| ------------------- | ------------------------------------ |
-| `*@tempmail.io`     | Any email at tempmail.io             |
-| `fraud@*`           | "fraud@" at any domain               |
-| `*+promo@*`         | Any email with "+promo" before the @ |
+| Pattern         | Matches                              |
+| --------------- | ------------------------------------ |
+| `*@tempmail.io` | Any email at tempmail.io             |
+| `fraud@*`       | "fraud@" at any domain               |
+| `*+promo@*`     | Any email with "+promo" before the @ |
 
 ### IP ranges
 
 IP lists support CIDR notation for matching ranges:
 
-| Pattern         | Matches                          |
-| --------------- | -------------------------------- |
-| `192.168.1.1`   | Exact IP                         |
-| `10.0.0.0/8`    | All IPs in the 10.x.x.x range   |
-| `2001:db8::/32` | IPv6 range                       |
+| Pattern         | Matches                       |
+| --------------- | ----------------------------- |
+| `192.168.1.1`   | Exact IP                      |
+| `10.0.0.0/8`    | All IPs in the 10.x.x.x range |
+| `2001:db8::/32` | IPv6 range                    |
 
 ## Rules
 
@@ -90,10 +90,10 @@ Rules define conditions and outcomes. Each rule has a **condition** (what to che
 
 ### Actions
 
-| Action   | Effect                                                                                         |
-| -------- | ---------------------------------------------------------------------------------------------- |
-| `ALLOW`  | Payment proceeds immediately. No further rules are evaluated.                                  |
-| `BLOCK`  | Payment is declined. The customer sees a generic decline message.                              |
+| Action   | Effect                                                                                                    |
+| -------- | --------------------------------------------------------------------------------------------------------- |
+| `ALLOW`  | Payment proceeds immediately. No further rules are evaluated.                                             |
+| `BLOCK`  | Payment is declined. The customer sees a generic decline message.                                         |
 | `REVIEW` | Payment is held for manual review. You'll receive an email and can approve or decline from the dashboard. |
 
 ### Rule syntax
@@ -104,38 +104,46 @@ Rules use a simple expression syntax. Each rule is a single condition that evalu
 
 These attributes are available in every rule:
 
-| Attribute              | Type    | Description                                      |
-| ---------------------- | ------- | ------------------------------------------------ |
-| `email`                | string  | Customer email address                           |
-| `email_domain`         | string  | Domain part of the email (after @)               |
-| `ip`                   | string  | Customer IP address                              |
-| `country`              | string  | Two-letter country code from billing address      |
-| `ip_country`           | string  | Two-letter country code from IP geolocation       |
-| `card_bin`             | string  | First 6 digits of the card number                |
-| `card_country`         | string  | Card issuing country                             |
-| `card_funding`         | string  | `credit`, `debit`, or `prepaid`                  |
-| `amount`               | integer | Payment amount in cents                          |
-| `currency`             | string  | Three-letter currency code                       |
-| `risk_score`           | integer | Pandabase risk score (0–100)                     |
-| `is_new_customer`      | boolean | True if the customer has no prior completed orders |
-| `customer_order_count` | integer | Number of completed orders by this customer       |
-| `metadata.*`           | string  | Checkout metadata values (e.g. `metadata.source`) |
+| Attribute               | Type    | Description                                         | Example Value                |
+| ----------------------- | ------- | --------------------------------------------------- | ---------------------------- |
+| `email`                 | string  | Customer email address                              | `john.doe@example.com`       |
+| `device_fingerprint`    | string  | Unique fingerprint of the device                    | `a3f7b2c1d9e8f0a4b5c6d7e8`   |
+| `card_fingerprint`      | string  | Unique fingerprint of the Card                      | `4f8a2c1b7d3e9f0a5b6c7d8e`   |
+| `email_domain`          | string  | Domain part of the email (after @)                  | `example.com`                |
+| `ip`                    | string  | Customer IP address                                 | `192.168.1.1`                |
+| `ip_country`            | string  | Customer IP address                                 | `US`                         |
+| `country`               | string  | Two-letter country code from billing address        | `US`                         |
+| `card_bin`              | string  | First 6 digits of the card number                   | 411111                       |
+| `card_country`          | string  | Card issuing country                                | `US`                         |
+| `card_funding`          | string  | `credit`, `debit`, or `prepaid`                     | `credit`                     |
+| `amount`                | integer | Payment amount in cents                             | `2999`                       |
+| `currency`              | string  | Three-letter currency code                          | `USD`                        |
+| `risk_score`            | integer | Pandabase risk score (0–100)                        | `42`                         |
+| `risk_level`            | enum    | Can be one of `LOW`, `MEDIUM` and `HIGH`            | `MEDIUM`                     |
+| `is_new_customer`       | boolean | True if the customer has no prior completed orders  | `true`                       |
+| `customer_order_count`  | integer | Number of completed orders by this customer         | `3`                          |
+| `customer_has_disputed` | boolean | Has this customer previously disputed               | `false`                      |
+| `ip_has_disputed`       | boolean | Has this IP previously disputed                     | `false`                      |
+| `device_has_disputed`   | boolean | Has this device previously disputed                 | `false`                      |
+| `isp`                   | integer | The customer's Internet Service Provider (ISP) name | `Comcast Cable`              |
+| `browser`               | integer | The customer's browser name and version             | `Chrome 124.0`               |
+| `metadata.*`            | string  | Checkout metadata values (e.g. `metadata.source`)   | `metadata.source=google_ads` |
 
 #### Operators
 
-| Operator     | Types              | Example                                  |
-| ------------ | ------------------ | ---------------------------------------- |
-| `==`         | string, integer    | `country == "US"`                        |
-| `!=`         | string, integer    | `card_funding != "prepaid"`              |
-| `>`          | integer            | `amount > 50000`                         |
-| `<`          | integer            | `amount < 100`                           |
-| `>=`         | integer            | `risk_score >= 80`                       |
-| `<=`         | integer            | `customer_order_count <= 1`              |
-| `IN`         | string, list       | `email IN @blocked_emails`               |
-| `NOT IN`     | string, list       | `country NOT IN @allowed_countries`      |
-| `CONTAINS`   | string             | `email_domain CONTAINS "tempmail"`       |
-| `STARTS_WITH`| string             | `email STARTS_WITH "test"`               |
-| `ENDS_WITH`  | string             | `email_domain ENDS_WITH ".xyz"`          |
+| Operator      | Types           | Example                             |
+| ------------- | --------------- | ----------------------------------- |
+| `==`          | string, integer | `country == "US"`                   |
+| `!=`          | string, integer | `card_funding != "prepaid"`         |
+| `>`           | integer         | `amount > 50000`                    |
+| `<`           | integer         | `amount < 100`                      |
+| `>=`          | integer         | `risk_score >= 80`                  |
+| `<=`          | integer         | `customer_order_count <= 1`         |
+| `IN`          | string, list    | `email IN @blocked_emails`          |
+| `NOT IN`      | string, list    | `country NOT IN @allowed_countries` |
+| `CONTAINS`    | string          | `email_domain CONTAINS "tempmail"`  |
+| `STARTS_WITH` | string          | `email STARTS_WITH "test"`          |
+| `ENDS_WITH`   | string          | `email_domain ENDS_WITH ".xyz"`     |
 
 #### Combining conditions
 
@@ -246,17 +254,18 @@ curl -X POST https://api.pandabase.io/v2/stores/{storeId}/shield/rules \
 
 Rules are evaluated from lowest to highest priority number. The first matching rule wins.
 
-| Priority | Rule                                | Action |
-| -------- | ----------------------------------- | ------ |
-| 0        | `customer_order_count >= 10`        | ALLOW  |
-| 1        | `email IN @disposable_emails`       | BLOCK  |
+| Priority | Rule                                         | Action |
+| -------- | -------------------------------------------- | ------ |
+| 0        | `customer_order_count >= 10`                 | ALLOW  |
+| 1        | `email IN @disposable_emails`                | BLOCK  |
 | 2        | `amount > 50000 AND is_new_customer == true` | REVIEW |
-| 3        | `risk_score >= 75`                  | REVIEW |
+| 3        | `risk_score >= 75`                           | REVIEW |
 
 In this setup, a repeat customer with 10+ orders is always allowed through — even if their email is on the disposable list or the amount is high. Priority 0 matches first.
 
 <Warning>
-  Be careful with ALLOW rules at low priority numbers. An overly broad ALLOW rule can bypass all your other protections.
+  Be careful with ALLOW rules at low priority numbers. An overly broad ALLOW
+  rule can bypass all your other protections.
 </Warning>
 
 ## Review queue
@@ -270,7 +279,8 @@ Payments that match a `REVIEW` rule are held and appear in the **Shield → Revi
 Payments in review are held for up to **72 hours**. If no action is taken, the payment is automatically declined and the customer is refunded.
 
 <Note>
-  You'll receive an email and a `PAYMENT_REVIEW` webhook event when a payment is held for review.
+  You'll receive an email and a `PAYMENT_REVIEW` webhook event when a payment is
+  held for review.
 </Note>
 
 ## Best practices
