@@ -25,32 +25,30 @@ bun add @pandabase/node
 
 </CodeGroup>
 
-
 ## Usage
 
 The package needs to be configured with your api key, which is available in the api keys tab.
 
 ```ts
-import { Client } from "@pandabase/node";
+import { Pandabase } from "@pandabase/node";
 
-const pb = new Client({
-  storeId: "store_",
-  apiKey: "sk_v3_interactions_"
+const pandabase = new Pandabase({
+  storeId: "shp_",
+  apiKey: "sk_...",
 });
 
-const payments = await pb.payments.list({
-  page: 1, page_size: 10
-})
-
-const products = await pb.products.list({
-  page: 1, page_size: 10
+await pandabase.checkouts.create({
+  items: [
+    {
+      name: "Product A",
+      quantity: 1,
+      amount: 1000, // $10.00 USD
+    },
+  ], // https://docs.pandabase.io/api-reference/checkouts/create-checkout-session#body-items
+  customer: {
+    email: "joe@gmail.com",
+  },
 });
 
-const { url } = await pb.payments.createLink({
-  amount: 100, // in cents
-  currency: 'USD'
-})
-
-console.log(url);
-// logs `https://pay.pandabase.io/<payId>?token=`
+await store.checkouts.estimate({}); // same API as above just returns a preview
 ```
