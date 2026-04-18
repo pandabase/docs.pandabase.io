@@ -318,6 +318,36 @@
           "items": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/LineItem" }
+          },
+          "available_payment_methods": {
+            "type": "array",
+            "description": "Payment methods available to the customer based on their country. Always includes global methods (CARD, APPLE_PAY, GOOGLE_PAY); additional methods are added based on country/currency. Availability by country: US adds CASHAPP, AMAZON_PAY, WECHAT_PAY, ALIPAY. GB adds CASHAPP, AMAZON_PAY plus all EU methods. EU/EEA (AT, BE, CY, DE, EE, ES, FI, FR, GR, HR, IE, IT, LT, LU, LV, MT, NL, PT, SI, SK, CZ, DK, HU, PL, SE, NO, CH) adds IDEAL, BANCONTACT, MULTIBANCO, MB_WAY, EPS, PRZELEWY24, BLIK, AMAZON_PAY. BR adds PIX. IN adds UPI. KR adds NAVER_PAY, KAKAO_PAY, PAYCO, SAMSUNG_PAY.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CARD",
+                "APPLE_PAY",
+                "GOOGLE_PAY",
+                "CASHAPP",
+                "AMAZON_PAY",
+                "WECHAT_PAY",
+                "ALIPAY",
+                "IDEAL",
+                "BANCONTACT",
+                "MULTIBANCO",
+                "MB_WAY",
+                "EPS",
+                "PRZELEWY24",
+                "BLIK",
+                "PIX",
+                "UPI",
+                "NAVER_PAY",
+                "KAKAO_PAY",
+                "PAYCO",
+                "SAMSUNG_PAY"
+              ]
+            },
+            "example": ["CARD", "APPLE_PAY", "GOOGLE_PAY", "IDEAL", "BANCONTACT", "MULTIBANCO", "MB_WAY", "EPS", "PRZELEWY24", "BLIK", "AMAZON_PAY"]
           }
         }
       },
