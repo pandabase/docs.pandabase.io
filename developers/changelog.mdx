@@ -4,6 +4,22 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+ <Update label="April 18, 2026" description="Payment Methods in Checkout Estimate" tags={["V2"]}>
+  ## Features
+
+- **`available_payment_methods` in checkout estimate**: The `POST /v2/stores/:storeId/checkouts/estimate` endpoint
+  now returns a list of supported payment methods based on the customer's country, alongside the existing
+  presentment currency resolution. Global methods (Card, Apple Pay, Google Pay) are always included, with
+  country-specific methods added on top:
+  - **US**: Cash App, Amazon Pay, WeChat Pay, Alipay
+  - **UK**: Cash App, Amazon Pay (plus EU methods)
+  - **EU/EEA** (Eurozone, Czechia, Denmark, Hungary, Poland, Sweden, Norway, Switzerland): iDEAL/Wero, Bancontact,
+    Multibanco, MB WAY, EPS, Przelewy24, BLIK, Amazon Pay
+  - **Brazil**: PIX
+  - **India**: UPI
+  - **South Korea**: Naver Pay, Kakao Pay, PAYCO, Samsung Pay
+    </Update>
+
 <Update label="April 3, 2026" description="New Supported Countries" tags={["V2"]}>
 ## Features
 
@@ -135,6 +151,7 @@ rss: true
 The V2 API is a complete rewrite of the Pandabase API with breaking changes. You cannot migrate from V1 endpoints to V2 directly.
 
 **Key changes from V1:**
+
 - New response format: `{ ok: true, data }` / `{ ok: false, error }`
 - New pagination format: `{ items, pagination: { page, limit, total, totalPages } }`
 - Stricter request validation with better error messages
@@ -154,15 +171,15 @@ The V2 API is a complete rewrite of the Pandabase API with breaking changes. You
 
 Webhook event names are now uppercase enum values:
 
-| V1 Event | V2 Event |
-|----------|----------|
-| `payment.pending` | `PAYMENT_PENDING` |
-| `payment.success` | `PAYMENT_COMPLETED` |
-| `payment.failed` | `PAYMENT_FAILED` |
-| `payment.refunded` | `PAYMENT_REFUNDED` |
-| `payment.disputed` | `PAYMENT_DISPUTED` |
-| — | `PAYMENT_DISPUTE_WON` |
-| — | `PAYMENT_DISPUTE_LOST` |
+| V1 Event           | V2 Event               |
+| ------------------ | ---------------------- |
+| `payment.pending`  | `PAYMENT_PENDING`      |
+| `payment.success`  | `PAYMENT_COMPLETED`    |
+| `payment.failed`   | `PAYMENT_FAILED`       |
+| `payment.refunded` | `PAYMENT_REFUNDED`     |
+| `payment.disputed` | `PAYMENT_DISPUTED`     |
+| —                  | `PAYMENT_DISPUTE_WON`  |
+| —                  | `PAYMENT_DISPUTE_LOST` |
 
 ### New Webhook Payload
 
