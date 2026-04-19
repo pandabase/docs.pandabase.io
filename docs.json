@@ -7,17 +7,27 @@
     "light": "#07C983",
     "dark": "#0b7031"
   },
+  "logo": {
+    "light": "/logo/dark.png",
+    "dark": "/logo/dark.png"
+  },
   "favicon": "/favicon.png",
   "navigation": {
+    "global": {
+      "anchors": []
+    },
     "tabs": [
       {
+        "icon": "book-bookmark",
         "tab": "Guides",
         "groups": [
           {
+            "icon": "book-blank",
             "group": "Getting started",
             "pages": ["index", "quickstart", "pricing", "development"]
           },
           {
+            "icon": "book",
             "group": "Guides",
             "pages": [
               "guides/accounts",
@@ -34,19 +44,11 @@
         ]
       },
       {
+        "icon": "brackets-curly",
         "tab": "Developers",
         "groups": [
           {
-            "group": "Basics",
-            "pages": [
-              "developers/introduction",
-              "developers/pagination",
-              "developers/rate-limits",
-              "developers/responses",
-              "developers/changelog"
-            ]
-          },
-          {
+            "icon": "book-open-cover",
             "group": "Learn",
             "pages": [
               "developers/learn/lifecycle",
@@ -57,60 +59,72 @@
             ]
           },
           {
-            "group": "SDKs",
-            "pages": ["developers/sdks/typescript", "developers/sdks/go"]
+            "icon": "code",
+            "group": "WebSDK (Private Preview)",
+            "pages": ["developers/websdk/getting-started"]
           },
           {
+            "icon": "webhook",
             "group": "Webhooks",
             "pages": [
               "developers/webhooks/overview",
               "developers/webhooks/events"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "icon": "terminal",
+        "tab": "API reference",
+        "groups": [
           {
-            "group": "Onchain Payments (Beta)",
+            "group": "Getting started",
             "pages": [
-              "developers/onchain/overview",
-              "developers/onchain/supported-chains",
-              "developers/onchain/integration",
-              "developers/onchain/api"
+              "developers/introduction",
+              "developers/pagination",
+              "developers/rate-limits",
+              "developers/responses",
+              "developers/changelog",
+              {
+                "expanded": true,
+                "group": "Core Resources",
+                "openapi": "developers/openapi.json"
+              },
+              {
+                "expanded": true,
+                "group": "Storefront",
+                "openapi": "developers/storefront-openapi.json"
+              },
+              {
+                "expanded": true,
+                "group": "Billing",
+                "openapi": "developers/checkout-openapi.json"
+              }
             ]
-          },
-          {
-            "group": "API reference",
-            "openapi": "developers/openapi.json"
-          },
-          {
-            "group": "Storefront API",
-            "openapi": "developers/storefront-openapi.json"
-          },
-          {
-            "group": "Checkout API",
-            "openapi": "developers/checkout-openapi.json"
           }
         ]
       }
     ]
   },
-  "logo": {
-    "light": "/logo/dark.png",
-    "dark": "/logo/dark.png"
-  },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@pandabase.io"
+        "href": "mailto:support@pandabase.io"
+      },
+      {
+        "label": "Customer Portal",
+        "href": "https://mypandabase.com"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Merchant Portal",
-      "href": "https://pandabase.io/dash"
+      "href": "https://merchant.pandabase.io"
     }
   },
   "contextual": {
-    "options": ["copy", "view"]
+    "options": ["copy", "view", "claude", "chatgpt", "mcp"]
   },
   "footer": {
     "socials": {
