@@ -4,7 +4,28 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
- <Update label="April 18, 2026" description="Payment Methods in Checkout Estimate" tags={["V2"]}>
+<Update label="April 19, 2026" description="Support Cases" tags={["V2"]}>
+  ## Features
+
+- **Support cases**: Customers can now open support tickets on their completed orders directly from the Pandabase portal. Merchants get real-time email notifications and can reply from their dashboard.
+
+- **Pandabase support intervention**: When a case needs platform oversight, our team can join the conversation. Staff replies are visible to both parties and clearly branded as Pandabase Support — no back-channels.
+
+- **Attachments**: Up to 5 files per message, allowlist (`image/*`, `application/pdf`, `text/plain`, `application/zip`). All URLs are short-lived.
+
+- **Customer emails now route through the portal**: Payment, order, subscription, and refund emails to customers no longer link to external support addresses — they direct users to sign in at `mypandabase.com` and open a ticket against the relevant order.
+
+</Update>
+
+<Update label="April 19, 2026" description="5 New Supported Countries" tags={["V2"]}>
+  ## Features
+
+- **5 new merchant countries**: Pandabase is now available to merchants in Israel, Romania, Hong Kong, Philippines, and Morocco — bringing total coverage to **43 countries**. Local bank transfers are supported for Israel (IBAN), Romania (SEPA), and Morocco. Wire
+  (SWIFT) payouts are available for Hong Kong and Philippines. Bank account field requirements and cross-border/FX fees are country-specific and match Stripe Global Payouts pricing (0.50%–1% cross-border, 1% FX).
+
+</Update>
+
+<Update label="April 18, 2026" description="Payment Methods in Checkout Estimate" tags={["V2"]}>
   ## Features
 
 - **`available_payment_methods` in checkout estimate**: The `POST /v2/stores/:storeId/checkouts/estimate` endpoint
