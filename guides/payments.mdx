@@ -3,80 +3,97 @@ title: "Payments"
 description: "How payments work on Pandabase."
 ---
 
-## Merchant of Record
-
-Pandabase acts as the **Merchant of Record (MoR)** for all transactions. This means we process payments, handle tax collection, manage disputes, and issue refunds on your behalf. Your customers pay us and we settle funds to your available balance after deducting fees.
+Pandabase processes payments as the **Merchant of Record (MoR)**: we charge the customer, collect tax, handle disputes, and issue refunds on your behalf. After fees, we settle the net to your store's available balance in **USD**.
 
 ## Currency
 
-All settlements are in **USD**. Regardless of where your store or customers are located, your balance and payouts are always in **United States** dollars.
-
-When a customer checks out from a supported country, the payment is automatically charged in their local currency. This unlocks region-specific payment methods and provides a familiar checkout experience. Exchange rates are locked at checkout time, and Pandabase handles the conversion — you always receive USD.
+Customers pay in their local currency wherever supported. This unlocks region-specific payment methods (iDEAL, BLIK, PIX, UPI, etc.) and gives them a familiar checkout. Exchange rates are locked at checkout time and the conversion happens on our side, so you always receive USD.
 
 <Note>
-  Final charge amounts may vary slightly due to exchange rate fluctuations
-  between checkout and settlement. Your USD settlement amount is unaffected.
+  Final charge amounts may vary slightly due to FX fluctuations between
+  checkout and settlement. Your USD settlement is unaffected.
 </Note>
 
-## Payment Methods
+## Payment methods
 
-Customers can pay with:
+Global methods (cards, Apple Pay, Google Pay) work in every supported currency. Local methods appear automatically when the checkout is presented in that region's currency.
 
-- Credit and debit cards (Visa, Mastercard, American Express, Discover)
-- Apple Pay and Google Pay
-- iDEAL / Wero (Netherlands)
-- Bancontact (Belgium)
-- Multibanco (Portugal)
-- MB WAY (Portugal)
-- EPS (Austria)
-- Przelewy24 (Poland)
-- BLIK (Poland)
-- PIX (Brazil)
-- UPI (India)
-- Naver Pay (South Korea)
-- Kakao Pay (South Korea)
-- PAYCO (South Korea)
-- Samsung Pay (South Korea)
+<Accordion title="Supported methods">
+  | Method                                  | Presentment currency |
+  | --------------------------------------- | -------------------- |
+  | Card (Visa, Mastercard, Amex, Discover) | Any supported        |
+  | Apple Pay                               | Any supported        |
+  | Google Pay                              | Any supported        |
+  | Cash App Pay                            | USD, GBP             |
+  | Amazon Pay                              | USD, GBP, EUR        |
+  | WeChat Pay                              | USD                  |
+  | Alipay                                  | USD                  |
+  | iDEAL                                   | EUR                  |
+  | Bancontact                              | EUR                  |
+  | Multibanco                              | EUR                  |
+  | MB WAY                                  | EUR                  |
+  | EPS                                     | EUR                  |
+  | Przelewy24                              | PLN                  |
+  | BLIK                                    | PLN                  |
+  | PIX                                     | BRL                  |
+  | UPI                                     | INR                  |
+  | Naver Pay                               | KRW                  |
+  | Kakao Pay                               | KRW                  |
+  | PAYCO                                   | KRW                  |
+  | Samsung Pay                             | KRW                  |
+</Accordion>
 
-Available methods depend on the customer's country and currency. Local payment methods appear automatically when the checkout is in a supported local currency.
-
-## Fees
-
-See [pricing](/pricing) for a full breakdown with examples.
-
-<Note>
-  There are no monthly fees, setup fees, or hidden charges. You only pay when
-  you make a sale.
-</Note>
-
-## How a payment works
+## Lifecycle
 
 <Steps>
-  <Step title="Customer checks out">
-    A customer adds items to a checkout session and enters their payment
-    details.
+  <Step title="Checkout">
+    Customer completes a checkout session and submits payment.
   </Step>
-  <Step title="Payment is processed">
-    The customer's card is charged and the payment is verified.
+  <Step title="Capture">
+    The payment is authorized and captured. 3-D Secure 2 runs automatically when the issuer requires it.
   </Step>
-  <Step title="Order is created">
-    On successful payment, an order is created and fulfillment is triggered
-    automatically (license keys, downloads, webhooks, etc.).
+  <Step title="Fulfillment">
+    On success, an order is created and fulfillment fires (license keys, downloads, webhooks).
   </Step>
-  <Step title="Balance is updated">
-    The sale amount (minus fees) is added to your store's available balance. You
-    can request a [payout](/payouts) at any time.
+  <Step title="Settlement">
+    The net amount (sale minus fees) lands in your available balance, ready to [pay out](/payouts).
   </Step>
 </Steps>
 
-## Order statuses
+## Statuses
 
-| Status     | Description                                                                            |
-| ---------- | -------------------------------------------------------------------------------------- |
-| Pending    | Payment intent created, waiting for customer or awaiting confirmation from the network |
-| Processing | Payment is being processed                                                             |
-| Completed  | Payment succeeded, order fulfilled                                                     |
-| Failed     | Payment failed (card declined, insufficient funds, etc.)                               |
-| Cancelled  | Payment was cancelled before completion                                                |
-| REfunded   | Order was refunded                                                                     |
-| Chargeback | Customer filed a dispute with their bank                                               |
+| Status     | Meaning                                    |
+| ---------- | ------------------------------------------ |
+| Pending    | Awaiting customer or network confirmation. |
+| Processing | Payment is in flight.                      |
+| Completed  | Payment succeeded, order fulfilled.        |
+| Failed     | Declined or rejected.                      |
+| Cancelled  | Cancelled before completion.               |
+| Refunded   | Order was refunded.                        |
+| Chargeback | Customer filed a dispute with their bank.  |
+
+## Dashboard
+
+The **Payments** page lists every payment your store has received. Filter by status, search by order or customer, and customize the visible columns.
+
+<Frame>
+  <img src="/images/guides/payments-page.png" alt="Payments list view" />
+</Frame>
+
+Click any row to open the detail view, which includes:
+
+- **Items and totals.** Line items, tax, platform fee, processing fee, and the net settled amount.
+- **Customer.** Email and billing address as captured at checkout.
+- **Location & Network.** Country, partial phone, IP, ISP, and browser fingerprint, useful for triaging fraud.
+- **Internal IDs.** Order, customer, payment, and payment reference IDs for support tickets and webhook lookups.
+- **Timeline.** Every event for the payment in order: checkout confirmed, webhooks dispatched, payment captured, order fulfilled.
+
+<Frame>
+  <img src="/images/guides/view-payment-page.png" alt="Payment detail view" />
+</Frame>
+
+Refunds are issued from the action button in the top right. See [Refunds](/guides/refunds) for the full flow.
+
+## Fees
+
+Pay-as-you-go. No monthly fees, setup fees, or hidden charges. You only pay when you make a sale. See [Pricing](/pricing) for the full breakdown with examples.

@@ -19,26 +19,39 @@
     "tabs": [
       {
         "icon": "book-bookmark",
-        "tab": "Guides",
+        "tab": "The Guide",
         "groups": [
           {
             "icon": "book-blank",
             "group": "Getting started",
-            "pages": ["index", "quickstart", "pricing", "development"]
+            "pages": [
+              "index",
+              "quickstart",
+              "pricing"
+            ]
           },
           {
             "icon": "book",
             "group": "Guides",
             "pages": [
-              "guides/accounts",
-              "guides/checkouts",
-              "guides/disputes",
-              "guides/payments",
-              "guides/payouts",
-              "guides/products",
-              "guides/refunds",
-              "guides/stores",
-              "guides/shield"
+              {
+                "expanded": true,
+                "icon": "user",
+                "group": "Your Account",
+                "pages": [
+                  "guides/accounts"
+                ]
+              },
+              {
+                "expanded": true,
+                "icon": "store",
+                "group": "Your Store",
+                "pages": [
+                  "guides/analytics",
+                  "guides/payments",
+                  "guides/payouts"
+                ]
+              }
             ]
           }
         ]
@@ -61,7 +74,9 @@
           {
             "icon": "code",
             "group": "WebSDK (Private Preview)",
-            "pages": ["developers/websdk/getting-started"]
+            "pages": [
+              "developers/websdk/getting-started"
+            ]
           },
           {
             "icon": "webhook",
@@ -124,7 +139,13 @@
     }
   },
   "contextual": {
-    "options": ["copy", "view", "claude", "chatgpt", "mcp"]
+    "options": [
+      "copy",
+      "view",
+      "claude",
+      "chatgpt",
+      "mcp"
+    ]
   },
   "footer": {
     "socials": {
