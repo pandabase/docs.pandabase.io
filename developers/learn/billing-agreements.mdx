@@ -22,7 +22,7 @@ description: "Capture a customer's authorization once and charge their saved pay
 
 ## Overview
 
-A mandate captures a customer's authorization to charge a specific payment method on demand. The customer picks the payment method during the agreement flow; from then on you can charge it on a fixed cadence (weekly, monthly, etc.) or whenever you need to (`ad_hoc`) — without sending the customer back to checkout.
+A mandate captures a customer's authorization to charge a specific payment method on demand. The customer picks the payment method during the agreement flow; from then on you can charge it on a fixed cadence (`WEEKLY`, `MONTHLY`, etc.) or whenever you need to (`AD_HOC`) — without sending the customer back to checkout.
 
 Each charge against a mandate uses a short-lived **Mandate Authorization Token (MAT)**. You request a MAT for a specific amount and reason, the customer is emailed about it, and you submit it to the payments endpoint to actually move the money.
 
@@ -59,7 +59,7 @@ POST /v2/core/stores/:storeId/mandates
 {
   "customerId": "cus_...",
   "description": "describe why you want to charge them",
-  "frequency": "monthly"
+  "frequency": "MONTHLY"
 }
 ```
 
@@ -67,12 +67,12 @@ POST /v2/core/stores/:storeId/mandates
 
 | Value       | Cadence                                                                  |
 | ----------- | ------------------------------------------------------------------------ |
-| `one_off`   | A single expected charge. The mandate auto-revokes after the first success. |
-| `weekly`    | One charge every 7 days.                                                 |
-| `monthly`   | One charge every 30 days.                                                |
-| `quarterly` | One charge per quarter.                                                  |
-| `yearly`    | One charge per year.                                                     |
-| `ad_hoc`    | No fixed cadence — charge whenever you need to.                          |
+| `ONE_OFF`   | A single expected charge. The mandate auto-revokes after the first success. |
+| `WEEKLY`    | One charge every 7 days.                                                 |
+| `MONTHLY`   | One charge every 30 days.                                                |
+| `QUARTERLY` | One charge per quarter.                                                  |
+| `YEARLY`    | One charge per year.                                                     |
+| `AD_HOC`    | No fixed cadence — charge whenever you need to.                          |
 
 ### Response
 

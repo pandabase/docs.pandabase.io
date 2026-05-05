@@ -32,7 +32,8 @@
     { "name": "Payouts", "description": "Payout management" },
     { "name": "Customers", "description": "Customer management" },
     { "name": "Licenses", "description": "License management" },
-    { "name": "Subscriptions", "description": "Subscription management (Beta)" }
+    { "name": "Subscriptions", "description": "Subscription management (Beta)" },
+    { "name": "Billing Agreements", "description": "Billing agreement (mandate) management. Beta — under active development." }
   ],
   "paths": {
     "/stores/{storeId}": {
@@ -1500,6 +1501,119 @@
           "404": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
+    },
+    "/stores/{storeId}/mandates": {
+      "post": {
+        "operationId": "createMandate",
+        "summary": "Create a billing agreement",
+        "description": "Create a billing agreement (mandate) tied to a customer. The response includes an `agreementUrl` — redirect the customer there to authorize the saved payment method. Once authorized, the mandate transitions to `ACTIVE` and can be charged via the payments endpoint.",
+        "tags": ["Billing Agreements"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateMandateBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mandate created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/Mandate" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/mandates/authorizations": {
+      "post": {
+        "operationId": "createMandateAuthorization",
+        "summary": "Create a Mandate Authorization Token (MAT)",
+        "description": "Request a short-lived Mandate Authorization Token scoped to a specific charge (amount, currency, and reason). Submit the returned `token` together with the mandate id to the payments endpoint to actually charge the customer.\n\nRequesting a MAT emails the customer notifying them that you have obtained authorization to charge their saved payment method — only request a token when you're ready to charge.",
+        "tags": ["Billing Agreements"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateMandateAuthorizationBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mandate Authorization Token issued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/MandateAuthorization" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/payments": {
+      "post": {
+        "operationId": "createMandatePayment",
+        "summary": "Charge a billing agreement",
+        "description": "Charge the customer's saved payment method using a billing agreement and a Mandate Authorization Token (MAT).\n\nIf the bank challenges the charge with 3D Secure, the response includes `status: REQUIRES_3DS` and an `authorizationUrl` — redirect the customer there. Once they complete the 3DS flow with their bank, the charge automatically succeeds; no retry is needed.",
+        "tags": ["Billing Agreements"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateMandatePaymentBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment created. `status: COMPLETED` means funds were collected. `status: REQUIRES_3DS` means the customer must complete bank authentication at `authorizationUrl` — the charge will succeed automatically once they do.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/MandatePayment" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
     }
   },
   "components": {
@@ -2706,6 +2820,128 @@
             }
           },
           "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Mandate": {
+        "type": "object",
+        "description": "A billing agreement (mandate) authorizing the merchant to charge the customer's saved payment method on demand.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Mandate ID (man_ prefix)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "REQUIRES_ACTION",
+              "REQUIRES_AUTHORIZATION",
+              "ACTIVE",
+              "REVOKED",
+              "EXPIRED"
+            ],
+            "description": "REQUIRES_ACTION: customer hasn't completed the agreement — send them to agreementUrl. REQUIRES_AUTHORIZATION: 3D Secure step required during setup, handled transparently by Pandabase. ACTIVE: authorized and ready to charge. REVOKED: revoked by the customer. EXPIRED: expired or authorization timed out."
+          },
+          "agreementUrl": {
+            "type": "string",
+            "description": "URL the customer must visit to authorize the mandate."
+          }
+        }
+      },
+      "CreateMandateBody": {
+        "type": "object",
+        "required": ["customerId", "description", "frequency"],
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "ID of the customer this mandate is tied to (cus_ prefix). Create the customer via the Customers API first."
+          },
+          "description": {
+            "type": "string",
+            "description": "Why you want to charge this customer. Surfaced in the agreement flow."
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "ONE_OFF",
+              "WEEKLY",
+              "MONTHLY",
+              "QUARTERLY",
+              "YEARLY",
+              "AD_HOC"
+            ],
+            "description": "ONE_OFF: a single expected charge — auto-revokes after first success. WEEKLY: one charge every 7 days. MONTHLY: one charge every 30 days. QUARTERLY: one charge per quarter. YEARLY: one charge per year. AD_HOC: no fixed cadence — charge whenever you need to."
+          }
+        }
+      },
+      "CreateMandateAuthorizationBody": {
+        "type": "object",
+        "required": ["mandateId", "amount", "currency", "description"],
+        "properties": {
+          "mandateId": {
+            "type": "string",
+            "description": "ID of the mandate to authorize a charge against (man_ prefix). The mandate must be ACTIVE."
+          },
+          "amount": {
+            "type": "integer",
+            "description": "Charge amount in the smallest currency unit (e.g. cents for USD)."
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code."
+          },
+          "description": {
+            "type": "string",
+            "description": "Why you want to charge the customer. Included in the customer notification email."
+          }
+        }
+      },
+      "MandateAuthorization": {
+        "type": "object",
+        "description": "Mandate Authorization Token (MAT). Submit alongside the mandate id to the payments endpoint to charge the customer's saved payment method.",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Short-lived authorization token scoped to the requested charge."
+          }
+        }
+      },
+      "CreateMandatePaymentBody": {
+        "type": "object",
+        "required": ["mandate"],
+        "properties": {
+          "mandate": {
+            "type": "object",
+            "required": ["id", "token"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Mandate ID (man_ prefix). The mandate must be ACTIVE."
+              },
+              "token": {
+                "type": "string",
+                "description": "Mandate Authorization Token (MAT) issued by POST /stores/{storeId}/mandates/authorizations."
+              }
+            }
+          }
+        }
+      },
+      "MandatePayment": {
+        "type": "object",
+        "description": "Result of charging a billing agreement.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Payment ID (pmt_ prefix)."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["COMPLETED", "REQUIRES_3DS"],
+            "description": "COMPLETED: funds were collected. REQUIRES_3DS: the bank requires 3D Secure — redirect the customer to authorizationUrl; the charge succeeds automatically once they complete authentication."
+          },
+          "authorizationUrl": {
+            "type": ["string", "null"],
+            "description": "Present when status is REQUIRES_3DS. Redirect URL for the customer to complete bank authentication."
+          }
         }
       },
       "License": {
