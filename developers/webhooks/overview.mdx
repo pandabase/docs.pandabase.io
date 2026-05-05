@@ -17,18 +17,6 @@ flowchart LR
 
 ## Event overview
 
-Pandabase fires webhook events when payment-related state changes occur. Each event type maps to a specific moment in the payment lifecycle:
-
-| Event                  | When it fires                          |
-| ---------------------- | -------------------------------------- |
-| `PAYMENT_PENDING`      | Customer initiates payment at checkout |
-| `PAYMENT_COMPLETED`    | Payment is successfully collected      |
-| `PAYMENT_FAILED`       | Payment fails, is canceled, or expires |
-| `PAYMENT_REFUNDED`     | A charge is refunded                   |
-| `PAYMENT_DISPUTED`     | Customer opens a chargeback dispute    |
-| `PAYMENT_DISPUTE_WON`  | Dispute resolved in your favor         |
-| `PAYMENT_DISPUTE_LOST` | Dispute resolved against you           |
-
 See the full [event reference](/developers/webhooks/events) for detailed descriptions and payload examples.
 
 ## Payload structure
@@ -255,9 +243,8 @@ func main() {
 
 ## Best practices
 
-1. **Return 200 immediately.** Do heavy processing asynchronously. Pandabase times out after 15 seconds.
+1. **Return 200 immediately.** Do heavy processing asynchronously.
 2. **Verify every request.** Always check `X-Pandabase-Signature` before acting on a webhook.
 3. **Deduplicate with idempotency keys.** Store `X-Pandabase-Idempotency` values and skip already-processed events.
-4. **Use HTTPS.** Webhook URLs must use `https://`. Pandabase rejects insecure endpoints.
 5. **Filter events.** Only subscribe to the events you need to reduce noise.
 6. **Handle out-of-order delivery.** Events may occasionally arrive out of sequence. Use the order `status` field rather than assuming event order.

@@ -1352,11 +1352,39 @@
         "tags": ["Subscriptions"],
         "parameters": [
           { "$ref": "#/components/parameters/StoreId" },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 1 } },
-          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 25 } },
-          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["TRIALING", "ACTIVE", "PAST_DUE", "PAUSED", "CANCELLED"] } },
-          { "name": "product_id", "in": "query", "schema": { "type": "string" } },
-          { "name": "customer_id", "in": "query", "schema": { "type": "string" } }
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["TRIALING", "ACTIVE", "PAST_DUE", "PAUSED", "CANCELLED"]
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "customer_id",
+            "in": "query",
+            "schema": { "type": "string" }
+          }
         ],
         "responses": {
           "200": {
@@ -1371,8 +1399,15 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "items": { "type": "array", "items": { "$ref": "#/components/schemas/Subscription" } },
-                        "pagination": { "$ref": "#/components/schemas/Pagination" }
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Subscription"
+                          }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
                       }
                     }
                   }
@@ -1415,7 +1450,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "immediate": { "type": "boolean", "default": false, "description": "If true, cancel immediately and revoke access. If false, cancel at end of current billing period." }
+                  "immediate": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, cancel immediately and revoke access. If false, cancel at end of current billing period."
+                  }
                 }
               }
             }
@@ -1670,7 +1709,13 @@
           "PAYMENT_DISPUTED",
           "PAYMENT_DISPUTE_WON",
           "PAYMENT_DISPUTE_LOST",
-          "PAYMENT_FAILED"
+          "PAYMENT_FAILED",
+          "SUBSCRIPTION_CREATED",
+          "SUBSCRIPTION_RENEWED",
+          "SUBSCRIPTION_PAST_DUE",
+          "SUBSCRIPTION_CANCELLED",
+          "SUBSCRIPTION_PAUSED",
+          "SUBSCRIPTION_RESUMED"
         ]
       },
       "Product": {
@@ -2595,19 +2640,46 @@
       "Subscription": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "description": "Subscription ID (sub_ prefix)" },
-          "status": { "type": "string", "enum": ["TRIALING", "ACTIVE", "PAST_DUE", "PAUSED", "CANCELLED"] },
-          "billingInterval": { "type": "string", "enum": ["WEEKLY", "MONTHLY", "YEARLY"] },
-          "amount": { "type": "integer", "description": "Recurring charge amount in cents" },
+          "id": {
+            "type": "string",
+            "description": "Subscription ID (sub_ prefix)"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["TRIALING", "ACTIVE", "PAST_DUE", "PAUSED", "CANCELLED"]
+          },
+          "billingInterval": {
+            "type": "string",
+            "enum": ["WEEKLY", "MONTHLY", "YEARLY"]
+          },
+          "amount": {
+            "type": "integer",
+            "description": "Recurring charge amount in cents"
+          },
           "currency": { "type": "string" },
           "currentPeriodStart": { "type": "string", "format": "date-time" },
           "currentPeriodEnd": { "type": "string", "format": "date-time" },
-          "nextChargeAt": { "type": ["string", "null"], "format": "date-time", "description": "Next automatic charge date. Null when cancelled or paused." },
-          "trialEnd": { "type": ["string", "null"], "format": "date-time", "description": "Trial end date. Null if no trial." },
+          "nextChargeAt": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Next automatic charge date. Null when cancelled or paused."
+          },
+          "trialEnd": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "Trial end date. Null if no trial."
+          },
           "cancelledAt": { "type": ["string", "null"], "format": "date-time" },
           "pausedAt": { "type": ["string", "null"], "format": "date-time" },
-          "endsAt": { "type": ["string", "null"], "format": "date-time", "description": "When access ends for cancelled-at-period-end subscriptions." },
-          "retryCount": { "type": "integer", "description": "Number of failed payment retry attempts." },
+          "endsAt": {
+            "type": ["string", "null"],
+            "format": "date-time",
+            "description": "When access ends for cancelled-at-period-end subscriptions."
+          },
+          "retryCount": {
+            "type": "integer",
+            "description": "Number of failed payment retry attempts."
+          },
           "product": {
             "type": ["object", "null"],
             "properties": {
