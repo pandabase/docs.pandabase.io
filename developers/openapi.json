@@ -33,7 +33,8 @@
     { "name": "Customers", "description": "Customer management" },
     { "name": "Licenses", "description": "License management" },
     { "name": "Subscriptions", "description": "Subscription management (Beta)" },
-    { "name": "Billing Agreements", "description": "Billing agreement (mandate) management. Beta — under active development." }
+    { "name": "Billing Agreements", "description": "Billing agreement (mandate) management. Beta — under active development." },
+    { "name": "Cases", "description": "Customer support case management. Cases are opened by customers from the customer portal — this API lets you read, reply to, and update existing cases." }
   ],
   "paths": {
     "/stores/{storeId}": {
@@ -1614,6 +1615,278 @@
           "404": { "$ref": "#/components/responses/ErrorResponse" }
         }
       }
+    },
+    "/stores/{storeId}/cases": {
+      "get": {
+        "operationId": "listCases",
+        "summary": "List cases",
+        "description": "List support cases for the store. Sorted by `lastMessageAt` desc, then `createdAt` desc.\n\nRequires `CASES_READ` scope.",
+        "tags": ["Cases"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/CaseStatus" }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/CasePriority" }
+          },
+          {
+            "name": "customerId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter to a single customer."
+          },
+          {
+            "name": "orderId",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter to a single order."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of cases",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Case" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/cases/{caseId}": {
+      "get": {
+        "operationId": "getCase",
+        "summary": "Get case detail",
+        "description": "Returns the case with the same fields as the list view, plus richer order data (`status`, `createdAt`).\n\nRequires `CASES_READ` scope.",
+        "tags": ["Cases"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CaseId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Case detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/CaseDetail" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "patch": {
+        "operationId": "updateCase",
+        "summary": "Update case priority or status",
+        "description": "Update the `priority` or `status` of a case. At least one field must be provided.\n\n**Status transitions:**\n- `→ CLOSED` from any non-closed state (records `closedBy = MERCHANT`).\n- `→ OPEN` only from `CLOSED` (reopens, clears `closedAt` / `closedBy`).\n- `→ AWAITING_CUSTOMER` from any non-closed state.\n\nA `SYSTEM` trail message is appended to the case timeline for each transition.\n\n**Errors:**\n- `400 Nothing to update` — empty body\n- `400 Case is already closed`\n- `400 Only closed cases can be reopened`\n- `400 Cannot set status on a closed case` — when transitioning to `AWAITING_CUSTOMER` while closed\n\nRequires `CASES_WRITE` scope.",
+        "tags": ["Cases"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CaseId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCaseBody" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated case",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/Case" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/cases/{caseId}/messages": {
+      "get": {
+        "operationId": "listCaseMessages",
+        "summary": "List case messages",
+        "description": "List messages on a case. Sorted oldest first.\n\nAttachment metadata is included, but file URLs are **not** exposed via store tokens — to view an attachment, use the merchant dashboard.\n\nRequires `CASES_READ` scope.",
+        "tags": ["Cases"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CaseId" },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/CaseMessage" }
+                        },
+                        "pagination": {
+                          "$ref": "#/components/schemas/Pagination"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      },
+      "post": {
+        "operationId": "createCaseMessage",
+        "summary": "Reply to a case",
+        "description": "Append a `MERCHANT` reply to the case.\n\n**Side effects:**\n- Sets case `status` to `AWAITING_CUSTOMER`.\n- Increments customer-side unread counter, resets merchant-side counter to 0.\n- Sends the customer an email with a preview of your message.\n\n**Rate limit:** 60 req/min per token (in addition to the global 60 req/s cap).\n\n**Errors:**\n- `400 Cannot send messages on a closed case — reopen it first` — PATCH `status: \"OPEN\"` first.\n\nRequires `CASES_WRITE` scope.",
+        "tags": ["Cases"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CaseId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCaseMessageBody" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Message created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": { "$ref": "#/components/schemas/CaseMessage" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/ErrorResponse" },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
+    },
+    "/stores/{storeId}/cases/{caseId}/read": {
+      "post": {
+        "operationId": "markCaseRead",
+        "summary": "Mark case as read",
+        "description": "Resets the merchant-side unread counter on a case to 0. Useful after polling, or once your integration has surfaced the case to whoever handles support on your end.\n\nRequires `CASES_WRITE` scope.",
+        "tags": ["Cases"],
+        "parameters": [
+          { "$ref": "#/components/parameters/StoreId" },
+          { "$ref": "#/components/parameters/CaseId" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Case marked as read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ok", "data"],
+                  "properties": {
+                    "ok": { "type": "boolean", "const": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "read": { "type": "boolean", "const": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/ErrorResponse" }
+        }
+      }
     }
   },
   "components": {
@@ -1707,6 +1980,13 @@
         "required": true,
         "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
         "description": "Subscription ID (sub_ prefix)"
+      },
+      "CaseId": {
+        "name": "caseId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "minLength": 12, "maxLength": 48 },
+        "description": "Case ID (cs_ prefix)"
       }
     },
     "responses": {
@@ -2941,6 +3221,159 @@
           "authorizationUrl": {
             "type": ["string", "null"],
             "description": "Present when status is REQUIRES_3DS. Redirect URL for the customer to complete bank authentication."
+          }
+        }
+      },
+      "CaseStatus": {
+        "type": "string",
+        "enum": ["OPEN", "AWAITING_CUSTOMER", "AWAITING_MERCHANT", "CLOSED"]
+      },
+      "CasePriority": {
+        "type": "string",
+        "enum": ["LOW", "NORMAL", "HIGH", "URGENT"]
+      },
+      "CaseSenderType": {
+        "type": "string",
+        "enum": ["CUSTOMER", "MERCHANT", "STAFF", "SYSTEM"],
+        "description": "CUSTOMER: the buyer. MERCHANT: store owner or team member. STAFF: Pandabase support intervened. SYSTEM: audit-trail entries (e.g. \"Case opened by customer\", \"Case closed by merchant\")."
+      },
+      "Case": {
+        "type": "object",
+        "description": "A customer support case.",
+        "properties": {
+          "id": { "type": "string", "description": "Case ID (cs_ prefix)" },
+          "subject": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/CaseStatus" },
+          "priority": { "$ref": "#/components/schemas/CasePriority" },
+          "orderId": { "type": "string", "description": "Order ID (ord_ prefix)" },
+          "customerId": { "type": "string", "description": "Customer ID (cus_ prefix)" },
+          "lastMessageAt": { "type": "string", "format": "date-time" },
+          "lastMessageBy": { "$ref": "#/components/schemas/CaseSenderType" },
+          "unreadCount": {
+            "type": "integer",
+            "description": "Merchant-side unread counter — number of customer/staff messages since you last marked the case read."
+          },
+          "escalated": { "type": "boolean" },
+          "closedAt": { "type": ["string", "null"], "format": "date-time" },
+          "closedBy": {
+            "type": ["string", "null"],
+            "description": "Who closed the case. Null while the case is open."
+          },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" },
+              "firstName": { "type": "string" },
+              "lastName": { "type": "string" }
+            }
+          },
+          "order": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "orderNumber": { "type": "string" },
+              "amount": { "type": "integer", "description": "Amount in cents." },
+              "currency": { "type": "string" }
+            }
+          }
+        }
+      },
+      "CaseDetail": {
+        "type": "object",
+        "description": "Case detail. Same fields as the list view (`Case`), with the embedded `order` additionally including `status` and `createdAt`.",
+        "properties": {
+          "id": { "type": "string", "description": "Case ID (cs_ prefix)" },
+          "subject": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/CaseStatus" },
+          "priority": { "$ref": "#/components/schemas/CasePriority" },
+          "orderId": { "type": "string", "description": "Order ID (ord_ prefix)" },
+          "customerId": { "type": "string", "description": "Customer ID (cus_ prefix)" },
+          "lastMessageAt": { "type": "string", "format": "date-time" },
+          "lastMessageBy": { "$ref": "#/components/schemas/CaseSenderType" },
+          "unreadCount": { "type": "integer" },
+          "escalated": { "type": "boolean" },
+          "closedAt": { "type": ["string", "null"], "format": "date-time" },
+          "closedBy": { "type": ["string", "null"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "customer": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" },
+              "firstName": { "type": "string" },
+              "lastName": { "type": "string" }
+            }
+          },
+          "order": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "orderNumber": { "type": "string" },
+              "amount": { "type": "integer", "description": "Amount in cents." },
+              "currency": { "type": "string" },
+              "status": { "type": "string" },
+              "createdAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "CaseAttachment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Attachment ID (csa_ prefix)" },
+          "filename": { "type": "string" },
+          "mimeType": { "type": "string" },
+          "sizeBytes": { "type": "integer" }
+        }
+      },
+      "CaseMessage": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Message ID (csm_ prefix)" },
+          "senderType": { "$ref": "#/components/schemas/CaseSenderType" },
+          "senderId": {
+            "type": ["string", "null"],
+            "description": "Participant ID (customer / member / admin). Null for SYSTEM messages."
+          },
+          "body": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "attachments": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CaseAttachment" }
+          }
+        }
+      },
+      "UpdateCaseBody": {
+        "type": "object",
+        "description": "At least one field is required.",
+        "minProperties": 1,
+        "properties": {
+          "priority": { "$ref": "#/components/schemas/CasePriority" },
+          "status": {
+            "type": "string",
+            "enum": ["AWAITING_CUSTOMER", "OPEN", "CLOSED"],
+            "description": "Allowed values via PATCH. `AWAITING_MERCHANT` is set by the system (e.g. when the customer replies) and cannot be set directly."
+          }
+        }
+      },
+      "CreateCaseMessageBody": {
+        "type": "object",
+        "required": ["body"],
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "attachments": {
+            "type": "array",
+            "maxItems": 5,
+            "items": { "type": "object" },
+            "description": "Not supported via store tokens — attachments must be added from the merchant dashboard."
           }
         }
       },
