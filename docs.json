@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "palm",
+  "theme": "maple",
   "name": "Pandabase",
   "colors": {
     "primary": "#0a8237",
@@ -11,109 +11,142 @@
     "light": "/logo/dark.png",
     "dark": "/logo/dark.png"
   },
+  "icons": {
+    "library": "fontawesome"
+  },
+  "fonts": {
+    "heading": { "family": "Sora" },
+    "body": { "family": "Inter" }
+  },
   "favicon": "/favicon.png",
   "navigation": {
-    "global": {
-      "anchors": []
-    },
-    "tabs": [
+    "products": [
       {
-        "icon": "book-bookmark",
-        "tab": "The Guide",
-        "groups": [
+        "product": "For Merchants",
+        "icon": "shop",
+        "tabs": [
           {
-            "icon": "book-blank",
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "pricing"
+            "tab": "Getting started",
+            "groups": [
+              {
+                "group": "Quickstart",
+                "pages": ["index", "quickstart", "pricing"]
+              }
             ]
           },
           {
-            "icon": "book",
-            "group": "Guides",
-            "pages": [
+            "tab": "Manage your store",
+            "groups": [
               {
-                "expanded": true,
-                "icon": "user",
-                "group": "Your Account",
-                "pages": [
-                  "guides/accounts"
-                ]
+                "group": "Analytics",
+                "pages": ["merchants/store/analytics"]
               },
               {
-                "expanded": true,
-                "icon": "store",
-                "group": "Your Store",
-                "pages": [
-                  "guides/analytics",
-                  "guides/payments",
-                  "guides/payouts"
-                ]
+                "group": "Manage products",
+                "pages": []
+              },
+              {
+                "group": "Manage payments",
+                "pages": ["merchants/store/payments"]
+              },
+              {
+                "group": "Manage payouts",
+                "pages": ["merchants/store/payouts"]
+              }
+            ]
+          },
+          {
+            "tab": "Your account",
+            "groups": [
+              {
+                "group": "Managing your account",
+                "pages": ["merchants/account/index"]
+              }
+            ]
+          },
+          {
+            "tab": "Trust and safety",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": ["merchants/trust-and-safety/prohibited-businesses"]
               }
             ]
           }
         ]
       },
       {
-        "icon": "brackets-curly",
-        "tab": "Developers",
-        "groups": [
+        "product": "For Developers",
+        "icon": "square-terminal",
+        "tabs": [
           {
-            "icon": "book-open-cover",
-            "group": "Learn",
-            "pages": [
-              "developers/learn/lifecycle",
-              "developers/learn/dynamic-payments",
-              "developers/learn/hosted-checkout",
-              "developers/learn/subscriptions",
-              "developers/learn/api-tokens"
+            "tab": "Documentation",
+            "groups": [
+              {
+                "icon": "book-open-cover",
+                "group": "Learn",
+                "pages": [
+                  "developers/learn/lifecycle",
+                  "developers/learn/dynamic-payments",
+                  "developers/learn/hosted-checkout",
+                  "developers/learn/subscriptions",
+                  "developers/learn/api-tokens"
+                ]
+              },
+              {
+                "icon": "code",
+                "group": "WebSDK (Private Preview)",
+                "pages": ["developers/websdk/getting-started"]
+              },
+              {
+                "icon": "webhook",
+                "group": "Webhooks",
+                "pages": [
+                  "developers/webhooks/overview",
+                  "developers/webhooks/events"
+                ]
+              },
+              {
+                "icon": "brackets-curly",
+                "group": "SDKs",
+                "pages": ["developers/sdks/typescript", "developers/sdks/go"]
+              },
+              {
+                "group": "Connected accounts",
+                "pages": ["developers/connected-accounts/quickstart"]
+              },
+              {
+                "group": "Changes",
+                "pages": ["developers/changelog"]
+              }
             ]
           },
           {
-            "icon": "code",
-            "group": "WebSDK (Private Preview)",
-            "pages": [
-              "developers/websdk/getting-started"
-            ]
-          },
-          {
-            "icon": "webhook",
-            "group": "Webhooks",
-            "pages": [
-              "developers/webhooks/overview",
-              "developers/webhooks/events"
-            ]
-          }
-        ]
-      },
-      {
-        "icon": "terminal",
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": [
-              "developers/introduction",
-              "developers/pagination",
-              "developers/rate-limits",
-              "developers/responses",
-              "developers/changelog",
+            "tab": "API (V2) Reference",
+            "groups": [
               {
-                "expanded": true,
-                "group": "Core Resources",
-                "openapi": "developers/openapi.json"
-              },
-              {
-                "expanded": true,
-                "group": "Storefront",
-                "openapi": "developers/storefront-openapi.json"
-              },
-              {
-                "expanded": true,
-                "group": "Billing",
-                "openapi": "developers/checkout-openapi.json"
+                "group": "Getting started",
+                "pages": [
+                  "developers/api/v2/introduction",
+                  "developers/api/v2/pagination",
+                  "developers/api/v2/rate-limits",
+                  "developers/api/v2/responses",
+                  {
+                    "expanded": true,
+                    "group": "Core Resources",
+                    "openapi": "developers/api/v2/schemas/core-openapi.json"
+                  },
+                  {
+                    "expanded": true,
+                    "group": "Storefront",
+                    "openapi": "developers/api/v2/schemas/storefront-openapi.json"
+                  },
+                  {
+                    "expanded": true,
+                    "group": "Billing",
+                    "openapi": "developers/api/v2/schemas/checkout-openapi.json"
+                  }
+                ]
               }
             ]
           }
@@ -126,10 +159,6 @@
       {
         "label": "Support",
         "href": "mailto:support@pandabase.io"
-      },
-      {
-        "label": "Customer Portal",
-        "href": "https://mypandabase.com"
       }
     ],
     "primary": {
@@ -139,13 +168,7 @@
     }
   },
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "claude",
-      "chatgpt",
-      "mcp"
-    ]
+    "options": ["copy", "view", "claude", "chatgpt", "mcp"]
   },
   "footer": {
     "socials": {
