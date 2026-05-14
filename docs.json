@@ -103,7 +103,8 @@
                 "group": "Webhooks",
                 "pages": [
                   "developers/webhooks/overview",
-                  "developers/webhooks/events"
+                  "developers/webhooks/events",
+                  "developers/webhooks/migrate-signatures"
                 ]
               },
               {

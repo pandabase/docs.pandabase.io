@@ -4,6 +4,82 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="May 14, 2026" description="Refunds, Disputes & Webhook Signatures" tags={["V2"]}>
+## Features
+
+- **Refunds & Disputes in the Store API**: Programmatic endpoints to list refunds, fetch a refund, issue a refund, list disputes, fetch a dispute, and submit dispute evidence. Gated by new `REFUNDS_READ` / `REFUNDS_WRITE` / `DISPUTES_READ` / `DISPUTES_WRITE` token scopes.
+- **`Webhook-Signature` header on outgoing webhooks**: New, replay-resistant signature alongside the existing `X-Pandabase-Signature`. We recommend migrating verification logic; the legacy header stays for backwards compatibility for now. Verification details and migration guide in the docs.
+- **Failed-webhook email alerts**: Store owners now get an email when an endpoint stops accepting deliveries, so a quietly-broken integration doesn't go unnoticed.
+- **More resilient subscription renewals**: Same renewal can no longer fire twice within a billing cycle, and transient errors (e.g., upstream payment blip) reschedule a quick retry without counting against the retry budget.
+
+</Update>
+
+<Update label="May 12, 2026" description="Dynamic Line Items" tags={["V2"]}>
+## Fixes
+
+- Dynamic line items in a checkout no longer count against the per-store catalog cap.
+
+</Update>
+
+<Update label="May 10, 2026" description="Credit/Debit Payouts & Verification" tags={["V2"]}>
+## Features
+
+- **Credit / debit payouts**: New routes for non-bank payout rails.
+- **Improved bank account verification flow**: New accounts go through a verification window before becoming eligible for payouts.
+
+</Update>
+
+<Update label="May 7, 2026" description="Case Auto-Reply & Auto-Close" tags={["V2"]}>
+## Features
+
+- **Case auto-reply and auto-close**: Configurable auto-reply on first customer message; idle cases close automatically after a period of no activity.
+
+</Update>
+
+<Update label="May 6, 2026" description="Tax Details Endpoint" tags={["V2"]}>
+## Features
+
+- **Tax details endpoint**: Returns the tax breakdown that will apply to a checkout given items and billing country.
+
+</Update>
+
+<Update label="May 5, 2026" description="Monthly Revenue Analytics" tags={["V2"]}>
+## Features
+
+- **Monthly revenue endpoint**: Month-over-month gross/net revenue analytics.
+
+</Update>
+
+<Update label="May 1, 2026" description="Paylinks & Email Reliability" tags={["V2"]}>
+## Features
+
+- **Paylinks**: Static, shareable checkout URLs. Supports usage caps, expiry, and a mix of catalog products plus dynamic line items. `POST /v2/storefront/paylinks/:paylinkId/checkout` to open a session — no auth needed.
+- **More reliable transactional emails**: Receipts, refund notices, and KYC results now retry longer before giving up.
+
+</Update>
+
+<Update label="April 29, 2026" description="Payout Fee Country Fix" tags={["V2"]}>
+## Fixes
+
+- **Payout fees now use the bank account's country**: Fixes incorrect cross-border fee estimates for stores whose bank account is in a different country than the store itself.
+
+</Update>
+
+<Update label="April 28, 2026" description="Shield (Beta)" tags={["V2"]}>
+## Features
+
+- **Shield (beta)**: Rules engine for blocklists / allowlists across emails, IP ranges, BIN ranges, and country codes. Auto-decline matching payments at checkout.
+
+</Update>
+
+<Update label="April 25, 2026" description="Cases API & Live Payout Fees" tags={["V2"]}>
+## Features
+
+- **Cases API for merchants**: Programmatic access to support tickets — list, get, reply, mark read — over the Store API and via the MCP server.
+- **Payout fees are now quoted live**: Replaces the previous static fee table. Quote breakdown (`standard_payout_fee`, `cross_border_payout_fee`, `foreign_exchange_fee`) is exposed on payout request responses.
+
+</Update>
+
 <Update label="April 19, 2026" description="Support Cases" tags={["V2"]}>
   ## Features
 

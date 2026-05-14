@@ -1,0 +1,242 @@
+---
+title: "Migrate webhook signatures"
+description: "Upgrade your endpoint from X-Pandabase-Signature to the replay-resistant Webhook-Signature header."
+---
+
+Pandabase is moving to a replay-resistant webhook signature scheme. The new signature is sent on every delivery alongside the legacy one, so you can migrate at your own pace. The legacy header will be removed on a future date — you'll receive at least 60 days' notice.
+
+## What's changing
+
+|                       | Legacy (`X-Pandabase-*`)        | New (`Webhook-*`)                                     |
+| --------------------- | ------------------------------- | ----------------------------------------------------- |
+| Signature header      | `X-Pandabase-Signature`         | `Webhook-Signature`                                   |
+| Timestamp header      | `X-Pandabase-Timestamp`         | `Webhook-Timestamp`                                   |
+| Idempotency header    | `X-Pandabase-Idempotency`       | `Webhook-Id`                                          |
+| Signed string         | `rawBody`                       | `${timestamp}.${rawBody}`                             |
+| Replay protection     | None                            | 5-minute freshness window enforced by you             |
+| Algorithm             | HMAC-SHA256, hex                | HMAC-SHA256, hex                                      |
+| Secret                | Your existing webhook secret    | Same secret — no rotation needed                      |
+
+The legacy signature binds nothing to time, so a captured payload can be replayed indefinitely. The new signature binds the timestamp into the signed string; rejecting old timestamps closes the replay window.
+
+## Migrate your endpoint
+
+### Step 1: Read the new headers
+
+Read `Webhook-Signature` and `Webhook-Timestamp` from the request. Headers are case-insensitive — most frameworks lowercase them.
+
+```ts
+const signature = req.headers["webhook-signature"];
+const timestamp = req.headers["webhook-timestamp"];
+```
+
+### Step 2: Construct the signed payload
+
+Concatenate the timestamp, a literal `.`, and the **raw** request body. Hash the bytes your server received — do not re-serialize a parsed JSON object.
+
+```ts
+const signedPayload = `${timestamp}.${rawBody}`;
+```
+
+If your framework hands you a parsed body by default, switch to raw — `express.raw()`, `fastify-raw-body`, `request.body` in Django, `c.req.raw.text()` in Hono.
+
+### Step 3: Compute the expected signature
+
+Hex-encoded HMAC-SHA256 with your webhook secret as the key.
+
+```ts
+const expected = crypto
+  .createHmac("sha256", secret)
+  .update(signedPayload)
+  .digest("hex");
+```
+
+### Step 4: Compare in constant time
+
+Always use `timingSafeEqual` / `hmac.compare_digest`. Length-check first — `timingSafeEqual` throws on unequal-length buffers in Node.
+
+```ts
+if (expected.length !== signature.length) return false;
+if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) {
+  return false;
+}
+```
+
+### Step 5: Reject stale timestamps
+
+Reject deliveries older than 5 minutes. **This step is what actually prevents replay** — without it, the timestamp binding gives you nothing.
+
+```ts
+const skewMs = Math.abs(Date.now() - Number(timestamp));
+if (skewMs > 5 * 60 * 1000) return false;
+```
+
+## Verify signatures
+
+<CodeGroup>
+
+```ts Node.js
+import crypto from "node:crypto";
+
+const TOLERANCE_MS = 5 * 60 * 1000;
+
+export function verifyWebhook(
+  headers: Record<string, string>,
+  rawBody: string,
+  secret: string,
+): boolean {
+  const timestamp = headers["webhook-timestamp"];
+  const signature = headers["webhook-signature"];
+  if (!timestamp || !signature) return false;
+
+  const signedPayload = `${timestamp}.${rawBody}`;
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(signedPayload)
+    .digest("hex");
+
+  if (expected.length !== signature.length) return false;
+  if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) {
+    return false;
+  }
+
+  const skewMs = Math.abs(Date.now() - Number(timestamp));
+  return skewMs <= TOLERANCE_MS;
+}
+```
+
+```python Python
+import hmac, hashlib, time
+
+TOLERANCE_MS = 5 * 60 * 1000
+
+def verify_webhook(headers: dict, raw_body: bytes, secret: str) -> bool:
+    timestamp = headers.get("webhook-timestamp")
+    signature = headers.get("webhook-signature")
+    if not timestamp or not signature:
+        return False
+
+    signed_payload = f"{timestamp}.{raw_body.decode()}".encode()
+    expected = hmac.new(secret.encode(), signed_payload, hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(expected, signature):
+        return False
+
+    skew_ms = abs(int(time.time() * 1000) - int(timestamp))
+    return skew_ms <= TOLERANCE_MS
+```
+
+```go Go
+package webhook
+
+import (
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/hex"
+    "strconv"
+    "time"
+)
+
+const toleranceMs = 5 * 60 * 1000
+
+func Verify(headers map[string]string, rawBody []byte, secret string) bool {
+    ts := headers["Webhook-Timestamp"]
+    sig := headers["Webhook-Signature"]
+    if ts == "" || sig == "" {
+        return false
+    }
+
+    mac := hmac.New(sha256.New, []byte(secret))
+    mac.Write([]byte(ts + "." + string(rawBody)))
+    expected := hex.EncodeToString(mac.Sum(nil))
+
+    if !hmac.Equal([]byte(expected), []byte(sig)) {
+        return false
+    }
+
+    tsInt, err := strconv.ParseInt(ts, 10, 64)
+    if err != nil {
+        return false
+    }
+    skew := time.Now().UnixMilli() - tsInt
+    if skew < 0 {
+        skew = -skew
+    }
+    return skew <= toleranceMs
+}
+```
+
+</CodeGroup>
+
+## Example delivery
+
+A delivery now carries both header sets:
+
+```http
+POST /webhooks/pandabase HTTP/1.1
+Host: example.com
+Content-Type: application/json
+User-Agent: Pandabase (https://pandabase.io)
+
+Webhook-Id: whk_abc/job_xyz
+Webhook-Timestamp: 1715688123456
+Webhook-Signature: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+
+X-Pandabase-Idempotency: whk_abc/job_xyz
+X-Pandabase-Timestamp: 1715688123456
+X-Pandabase-Signature: 0a4d55a8d778e5022fab701977c5d840bbc486d0
+
+{ "event": "PAYMENT_COMPLETED", ... }
+```
+
+`Webhook-Timestamp` is **milliseconds since Unix epoch**. `Webhook-Signature` is hex-encoded HMAC-SHA256.
+
+## Test your integration
+
+Send a test delivery from the dashboard (open your webhook → **Send test event**) or via the API:
+
+```bash
+curl -X POST https://api.pandabase.io/v2/stores/{storeId}/webhooks/{webhookId}/test \
+  -H "Authorization: Bearer $SESSION_TOKEN"
+```
+
+If your endpoint returns `2xx`, both signatures verified. The delivery appears in your webhook's delivery log immediately.
+
+## Pitfalls
+
+- **Signing only the body.** This is the legacy behavior. The new signature requires `${timestamp}.${rawBody}`.
+- **Skipping the freshness check.** The signature alone does not stop replay. The 5-minute window is load-bearing.
+- **Hashing a re-serialized body.** Whitespace, key order, and number formatting all change. Hash the raw bytes.
+- **Comparing with `==` or `===`.** Use `timingSafeEqual` / `hmac.compare_digest`.
+- **Case-sensitive header lookup.** Read `webhook-signature` (lowercase) when in doubt.
+- **Clock skew.** A drift larger than 5 minutes between your server and Pandabase will reject valid events. Keep hosts NTP-synced.
+
+## Rollout timeline
+
+| Phase                                    | Status                          |
+| ---------------------------------------- | ------------------------------- |
+| Both headers sent on every delivery      | **Now**                         |
+| `X-Pandabase-*` deprecation announcement | Future — minimum 60 days notice |
+| `X-Pandabase-*` removed                  | After deprecation window        |
+
+We email the address associated with your store before any removal date.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Do I need to rotate my webhook secret?">
+    No. The same secret signs both formats. Rotate only if you suspect compromise.
+  </Accordion>
+  <Accordion title="My existing verifier still works. Will it break?">
+    No. The legacy header is still sent. You stay on the legacy format — and the replay risk — until you migrate.
+  </Accordion>
+  <Accordion title="Can I verify both during a transition?">
+    Yes. Accept the request if either signature verifies. Switching to the new format only is preferred, since accepting the legacy format keeps the replay window open.
+  </Accordion>
+  <Accordion title="Is this Standard Webhooks?">
+    The header names match Standard Webhooks (`webhook-id`, `webhook-timestamp`, `webhook-signature`). The signature value is hex HMAC-SHA256 — Standard Webhooks uses base64 with a `v1,` prefix. To verify with a generic Standard Webhooks library, set the encoding to hex or use the snippets above.
+  </Accordion>
+  <Accordion title="The Webhook-Id header looks like X-Pandabase-Idempotency. Should I check it?">
+    Yes — use it to dedupe. Failed deliveries retry up to 5 times with exponential backoff; without idempotency you may process the same event twice.
+  </Accordion>
+</AccordionGroup>
