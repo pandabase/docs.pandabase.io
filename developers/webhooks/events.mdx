@@ -1,17 +1,17 @@
 ---
 title: "Events"
-description: "Types of events Pandabase sends to your webhook endpoints and how to handle them."
+description: "Reference for every event Pandabase can send to your webhook endpoints."
 ---
 
-This is a list of all event types Pandabase can send to your configured webhook endpoints. Each event is delivered as a `POST` request with a JSON payload.
+This page lists every event Pandabase sends and what each one means. For delivery semantics, signature verification, and retry behavior, see the [Webhooks overview](/developers/webhooks/overview).
 
-## Webhook structure
+## Payload structure
 
-Every webhook delivery contains the event type, a unique event ID, a timestamp, and a `data` object with order, customer, and geo information.
+Every delivery is a JSON `POST` with the event type, a unique event ID, a timestamp, and a `data` object.
 
 <CodeGroup>
 
-```json Example Payload
+```json Example payload
 {
   "event": "PAYMENT_COMPLETED",
   "id": "evt_cm5x7k2a000001j0g8h3f9d2e",
@@ -23,13 +23,8 @@ Every webhook delivery contains the event type, a unique event ID, a timestamp, 
       "status": "COMPLETED",
       "amount": 5000,
       "currency": "USD",
-      "customFields": {
-        "discord": "johndoe#1234"
-      },
-      "metadata": {
-        "campaign": "spring_sale",
-        "ref": "partner_abc"
-      },
+      "customFields": { "discord": "johndoe#1234" },
+      "metadata": { "campaign": "spring_sale", "ref": "partner_abc" },
       "items": [
         {
           "productId": "prd_cm5x7k2a000001j0g8h3f9d2e",
@@ -54,7 +49,7 @@ Every webhook delivery contains the event type, a unique event ID, a timestamp, 
 }
 ```
 
-```typescript Type Definition
+```typescript Types
 type WebhookEvent =
   | "PAYMENT_PENDING"
   | "PAYMENT_COMPLETED"
@@ -72,14 +67,14 @@ type WebhookEvent =
 
 interface WebhookPayload {
   event: WebhookEvent;
-  id: string; // evt_ prefixed unique ID
+  id: string;        // evt_ prefixed
   timestamp: string; // ISO 8601
   data: {
     order: {
       id: string;
       orderNumber: string;
       status: string;
-      amount: number; // in cents
+      amount: number;   // cents
       currency: string;
       customFields: Record<string, unknown> | null;
       metadata: Record<string, string> | null;
@@ -91,10 +86,7 @@ interface WebhookPayload {
         amount: number; // unit price in cents
       }>;
     };
-    customer: {
-      id: string;
-      email: string;
-    } | null;
+    customer: { id: string; email: string } | null;
     geo: {
       ip: string;
       country: string | null;
@@ -107,107 +99,23 @@ interface WebhookPayload {
 
 </CodeGroup>
 
-## Webhook headers
+All monetary values are in **cents** (integers, no floats).
 
-Every delivery includes these headers for verification and deduplication:
-
-| Header                    | Description                                                              |
-| ------------------------- | ------------------------------------------------------------------------ |
-| `X-Pandabase-Signature`   | HMAC-SHA256 hex digest of the JSON body, signed with your webhook secret |
-| `X-Pandabase-Timestamp`   | Unix timestamp (milliseconds) of when the delivery was sent              |
-| `X-Pandabase-Idempotency` | Unique delivery identifier — use this to deduplicate retried deliveries  |
-| `Content-Type`            | Always `application/json`                                                |
-| `User-Agent`              | `Pandabase (https://pandabase.io)`                                       |
-
-## Verifying signatures
-
-Always verify the `X-Pandabase-Signature` header to confirm the webhook was sent by Pandabase and hasn't been tampered with.
-
-<CodeGroup>
-
-```typescript Node.js
-import crypto from "crypto";
-
-function verifyWebhook(
-  rawBody: string,
-  signature: string,
-  secret: string,
-): boolean {
-  const expected = crypto
-    .createHmac("sha256", secret)
-    .update(rawBody)
-    .digest("hex");
-
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
-}
-
-// In your handler:
-const signature = request.headers["x-pandabase-signature"];
-if (!verifyWebhook(request.rawBody, signature, WEBHOOK_SECRET)) {
-  return response.status(401).send("Invalid signature");
-}
-```
-
-```python Python
-import hmac
-import hashlib
-
-def verify_webhook(raw_body: bytes, signature: str, secret: str) -> bool:
-    expected = hmac.new(
-        secret.encode(),
-        raw_body,
-        hashlib.sha256
-    ).hexdigest()
-    return hmac.compare_digest(expected, signature)
-```
-
-```go Go
-package main
-
-import (
-    "crypto/hmac"
-    "crypto/sha256"
-    "encoding/hex"
-)
-
-func verifyWebhook(body []byte, signature string, secret string) bool {
-    mac := hmac.New(sha256.New, []byte(secret))
-    mac.Write(body)
-    expected := hex.EncodeToString(mac.Sum(nil))
-    return hmac.Equal([]byte(expected), []byte(signature))
-}
-```
-
-</CodeGroup>
-
-<Warning>
-  Always use constant-time comparison (e.g. `timingSafeEqual`,
-  `hmac.compare_digest`) when verifying signatures to prevent timing attacks.
-</Warning>
-
-## Retries
-
-Failed deliveries are retried up to **5 times** with exponential backoff starting at 1 second (1s, 2s, 4s, 8s, 16s). Your endpoint should return a `2xx` status code to acknowledge receipt. Any other status code or a timeout (15 seconds) is treated as a failure and triggers a retry.
-
-Use the `X-Pandabase-Idempotency` header to deduplicate deliveries — the same event may be delivered more than once due to retries.
-
-## Event types
+## Payment events
 
 ### `PAYMENT_PENDING`
 
 Fired when a customer initiates payment at checkout. The order has been created and a payment intent is awaiting confirmation.
 
 <Note>
-  At this stage, geo data (`city`, `region`, `country`) may be `null` — it is
-  enriched asynchronously after checkout. Subsequent events will include full
-  geo data.
+  At this stage, geo data (`city`, `region`, `country`) may be `null` — it is enriched asynchronously after checkout. Subsequent events will include full geo data.
 </Note>
 
 ---
 
 ### `PAYMENT_COMPLETED`
 
-Fired when a payment is successfully collected. This is the primary event to listen for when fulfilling orders.
+Fired when a payment is successfully collected. **This is the primary event to listen for when fulfilling orders.**
 
 The order status will be `PROCESSING` (if fulfillment is in progress) or `COMPLETED` (if already fulfilled). The `items` array contains all purchased products, `customFields` includes any data the customer submitted at checkout, and `metadata` contains any developer-defined key-value pairs set when creating the checkout session.
 
@@ -241,17 +149,13 @@ Fired when a dispute is resolved in the merchant's favor. The disputed amount an
 
 Fired when a dispute is resolved against the merchant. The deducted funds remain lost and the order stays in `CHARGEBACK` status.
 
----
-
 ## Subscription events
 
-Subscription events include the same `order`, `customer`, and `geo` fields as payment events, plus a `subscription` object with the current subscription state.
-
-They are fired alongside (not instead of) payment events — for example, a successful renewal triggers both `PAYMENT_COMPLETED` and `SUBSCRIPTION_RENEWED`.
+Subscription events include the same `order`, `customer`, and `geo` fields as payment events, plus a `subscription` object with the current subscription state. They are fired **alongside** (not instead of) payment events — for example, a successful renewal triggers both `PAYMENT_COMPLETED` and `SUBSCRIPTION_RENEWED`.
 
 <CodeGroup>
 
-```json Example Payload (SUBSCRIPTION_RENEWED)
+```json Example payload (SUBSCRIPTION_RENEWED)
 {
   "event": "SUBSCRIPTION_RENEWED",
   "id": "evt_cm5x7k2a000001j0g8h3f9d2e",
@@ -296,18 +200,18 @@ They are fired alongside (not instead of) payment events — for example, a succ
 }
 ```
 
-```typescript Subscription Object Type
+```typescript Subscription type
 interface WebhookSubscription {
   id: string;                    // sub_ prefixed
   status: "TRIALING" | "ACTIVE" | "PAST_DUE" | "PAUSED" | "CANCELLED";
   billingInterval: "WEEKLY" | "MONTHLY" | "YEARLY";
-  amount: number;                // in cents
+  amount: number;                // cents
   currency: string;
   currentPeriodStart: string;    // ISO 8601
-  currentPeriodEnd: string;      // ISO 8601
+  currentPeriodEnd: string;
   nextChargeAt: string | null;   // null when cancelled/paused
-  trialEnd: string | null;       // null if no trial
-  cancelledAt: string | null;    // null if active
+  trialEnd: string | null;
+  cancelledAt: string | null;
 }
 ```
 
@@ -319,32 +223,24 @@ interface WebhookSubscription {
 
 ### `SUBSCRIPTION_CREATED`
 
-Fired when a new subscription is activated. This happens when:
-- A customer completes checkout for a subscription product (first payment collected)
-- A customer starts a free trial (card saved, no charge)
+Fired when a new subscription is activated:
+- A customer completes checkout for a subscription product (first payment collected), or
+- A customer starts a free trial (card saved, no charge).
 
-The `order` in the payload is the initial order that created the subscription.
-
-<Note>
-  For trial subscriptions, the initial order has an amount of `$0.00`. The first charge happens when the trial ends.
-</Note>
+The `order` in the payload is the initial order that created the subscription. For trial subscriptions, the initial order has an amount of `$0.00` — the first charge happens when the trial ends.
 
 ---
 
 ### `SUBSCRIPTION_RENEWED`
 
-Fired when a recurring payment is successfully collected. This event is sent on every billing cycle — weekly, monthly, or yearly depending on the subscription's billing interval.
-
-The `order` in the payload is the renewal order for this billing period. Use this event to extend access, deliver license keys, or update entitlements.
+Fired when a recurring payment is successfully collected. Sent on every billing cycle — weekly, monthly, or yearly depending on the subscription's billing interval. Use this event to extend access, deliver license keys, or update entitlements.
 
 ---
 
 ### `SUBSCRIPTION_PAST_DUE`
 
-Fired when a renewal payment fails or requires additional authentication (3D Secure). The subscription moves to `PAST_DUE` status.
-
-This can happen when:
-- The customer's card is declined
+Fired when a renewal payment fails or requires additional authentication (3D Secure). The subscription moves to `PAST_DUE` status. Causes include:
+- The customer's card was declined
 - The card requires 3DS verification (customer is emailed an authentication link)
 - The payment method has expired
 
@@ -358,7 +254,7 @@ Failed payments are automatically retried up to 3 times over 3 days (24h, 48h, 7
 
 ### `SUBSCRIPTION_CANCELLED`
 
-Fired when a subscription is cancelled. This can happen when:
+Fired when a subscription is cancelled. Causes include:
 - The merchant cancels the subscription (immediately or at period end)
 - The customer cancels from the customer portal (always at period end)
 - All automatic payment retries are exhausted
@@ -376,86 +272,3 @@ Fired when a merchant pauses a subscription. No further charges are made until t
 ### `SUBSCRIPTION_RESUMED`
 
 Fired when a merchant resumes a previously paused subscription. Billing resumes at the end of the current period (or immediately if the period has already ended).
-
----
-
-## Integrating subscription webhooks
-
-Here's an example of handling subscription events in a webhook handler:
-
-<CodeGroup>
-
-```typescript Node.js
-app.post("/webhooks/pandabase", (req, res) => {
-  const signature = req.headers["x-pandabase-signature"];
-  if (!verifyWebhook(req.rawBody, signature, WEBHOOK_SECRET)) {
-    return res.status(401).send("invalid signature");
-  }
-
-  const { event, data } = req.body;
-
-  switch (event) {
-    case "SUBSCRIPTION_CREATED":
-      // grant initial access
-      await grantAccess(data.customer.email, data.order.items);
-      break;
-
-    case "SUBSCRIPTION_RENEWED":
-      // extend access for the next billing period
-      await extendAccess(data.customer.email, data.order.items);
-      break;
-
-    case "SUBSCRIPTION_CANCELLED":
-      // schedule access revocation (check endsAt via API)
-      await scheduleRevocation(data.customer.email);
-      break;
-
-    case "SUBSCRIPTION_PAST_DUE":
-      // optionally notify your system, but don't revoke access yet
-      await flagSubscriptionAtRisk(data.customer.email);
-      break;
-
-    case "SUBSCRIPTION_PAUSED":
-    case "SUBSCRIPTION_RESUMED":
-      // update internal subscription state
-      await syncSubscriptionStatus(data.customer.email, event);
-      break;
-  }
-
-  res.status(200).send({ received: true });
-});
-```
-
-```python Python
-@app.route("/webhooks/pandabase", methods=["POST"])
-def handle_webhook():
-    signature = request.headers.get("X-Pandabase-Signature")
-    if not verify_webhook(request.data, signature, WEBHOOK_SECRET):
-        return "invalid signature", 401
-
-    payload = request.json
-    event = payload["event"]
-    data = payload["data"]
-
-    if event == "SUBSCRIPTION_CREATED":
-        grant_access(data["customer"]["email"], data["order"]["items"])
-    elif event == "SUBSCRIPTION_RENEWED":
-        extend_access(data["customer"]["email"], data["order"]["items"])
-    elif event == "SUBSCRIPTION_CANCELLED":
-        schedule_revocation(data["customer"]["email"])
-    elif event == "SUBSCRIPTION_PAST_DUE":
-        flag_subscription_at_risk(data["customer"]["email"])
-
-    return {"received": True}, 200
-```
-
-</CodeGroup>
-
-## Best practices
-
-1. **Return 200 quickly.** Process webhook logic asynchronously if it takes more than a few seconds. Pandabase times out after 15 seconds.
-2. **Deduplicate with idempotency keys.** Store the `X-Pandabase-Idempotency` header value and skip events you've already processed.
-3. **Verify signatures.** Always validate `X-Pandabase-Signature` before processing the payload.
-4. **Use event filtering.** Subscribe only to the events you need to reduce noise and processing overhead.
-5. **Handle out-of-order delivery.** In rare cases, events may arrive out of order (e.g. `PAYMENT_COMPLETED` before `PAYMENT_PENDING`). Use the `timestamp` field and order status to handle this gracefully.
-6. **Don't revoke on PAST_DUE.** For subscriptions, only revoke access on `SUBSCRIPTION_CANCELLED`. The `PAST_DUE` state is temporary — the payment may still succeed via retry or 3DS authentication.
