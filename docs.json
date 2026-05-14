@@ -47,11 +47,33 @@
               },
               {
                 "group": "Manage payments",
-                "pages": ["merchants/store/payments"]
+                "pages": [
+                  "merchants/store/payments",
+                  "merchants/store/refunds",
+                  "merchants/store/disputes"
+                ]
+              },
+              {
+                "group": "Paylinks",
+                "pages": ["merchants/store/paylinks"]
+              },
+              {
+                "group": "Customer support",
+                "pages": ["merchants/store/cases"]
               },
               {
                 "group": "Manage payouts",
-                "pages": ["merchants/store/payouts"]
+                "pages": [
+                  "merchants/store/payouts",
+                  "merchants/store/bank-accounts"
+                ]
+              },
+              {
+                "group": "Store ownership",
+                "pages": [
+                  "merchants/store/convert-to-entity",
+                  "merchants/store/delete-store"
+                ]
               }
             ]
           },

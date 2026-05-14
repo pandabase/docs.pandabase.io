@@ -4,12 +4,13 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
-<Update label="May 14, 2026" description="Refunds, Disputes & Webhook Signatures" tags={["V2"]}>
+<Update label="May 14, 2026" description="Refunds, Disputes, Webhook Signatures & New Payment Methods" tags={["V2"]}>
 ## Features
 
 - **Refunds & Disputes in the Store API**: Programmatic endpoints to list refunds, fetch a refund, issue a refund, list disputes, fetch a dispute, and submit dispute evidence. Gated by new `REFUNDS_READ` / `REFUNDS_WRITE` / `DISPUTES_READ` / `DISPUTES_WRITE` token scopes.
 - **`Webhook-Signature` header on outgoing webhooks**: New, replay-resistant signature alongside the existing `X-Pandabase-Signature`. We recommend migrating verification logic; the legacy header stays for backwards compatibility for now. Verification details and migration guide in the docs.
 - **Failed-webhook email alerts**: Store owners now get an email when an endpoint stops accepting deliveries, so a quietly-broken integration doesn't go unnoticed.
+- **New payment methods**: Bizum (EUR) and Pay by Bank (GBP) are now available at checkout in their respective regions.
 - **More resilient subscription renewals**: Same renewal can no longer fire twice within a billing cycle, and transient errors (e.g., upstream payment blip) reschedule a quick retry without counting against the retry budget.
 
 </Update>
