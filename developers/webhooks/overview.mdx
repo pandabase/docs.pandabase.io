@@ -1,13 +1,11 @@
 ---
 title: "Overview"
-description: "Listen to events from your Pandabase store so you can automatically trigger actions in your application."
+description: "Listen to store events and trigger actions in your application."
 ---
 
-When something happens in your store — a payment, a refund, a dispute — Pandabase POSTs the event to your endpoint. See the [event reference](/developers/webhooks/events) for the full list.
+Pandabase POSTs each event to your endpoint. See the [event reference](/developers/webhooks/events).
 
 ## Payload
-
-JSON. Event type, message id, timestamp, and a `data` object with order / customer / geo.
 
 ```json
 {
@@ -37,63 +35,56 @@ JSON. Event type, message id, timestamp, and a `data` object with order / custom
       "id": "cus_cm5x7k2a000001j0g8h3f9d2e",
       "email": "buyer@example.com"
     },
-    "geo": {
-      "ip": "1.2.3.4",
-      "country": "US",
-      "city": "Miami",
-      "region": "FL"
-    }
+    "geo": { "ip": "1.2.3.4", "country": "US", "city": "Miami", "region": "FL" }
   }
 }
 ```
 
-All monetary values are in **cents** (integers). No floats.
+Amounts are integers in **cents**.
 
 ## Signature modes
 
-Endpoints run in one of two modes:
+| Mode   | Format                                                   | Status                              |
+| ------ | -------------------------------------------------------- | ----------------------------------- |
+| **V2** | [Standard Webhooks](https://www.standardwebhooks.com) v1 | Required. Default for new endpoints. |
+| **V1** | Hex `Webhook-Signature` + legacy `X-Pandabase-*`         | Deprecated. [Migrate](/developers/webhooks/migrate-signatures). |
 
-- **V2** — [Standard Webhooks](https://www.standardwebhooks.com) v1. Default for new endpoints.
-- **V1** — Hex `Webhook-Signature` (ms timestamps) + legacy `X-Pandabase-*` headers. Default for endpoints created before 2026-05-15.
+This page documents V2.
 
-This page documents V2. V1 lives in the [migration guide](/developers/webhooks/migrate-signatures).
+## Headers
 
-## Headers (V2)
-
-| Header              | Description                                                                                          |
-| ------------------- | ---------------------------------------------------------------------------------------------------- |
-| `Webhook-Id`        | Message id. Matches `payload.id`. Use to deduplicate retries.                                        |
-| `Webhook-Timestamp` | Unix timestamp in **seconds**. Reject anything older than 5 minutes.                                 |
-| `Webhook-Signature` | `v1,<base64>` HMAC-SHA256 of `${Webhook-Id}.${Webhook-Timestamp}.${rawBody}`.                        |
+| Header              | Value                                                                         |
+| ------------------- | ----------------------------------------------------------------------------- |
+| `Webhook-Id`        | Message id. Matches `payload.id`. Deduplicate on this.                        |
+| `Webhook-Timestamp` | Unix timestamp in **seconds**. Reject if older than 5 minutes.                |
+| `Webhook-Signature` | `v1,<base64>` HMAC-SHA256 of `${Webhook-Id}.${Webhook-Timestamp}.${rawBody}`. |
 
 ## Retries
 
-Failed deliveries retry over **~75 hours** per the [Standard Webhooks schedule](https://www.standardwebhooks.com/#retries). 2xx is success; anything else (non-2xx, 15s timeout, connection error) retries.
+2xx is success. Anything else — non-2xx, 15s timeout, connection error — retries per the [Standard Webhooks schedule](https://www.standardwebhooks.com/#retries) over ~75 hours, ±10% jitter.
 
-| Attempt | Delay | Time since first dispatch |
-| ------- | ----- | ------------------------- |
-| 1       | —     | 00:00:00                   |
-| 2       | 5s    | 00:00:05                   |
-| 3       | 5m    | 00:05:05                   |
-| 4       | 30m   | 00:35:05                   |
-| 5       | 2h    | 02:35:05                   |
-| 6       | 5h    | 07:35:05                   |
-| 7       | 10h   | 17:35:05                   |
-| 8       | 14h   | 31:35:05                   |
-| 9       | 20h   | 51:35:05                   |
-| 10      | 24h   | 75:35:05                   |
+| Attempt | Delay | Elapsed  |
+| ------- | ----- | -------- |
+| 1       | —     | 00:00:00 |
+| 2       | 5s    | 00:00:05 |
+| 3       | 5m    | 00:05:05 |
+| 4       | 30m   | 00:35:05 |
+| 5       | 2h    | 02:35:05 |
+| 6       | 5h    | 07:35:05 |
+| 7       | 10h   | 17:35:05 |
+| 8       | 14h   | 31:35:05 |
+| 9       | 20h   | 51:35:05 |
+| 10      | 24h   | 75:35:05 |
 
-Delays are jittered ±10%. After all 10 fail, the store owner is emailed (max 1 per endpoint per 6 hours).
+After all 10 fail, the store owner is emailed (max 1 per endpoint per 6 hours).
 
 ## Verification
-
-Use a Standard Webhooks SDK — it handles signatures, timestamps, and constant-time comparison.
 
 <Warning>
   Hash the **raw** request body. Whitespace and key order change the bytes.
 </Warning>
 
-### Standard Webhooks SDK (recommended)
+### SDK
 
 <CodeGroup>
 
@@ -291,8 +282,8 @@ func Verify(h http.Header, rawBody []byte, secret string) bool {
 
 ## Best practices
 
-- **Return 2xx fast.** Do work asynchronously.
-- **Verify every request** and reject stale timestamps before acting.
-- **Deduplicate with `Webhook-Id`.** Retries can deliver the same event more than once.
-- **Filter events** — only subscribe to what you need.
-- **Don't assume event order.** Use the order `status` field rather than event arrival order.
+- Return 2xx fast. Do work asynchronously.
+- Verify every request. Reject stale timestamps.
+- Deduplicate on `Webhook-Id`.
+- Subscribe only to events you need.
+- Don't rely on delivery order — use the order `status` field.

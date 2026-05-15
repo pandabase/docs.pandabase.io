@@ -1,57 +1,66 @@
 ---
 title: "Migrate webhook signatures"
-description: "Upgrade your endpoint to Standard Webhooks v2, or migrate off the legacy X-Pandabase-* headers."
+description: "Upgrade to Standard Webhooks v2 before V1 is deprecated."
 ---
 
-Each webhook endpoint runs in one of two signature modes:
+<Warning>
+  **V1 is being deprecated.** All endpoints must move to V2. New endpoints are V2 by default; existing V1 endpoints will be auto-migrated after a 60-day notice period.
+</Warning>
 
-- **V2** — [Standard Webhooks](https://www.standardwebhooks.com) v1. SDKs verify it for free. Default for endpoints created after 2026-05-15.
-- **V1** — Hex `Webhook-Signature` over `${timestamp}.${rawBody}` (ms), plus legacy `X-Pandabase-*` headers. Default for older endpoints.
+Endpoints run in **V1** or **V2**.
 
-V1 keeps working — switch when you're ready.
+| Mode   | Signature                                                 | Status                                        |
+| ------ | --------------------------------------------------------- | --------------------------------------------- |
+| **V2** | [Standard Webhooks](https://www.standardwebhooks.com) v1  | Required. Default for endpoints after 2026-05-15. |
+| **V1** | Hex over `${timestamp}.${rawBody}` (ms) + `X-Pandabase-*` | Deprecated. Migrate before the cutoff.        |
 
-## Which mode am I on?
-
-`GET /v2/stores/:storeId/webhooks/:webhookId` returns `signatureVersion`. Same field shown on the dashboard's webhook page.
+Check your mode with `GET /v2/stores/:storeId/webhooks/:webhookId` (`signatureVersion`) or the dashboard.
 
 ## V1 → V2
 
-1. **Deploy your V2 verifier first.** Snippets in the [overview](/developers/webhooks/overview#verification). Easiest: drop in a [Standard Webhooks SDK](https://www.standardwebhooks.com/#libraries).
-2. **Flip the mode:**
-
-   ```bash
-   curl -X PATCH https://api.pandabase.io/v2/stores/{storeId}/webhooks/{webhookId} \
-     -H "Authorization: Bearer $SESSION_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{ "signatureVersion": "V2" }'
-   ```
-
-3. **Test:** `POST /v2/stores/{storeId}/webhooks/{webhookId}/test`. The test mirrors real deliveries.
-4. **Roll back** with `"signatureVersion": "V1"` if needed.
+<Steps>
+  <Step title="Deploy a V2 verifier">
+    Snippets in the [overview](/developers/webhooks/overview#verification). Easiest: a [Standard Webhooks SDK](https://www.standardwebhooks.com/#libraries).
+  </Step>
+  <Step title="Flip the mode">
+    ```bash
+    curl -X PATCH https://api.pandabase.io/v2/stores/{storeId}/webhooks/{webhookId} \
+      -H "Authorization: Bearer $SESSION_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{ "signatureVersion": "V2" }'
+    ```
+  </Step>
+  <Step title="Test">
+    `POST /v2/stores/{storeId}/webhooks/{webhookId}/test`. Mirrors real deliveries.
+  </Step>
+  <Step title="Roll back if needed">
+    `"signatureVersion": "V1"`.
+  </Step>
+</Steps>
 
 ### Differences
 
-|                          | V1                                     | V2                                              |
-| ------------------------ | -------------------------------------- | ----------------------------------------------- |
-| Encoding                 | Hex                                    | `v1,<base64>` (space-separated list)            |
-| Signed string            | `${timestamp}.${rawBody}`              | `${Webhook-Id}.${timestamp}.${rawBody}`         |
-| `Webhook-Timestamp`      | Milliseconds                           | Seconds                                         |
-| `Webhook-Id`             | `${webhookId}/${jobId}`                | Message id — matches `payload.id`               |
-| `X-Pandabase-*` headers  | Sent                                   | **Not sent**                                    |
+|                         | V1                        | V2                                      |
+| ----------------------- | ------------------------- | --------------------------------------- |
+| Encoding                | Hex                       | `v1,<base64>` (space-separated list)    |
+| Signed string           | `${timestamp}.${rawBody}` | `${Webhook-Id}.${timestamp}.${rawBody}` |
+| `Webhook-Timestamp`     | Milliseconds              | Seconds                                 |
+| `Webhook-Id`            | `${webhookId}/${jobId}`   | Message id (matches `payload.id`)       |
+| `X-Pandabase-*` headers | Sent                      | Not sent                                |
 
 ## X-Pandabase-* → Webhook-* (V1)
 
-Still verifying `X-Pandabase-Signature`? Move to `Webhook-Signature` (the V1 endpoint already sends it). You get replay protection for free.
+V1 endpoints already send `Webhook-*` alongside the legacy headers. Switching to them adds replay protection.
 
-| Header              | `X-Pandabase-*`                  | `Webhook-*` (V1)                            |
-| ------------------- | -------------------------------- | ------------------------------------------- |
-| Signature           | `X-Pandabase-Signature`          | `Webhook-Signature`                         |
-| Timestamp           | `X-Pandabase-Timestamp` (ms)     | `Webhook-Timestamp` (ms)                    |
-| Idempotency         | `X-Pandabase-Idempotency`        | `Webhook-Id`                                |
-| Signed string       | `rawBody`                        | `${timestamp}.${rawBody}`                   |
-| Replay protection   | None                             | Reject events older than 5 minutes          |
+| Header             | `X-Pandabase-*`              | `Webhook-*` (V1)                   |
+| ------------------ | ---------------------------- | ---------------------------------- |
+| Signature          | `X-Pandabase-Signature`      | `Webhook-Signature`                |
+| Timestamp          | `X-Pandabase-Timestamp` (ms) | `Webhook-Timestamp` (ms)           |
+| Idempotency        | `X-Pandabase-Idempotency`    | `Webhook-Id`                       |
+| Signed string      | `rawBody`                    | `${timestamp}.${rawBody}`          |
+| Replay protection  | None                         | Reject events older than 5 minutes |
 
-Same secret, same hex encoding. Snippets:
+Same secret, same hex encoding.
 
 <CodeGroup>
 
@@ -173,24 +182,16 @@ X-Pandabase-Signature: 0a4d55a8d778e5022fab701977c5d840bbc486d0
 
 - Hash the **raw** body, not a re-serialized JSON object.
 - Use `timingSafeEqual` / `hmac.compare_digest`. Never `==`.
-- Reject stale timestamps — the signature alone doesn't stop replay.
+- Reject stale timestamps. The signature alone doesn't stop replay.
 - V2 timestamps are **seconds**, V1 are **milliseconds**.
-- V2 `Webhook-Signature` is a space-separated list; check each `v1,…` entry.
-- Keep your server NTP-synced; >5 min drift will reject valid events.
+- V2 `Webhook-Signature` is a space-separated list — check each `v1,…` entry.
+- Keep your server NTP-synced. >5 min drift rejects valid events.
 
 ## FAQ
 
 <AccordionGroup>
-  <Accordion title="Do I have to upgrade to V2?">
-    No. V1 keeps working.
-  </Accordion>
-  <Accordion title="Will V1 ever go away?">
-    Not without 60 days notice, emailed to your store's contact.
-  </Accordion>
-  <Accordion title="Same secret for V1 and V2?">
-    Yes.
-  </Accordion>
-  <Accordion title="Can endpoints in the same store be on different modes?">
-    Yes — `signatureVersion` is per-endpoint.
-  </Accordion>
+  <Accordion title="Do I have to upgrade to V2?">Yes. V1 is being deprecated. Migrate before the cutoff or your endpoint will be auto-migrated.</Accordion>
+  <Accordion title="When does V1 go away?">After a 60-day notice period, emailed to your store contact. The deprecation date will be announced in the changelog.</Accordion>
+  <Accordion title="Same secret for V1 and V2?">Yes.</Accordion>
+  <Accordion title="Can endpoints in one store be on different modes?">Yes during migration. `signatureVersion` is per-endpoint.</Accordion>
 </AccordionGroup>
