@@ -4,6 +4,19 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="May 15, 2026" description="Standard Webhooks support" tags={["V2"]}>
+## Features
+
+- **Webhooks now support [Standard Webhooks](https://www.standardwebhooks.com)**: Each webhook endpoint runs in one of two signature modes. **V1** is the format already documented at docs.pandabase.io and is what existing endpoints stay on by default. **V2** is Standard Webhooks v1 — any off-the-shelf Standard Webhooks SDK verifies it directly. New endpoints default to V2.
+- **`signatureVersion` field on the webhook API**: Set or change a webhook's mode via the new `signatureVersion` field on `POST` and `PATCH` for webhooks. Returned on every webhook response.
+- **Send test event now matches your signature mode**: A test delivery uses the same headers a real delivery would, so a successful test is a true rehearsal.
+- **V2 endpoints drop legacy `X-Pandabase-*` headers**: Opting into V2 is the explicit signal that you're on a modern verifier. V1 endpoints keep receiving both header sets.
+- **Retry schedule now spans ~75 hours**: Failed webhook deliveries follow the Standard Webhooks recommendation — 9 retries (5s → 5m → 30m → 2h → 5h → 10h → 14h → 20h → 24h) with ±10% jitter. Previously: 5 attempts within ~30 seconds, which often gave up before a transient outage on your end recovered.
+
+See the updated [webhook overview](/developers/webhooks/overview) and [migration guide](/developers/webhooks/migrate-signatures).
+
+</Update>
+
 <Update label="May 14, 2026" description="Refunds, Disputes, Webhook Signatures & New Payment Methods" tags={["V2"]}>
 ## Features
 

@@ -3,25 +3,11 @@ title: "Overview"
 description: "Listen to events from your Pandabase store so you can automatically trigger actions in your application."
 ---
 
-## Why use webhooks?
+When something happens in your store — a payment, a refund, a dispute — Pandabase POSTs the event to your endpoint. See the [event reference](/developers/webhooks/events) for the full list.
 
-Webhooks let you react to events in real time. When something happens in your store — a payment is collected, a refund is issued, a dispute is opened — Pandabase sends a `POST` request to your endpoint with the event data. This is how you deliver license keys, update your database, send notifications, or trigger any custom logic immediately after a purchase.
+## Payload
 
-```mermaid
-flowchart LR
-    A[Customer Pays] --> B[Pandabase Processes Payment]
-    B --> C[Pandabase Sends Webhook]
-    C --> D[Your App Receives Event]
-    D --> E[Deliver Product / Update Records]
-```
-
-## Event overview
-
-See the full [event reference](/developers/webhooks/events) for detailed descriptions and payload examples.
-
-## Payload structure
-
-Every webhook delivery is a JSON `POST` request. The payload includes the event type, a unique event ID, a timestamp, and a `data` object containing the order, customer, and geo information.
+JSON. Event type, message id, timestamp, and a `data` object with order / customer / geo.
 
 ```json
 {
@@ -63,42 +49,123 @@ Every webhook delivery is a JSON `POST` request. The payload includes the event 
 
 All monetary values are in **cents** (integers). No floats.
 
-## Headers
+## Signature modes
 
-Every webhook delivery includes headers for verification and deduplication:
+Endpoints run in one of two modes:
 
-| Header              | Description                                                                                              |
-| ------------------- | -------------------------------------------------------------------------------------------------------- |
-| `Webhook-Signature` | HMAC-SHA256 hex digest of `${Webhook-Timestamp}.${rawBody}`, signed with your webhook secret             |
-| `Webhook-Timestamp` | Unix timestamp (milliseconds) of when the delivery was sent — used to enforce a 5-minute freshness window |
-| `Webhook-Id`        | Unique delivery ID — store this to deduplicate retried deliveries                                        |
-| `Content-Type`      | `application/json`                                                                                       |
-| `User-Agent`        | `Pandabase (https://pandabase.io)`                                                                       |
+- **V2** — [Standard Webhooks](https://www.standardwebhooks.com) v1. Default for new endpoints.
+- **V1** — Hex `Webhook-Signature` (ms timestamps) + legacy `X-Pandabase-*` headers. Default for endpoints created before 2026-05-15.
 
-<Note>
-  Legacy `X-Pandabase-Signature`, `X-Pandabase-Timestamp`, and `X-Pandabase-Idempotency` headers are still sent for backwards compatibility but will be removed in the future (minimum 60 days notice). See [Migrate webhook signatures](/developers/webhooks/migrate-signatures).
-</Note>
+This page documents V2. V1 lives in the [migration guide](/developers/webhooks/migrate-signatures).
+
+## Headers (V2)
+
+| Header              | Description                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------- |
+| `Webhook-Id`        | Message id. Matches `payload.id`. Use to deduplicate retries.                                        |
+| `Webhook-Timestamp` | Unix timestamp in **seconds**. Reject anything older than 5 minutes.                                 |
+| `Webhook-Signature` | `v1,<base64>` HMAC-SHA256 of `${Webhook-Id}.${Webhook-Timestamp}.${rawBody}`.                        |
 
 ## Retries
 
-Failed deliveries are retried up to **5 times** with exponential backoff (1s → 2s → 4s → 8s → 16s). A `2xx` response is treated as success. Anything else — a non-2xx status, a timeout (15 seconds), or a connection error — triggers a retry.
+Failed deliveries retry over **~75 hours** per the [Standard Webhooks schedule](https://www.standardwebhooks.com/#retries). 2xx is success; anything else (non-2xx, 15s timeout, connection error) retries.
 
-```mermaid
-flowchart LR
-    A[Deliver] -->|2xx| B[Success]
-    A -->|Failure / Timeout| C{Retries left?}
-    C -->|Yes| D[Exponential Backoff]
-    D --> A
-    C -->|No| E[Marked Failed]
-```
+| Attempt | Delay | Time since first dispatch |
+| ------- | ----- | ------------------------- |
+| 1       | —     | 00:00:00                   |
+| 2       | 5s    | 00:00:05                   |
+| 3       | 5m    | 00:05:05                   |
+| 4       | 30m   | 00:35:05                   |
+| 5       | 2h    | 02:35:05                   |
+| 6       | 5h    | 07:35:05                   |
+| 7       | 10h   | 17:35:05                   |
+| 8       | 14h   | 31:35:05                   |
+| 9       | 20h   | 51:35:05                   |
+| 10      | 24h   | 75:35:05                   |
+
+Delays are jittered ±10%. After all 10 fail, the store owner is emailed (max 1 per endpoint per 6 hours).
 
 ## Verification
 
-Always verify `Webhook-Signature` before processing a delivery. The signature is a hex HMAC-SHA256 of `${Webhook-Timestamp}.${rawBody}`, signed with your webhook secret. You must also reject deliveries whose `Webhook-Timestamp` is older than 5 minutes — that's what closes the replay window.
+Use a Standard Webhooks SDK — it handles signatures, timestamps, and constant-time comparison.
 
 <Warning>
-  Hash the **raw request body**, not a re-serialized JSON object. Use constant-time comparison (`timingSafeEqual`, `hmac.compare_digest`). Never compare signatures with `===` or `==`.
+  Hash the **raw** request body. Whitespace and key order change the bytes.
 </Warning>
+
+### Standard Webhooks SDK (recommended)
+
+<CodeGroup>
+
+```typescript Node.js
+import { Webhook } from "standardwebhooks";
+
+const wh = new Webhook(process.env.WEBHOOK_SECRET!);
+
+app.post(
+  "/webhooks/pandabase",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    try {
+      const event = wh.verify(req.body.toString(), req.headers as any);
+      // event is the parsed JSON body, signature already verified
+
+      switch (event.event) {
+        case "PAYMENT_COMPLETED":
+          console.log(`Payment completed for order ${event.data.order.id}`);
+          break;
+        case "PAYMENT_REFUNDED":
+          console.log(`Refund issued for order ${event.data.order.id}`);
+          break;
+      }
+
+      res.status(200).send("OK");
+    } catch {
+      res.status(401).send("Invalid signature");
+    }
+  },
+);
+```
+
+```python Python
+from standardwebhooks import Webhook
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+wh = Webhook(WEBHOOK_SECRET)
+
+@app.route("/webhooks/pandabase", methods=["POST"])
+def handle_webhook():
+    try:
+        event = wh.verify(request.data, dict(request.headers))
+    except Exception:
+        return jsonify(error="Invalid signature"), 401
+
+    if event["event"] == "PAYMENT_COMPLETED":
+        print(f"Payment completed for order {event['data']['order']['id']}")
+
+    return jsonify(message="OK"), 200
+```
+
+```go Go
+import standardwebhooks "github.com/standard-webhooks/standard-webhooks/libraries/go"
+
+wh, _ := standardwebhooks.NewWebhook(webhookSecret)
+
+func webhookHandler(w http.ResponseWriter, r *http.Request) {
+    body, _ := io.ReadAll(r.Body)
+    if err := wh.Verify(body, r.Header); err != nil {
+        http.Error(w, "Invalid signature", http.StatusUnauthorized)
+        return
+    }
+    // body is verified — parse and dispatch
+    w.WriteHeader(http.StatusOK)
+}
+```
+
+</CodeGroup>
+
+### Manual
 
 <CodeGroup>
 
@@ -112,183 +179,120 @@ function verifyWebhook(
   rawBody: string,
   secret: string,
 ): boolean {
+  const msgId = headers["webhook-id"];
   const timestamp = headers["webhook-timestamp"];
-  const signature = headers["webhook-signature"];
-  if (!timestamp || !signature) return false;
+  const signatureHeader = headers["webhook-signature"];
+  if (!msgId || !timestamp || !signatureHeader) return false;
 
-  const signedPayload = `${timestamp}.${rawBody}`;
+  // Webhook-Signature is a space-separated list of `vN,<base64>` entries.
+  // We only need to match one.
+  const signatures = signatureHeader
+    .split(" ")
+    .filter((s) => s.startsWith("v1,"))
+    .map((s) => s.slice(3));
+
+  const signedPayload = `${msgId}.${timestamp}.${rawBody}`;
   const expected = crypto
     .createHmac("sha256", secret)
     .update(signedPayload)
-    .digest("hex");
+    .digest("base64");
 
-  if (expected.length !== signature.length) return false;
-  if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))) {
-    return false;
-  }
+  const valid = signatures.some(
+    (sig) =>
+      sig.length === expected.length &&
+      crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected)),
+  );
+  if (!valid) return false;
 
-  const skewMs = Math.abs(Date.now() - Number(timestamp));
+  const skewMs = Math.abs(Date.now() - Number(timestamp) * 1000);
   return skewMs <= TOLERANCE_MS;
 }
-
-// Express example
-app.post(
-  "/webhooks/pandabase",
-  express.raw({ type: "application/json" }),
-  (req, res) => {
-    if (
-      !verifyWebhook(
-        req.headers as Record<string, string>,
-        req.body.toString(),
-        WEBHOOK_SECRET,
-      )
-    ) {
-      return res.status(401).send("Invalid signature");
-    }
-
-    const event = JSON.parse(req.body.toString());
-
-    switch (event.event) {
-      case "PAYMENT_COMPLETED":
-        console.log(`Payment completed for order ${event.data.order.id}`);
-        break;
-      case "PAYMENT_REFUNDED":
-        console.log(`Refund issued for order ${event.data.order.id}`);
-        break;
-    }
-
-    res.status(200).send("OK");
-  },
-);
 ```
 
 ```python Python
-import hmac, hashlib, time
-from flask import Flask, request, jsonify
+import hmac, hashlib, base64, time
 
-app = Flask(__name__)
-WEBHOOK_SECRET = "whk_your_secret_here"
 TOLERANCE_MS = 5 * 60 * 1000
 
-def verify(headers, raw_body: bytes) -> bool:
-    timestamp = headers.get("Webhook-Timestamp")
-    signature = headers.get("Webhook-Signature")
-    if not timestamp or not signature:
+def verify(headers, raw_body: bytes, secret: str) -> bool:
+    msg_id = headers.get("webhook-id")
+    timestamp = headers.get("webhook-timestamp")
+    sig_header = headers.get("webhook-signature")
+    if not msg_id or not timestamp or not sig_header:
         return False
 
-    signed_payload = f"{timestamp}.{raw_body.decode()}".encode()
-    expected = hmac.new(WEBHOOK_SECRET.encode(), signed_payload, hashlib.sha256).hexdigest()
+    signed_payload = f"{msg_id}.{timestamp}.{raw_body.decode()}".encode()
+    expected = base64.b64encode(
+        hmac.new(secret.encode(), signed_payload, hashlib.sha256).digest()
+    ).decode()
 
-    if not hmac.compare_digest(expected, signature):
+    sigs = [s[3:] for s in sig_header.split(" ") if s.startswith("v1,")]
+    if not any(hmac.compare_digest(s, expected) for s in sigs):
         return False
 
-    skew_ms = abs(int(time.time() * 1000) - int(timestamp))
+    skew_ms = abs(int(time.time() * 1000) - int(timestamp) * 1000)
     return skew_ms <= TOLERANCE_MS
-
-@app.route("/webhooks/pandabase", methods=["POST"])
-def handle_webhook():
-    if not verify(request.headers, request.data):
-        return jsonify(error="Invalid signature"), 401
-
-    event = request.json
-
-    if event["event"] == "PAYMENT_COMPLETED":
-        print(f"Payment completed for order {event['data']['order']['id']}")
-    elif event["event"] == "PAYMENT_REFUNDED":
-        print(f"Refund issued for order {event['data']['order']['id']}")
-
-    return jsonify(message="OK"), 200
 ```
 
 ```go Go
-package main
+package webhook
 
 import (
     "crypto/hmac"
     "crypto/sha256"
-    "encoding/hex"
-    "encoding/json"
-    "io"
-    "log"
+    "encoding/base64"
     "net/http"
     "strconv"
+    "strings"
     "time"
 )
 
-var webhookSecret = []byte("whk_your_secret_here")
-
 const toleranceMs = 5 * 60 * 1000
 
-func verify(headers http.Header, body []byte) bool {
-    ts := headers.Get("Webhook-Timestamp")
-    sig := headers.Get("Webhook-Signature")
-    if ts == "" || sig == "" {
+func Verify(h http.Header, rawBody []byte, secret string) bool {
+    msgID := h.Get("Webhook-Id")
+    ts := h.Get("Webhook-Timestamp")
+    sigHeader := h.Get("Webhook-Signature")
+    if msgID == "" || ts == "" || sigHeader == "" {
         return false
     }
 
-    mac := hmac.New(sha256.New, webhookSecret)
-    mac.Write([]byte(ts + "." + string(body)))
-    expected := hex.EncodeToString(mac.Sum(nil))
+    mac := hmac.New(sha256.New, []byte(secret))
+    mac.Write([]byte(msgID + "." + ts + "." + string(rawBody)))
+    expected := base64.StdEncoding.EncodeToString(mac.Sum(nil))
 
-    if !hmac.Equal([]byte(expected), []byte(sig)) {
+    matched := false
+    for _, entry := range strings.Split(sigHeader, " ") {
+        if !strings.HasPrefix(entry, "v1,") {
+            continue
+        }
+        if hmac.Equal([]byte(entry[3:]), []byte(expected)) {
+            matched = true
+            break
+        }
+    }
+    if !matched {
         return false
     }
 
-    tsInt, err := strconv.ParseInt(ts, 10, 64)
+    tsSec, err := strconv.ParseInt(ts, 10, 64)
     if err != nil {
         return false
     }
-    skew := time.Now().UnixMilli() - tsInt
+    skew := time.Now().UnixMilli() - tsSec*1000
     if skew < 0 {
         skew = -skew
     }
     return skew <= toleranceMs
 }
-
-func webhookHandler(w http.ResponseWriter, r *http.Request) {
-    body, _ := io.ReadAll(r.Body)
-
-    if !verify(r.Header, body) {
-        http.Error(w, "Invalid signature", http.StatusUnauthorized)
-        return
-    }
-
-    var event struct {
-        Event string `json:"event"`
-        Data  struct {
-            Order struct {
-                ID string `json:"id"`
-            } `json:"order"`
-        } `json:"data"`
-    }
-    json.Unmarshal(body, &event)
-
-    switch event.Event {
-    case "PAYMENT_COMPLETED":
-        log.Printf("Payment completed for order %s", event.Data.Order.ID)
-    case "PAYMENT_REFUNDED":
-        log.Printf("Refund issued for order %s", event.Data.Order.ID)
-    }
-
-    w.WriteHeader(http.StatusOK)
-}
-
-func main() {
-    http.HandleFunc("/webhooks/pandabase", webhookHandler)
-    http.ListenAndServe(":3000", nil)
-}
 ```
 
 </CodeGroup>
 
-<Note>
-  Already verifying against the legacy `X-Pandabase-Signature`? Your endpoint keeps working until the legacy headers are removed. See [Migrate webhook signatures](/developers/webhooks/migrate-signatures) to switch over.
-</Note>
-
 ## Best practices
 
-1. **Return 200 immediately.** Do heavy processing asynchronously.
-2. **Verify every request.** Always check `Webhook-Signature` and reject stale `Webhook-Timestamp` values before acting on a webhook.
-3. **Deduplicate with idempotency keys.** Store `Webhook-Id` values and skip already-processed events.
-4. **Filter events.** Only subscribe to the events you need to reduce noise.
-5. **Handle out-of-order delivery.** Events may occasionally arrive out of sequence. Use the order `status` field rather than assuming event order.
+- **Return 2xx fast.** Do work asynchronously.
+- **Verify every request** and reject stale timestamps before acting.
+- **Deduplicate with `Webhook-Id`.** Retries can deliver the same event more than once.
+- **Filter events** — only subscribe to what you need.
+- **Don't assume event order.** Use the order `status` field rather than event arrival order.
