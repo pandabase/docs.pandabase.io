@@ -20,21 +20,40 @@ Check your mode with `GET /v2/stores/:storeId/webhooks/:webhookId` (`signatureVe
 
 <Steps>
   <Step title="Deploy a V2 verifier">
-    Snippets in the [overview](/developers/webhooks/overview#verification). Easiest: a [Standard Webhooks SDK](https://www.standardwebhooks.com/#libraries).
+    We require webhook signatures to be verified using the raw request body and your webhook signing secret.
+
+    You can use the snippets from the
+    <a href="/developers/webhooks/overview#verification">verification guide</a>,
+    or install a
+    <a href="https://www.standardwebhooks.com/#libraries">
+      Standard Webhooks SDK
+    </a>
+    for the fastest setup.
   </Step>
-  <Step title="Flip the mode">
-    ```bash
-    curl -X PATCH https://api.pandabase.io/v2/stores/{storeId}/webhooks/{webhookId} \
-      -H "Authorization: Bearer $SESSION_TOKEN" \
-      -H "Content-Type: application/json" \
-      -d '{ "signatureVersion": "V2" }'
-    ```
+
+  <Step title="Switch your webhook version">
+    In your merchant dashboard, navigate to:
+
+    <strong>Your Store → Developers → Webhooks</strong>
+
+    Open the webhook dropdown menu, click **Edit**, and
+    select the webhook version you want to enable.
   </Step>
-  <Step title="Test">
-    `POST /v2/stores/{storeId}/webhooks/{webhookId}/test`. Mirrors real deliveries.
+
+  <Step title="Send a test event">
+    After updating the version, return to:
+
+    <strong>Your Store → Developers → Webhooks</strong>
+
+    Open the dropdown menu and click <strong>Send test</strong> to verify
+    that your endpoint is receiving and validating events correctly.
   </Step>
+
   <Step title="Roll back if needed">
-    `"signatureVersion": "V1"`.
+    You can revert to a previous webhook version at any time.
+
+    Go back to <strong>Your Store → Developers → Webhooks</strong>,
+    click <strong>Edit</strong>, and select the previous version.
   </Step>
 </Steps>
 
