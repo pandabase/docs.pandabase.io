@@ -156,18 +156,27 @@
                   "developers/api/v2/responses",
                   {
                     "expanded": true,
-                    "group": "Core Resources",
-                    "openapi": "developers/api/v2/schemas/core-openapi.json"
+                    "group": "Store APIs",
+                    "openapi": {
+                      "source": "developers/api/v2/schemas/core-openapi.json",
+                      "directory": "developers/apis/v2/store-api-reference"
+                    }
                   },
                   {
                     "expanded": true,
-                    "group": "Storefront",
-                    "openapi": "developers/api/v2/schemas/storefront-openapi.json"
+                    "group": "Storefront APIs",
+                    "openapi": {
+                      "source": "developers/api/v2/schemas/storefront-openapi.json",
+                      "directory": "developers/apis/v2/storefront-api-reference"
+                    }
                   },
                   {
                     "expanded": true,
-                    "group": "Billing",
-                    "openapi": "developers/api/v2/schemas/checkout-openapi.json"
+                    "group": "Billing APIs",
+                    "openapi": {
+                      "source": "developers/api/v2/schemas/checkout-openapi.json",
+                      "directory": "developers/apis/v2/billing-api-reference"
+                    }
                   }
                 ]
               }

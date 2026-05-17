@@ -27,6 +27,7 @@
   "paths": {
     "/stores/{storeId}/": {
       "get": {
+        "summary": "Get store",
         "tags": [
           "Store"
         ],
@@ -110,6 +111,7 @@
     },
     "/stores/{storeId}/products/": {
       "get": {
+        "summary": "List products",
         "tags": [
           "Products"
         ],
@@ -392,6 +394,7 @@
         }
       },
       "post": {
+        "summary": "Create product",
         "tags": [
           "Products"
         ],
@@ -897,6 +900,7 @@
     },
     "/stores/{storeId}/products/{productId}": {
       "get": {
+        "summary": "Get product",
         "tags": [
           "Products"
         ],
@@ -1002,6 +1006,7 @@
         }
       },
       "patch": {
+        "summary": "Update product",
         "tags": [
           "Products"
         ],
@@ -1690,6 +1695,7 @@
         }
       },
       "delete": {
+        "summary": "Delete product",
         "tags": [
           "Products"
         ],
@@ -1774,6 +1780,7 @@
     },
     "/stores/{storeId}/categories/": {
       "get": {
+        "summary": "List categories",
         "tags": [
           "Categories"
         ],
@@ -1988,6 +1995,7 @@
         }
       },
       "post": {
+        "summary": "Create category",
         "tags": [
           "Categories"
         ],
@@ -2157,6 +2165,7 @@
     },
     "/stores/{storeId}/categories/{categoryId}": {
       "get": {
+        "summary": "Get category",
         "tags": [
           "Categories"
         ],
@@ -2253,6 +2262,7 @@
         }
       },
       "patch": {
+        "summary": "Update category",
         "tags": [
           "Categories"
         ],
@@ -2457,6 +2467,7 @@
         }
       },
       "delete": {
+        "summary": "Delete category",
         "tags": [
           "Categories"
         ],
@@ -2541,6 +2552,7 @@
     },
     "/stores/{storeId}/coupons/": {
       "get": {
+        "summary": "List coupons",
         "tags": [
           "Coupons"
         ],
@@ -2758,6 +2770,7 @@
         }
       },
       "post": {
+        "summary": "Create coupon",
         "tags": [
           "Coupons"
         ],
@@ -2937,6 +2950,7 @@
     },
     "/stores/{storeId}/coupons/{couponId}": {
       "get": {
+        "summary": "Get coupon",
         "tags": [
           "Coupons"
         ],
@@ -3035,6 +3049,7 @@
         }
       },
       "patch": {
+        "summary": "Update coupon",
         "tags": [
           "Coupons"
         ],
@@ -3271,6 +3286,7 @@
         }
       },
       "delete": {
+        "summary": "Delete coupon",
         "tags": [
           "Coupons"
         ],
@@ -3355,6 +3371,7 @@
     },
     "/stores/{storeId}/webhooks/": {
       "get": {
+        "summary": "List webhooks",
         "tags": [
           "Webhooks"
         ],
@@ -3469,6 +3486,7 @@
         }
       },
       "post": {
+        "summary": "Create webhook",
         "tags": [
           "Webhooks"
         ],
@@ -3689,6 +3707,7 @@
     },
     "/stores/{storeId}/webhooks/{webhookId}": {
       "get": {
+        "summary": "Get webhook",
         "tags": [
           "Webhooks"
         ],
@@ -3782,6 +3801,7 @@
         }
       },
       "patch": {
+        "summary": "Update webhook",
         "tags": [
           "Webhooks"
         ],
@@ -4015,6 +4035,7 @@
         }
       },
       "delete": {
+        "summary": "Delete webhook",
         "tags": [
           "Webhooks"
         ],
@@ -4099,6 +4120,7 @@
     },
     "/stores/{storeId}/analytics/overview": {
       "get": {
+        "summary": "Get analytics overview",
         "tags": [
           "Analytics"
         ],
@@ -4239,6 +4261,7 @@
     },
     "/stores/{storeId}/analytics/gross-volume": {
       "get": {
+        "summary": "Get gross volume",
         "tags": [
           "Analytics"
         ],
@@ -4391,6 +4414,7 @@
     },
     "/stores/{storeId}/analytics/orders-by-country": {
       "get": {
+        "summary": "Get orders by country",
         "tags": [
           "Analytics"
         ],
@@ -4536,6 +4560,7 @@
     },
     "/stores/{storeId}/payouts/": {
       "get": {
+        "summary": "List payouts",
         "tags": [
           "Payouts"
         ],
@@ -4652,6 +4677,7 @@
     },
     "/stores/{storeId}/payouts/{payoutId}": {
       "get": {
+        "summary": "Get payout",
         "tags": [
           "Payouts"
         ],
@@ -4747,6 +4773,7 @@
     },
     "/stores/{storeId}/payouts/bank-accounts": {
       "get": {
+        "summary": "List bank accounts",
         "tags": [
           "Payouts"
         ],
@@ -4839,6 +4866,7 @@
     },
     "/stores/{storeId}/payouts/ledger": {
       "get": {
+        "summary": "List balance ledger",
         "tags": [
           "Payouts"
         ],
@@ -4984,6 +5012,7 @@
     },
     "/stores/{storeId}/orders/": {
       "get": {
+        "summary": "List orders",
         "tags": [
           "Orders"
         ],
@@ -5185,6 +5214,7 @@
     },
     "/stores/{storeId}/orders/{orderId}": {
       "get": {
+        "summary": "Get order",
         "tags": [
           "Orders"
         ],
@@ -5326,6 +5356,7 @@
     },
     "/stores/{storeId}/orders/{orderId}/refunds": {
       "get": {
+        "summary": "List order refunds",
         "tags": [
           "Orders"
         ],
@@ -5424,6 +5455,7 @@
     },
     "/stores/{storeId}/orders/{orderId}/retry-fulfillment": {
       "post": {
+        "summary": "Retry order fulfillment",
         "tags": [
           "Orders"
         ],
@@ -5532,6 +5564,7 @@
     },
     "/stores/{storeId}/orders/payments/": {
       "get": {
+        "summary": "List payments",
         "tags": [
           "Payments"
         ],
@@ -5729,6 +5762,7 @@
     },
     "/stores/{storeId}/orders/payments/{paymentId}": {
       "get": {
+        "summary": "Get payment",
         "tags": [
           "Payments"
         ],
@@ -5862,6 +5896,7 @@
     },
     "/stores/{storeId}/customers/": {
       "get": {
+        "summary": "List customers",
         "tags": [
           "Customers"
         ],
@@ -6037,6 +6072,7 @@
     },
     "/stores/{storeId}/customers/{customerId}": {
       "get": {
+        "summary": "Get customer",
         "tags": [
           "Customers"
         ],
@@ -6128,6 +6164,7 @@
     },
     "/stores/{storeId}/licenses/": {
       "get": {
+        "summary": "List licenses",
         "tags": [
           "Licenses"
         ],
@@ -6278,6 +6315,7 @@
     },
     "/stores/{storeId}/licenses/{licenseId}": {
       "get": {
+        "summary": "Get license",
         "tags": [
           "Licenses"
         ],
@@ -6370,6 +6408,7 @@
     },
     "/stores/{storeId}/licenses/verify": {
       "post": {
+        "summary": "Verify license",
         "tags": [
           "Licenses"
         ],
@@ -6473,6 +6512,7 @@
     },
     "/stores/{storeId}/subscriptions/": {
       "get": {
+        "summary": "List subscriptions",
         "tags": [
           "Subscriptions"
         ],
@@ -6666,6 +6706,7 @@
     },
     "/stores/{storeId}/subscriptions/{subscriptionId}": {
       "get": {
+        "summary": "Get subscription",
         "tags": [
           "Subscriptions"
         ],
@@ -6779,6 +6820,7 @@
     },
     "/stores/{storeId}/subscriptions/{subscriptionId}/cancel": {
       "post": {
+        "summary": "Cancel subscription",
         "tags": [
           "Subscriptions"
         ],
@@ -6931,6 +6973,7 @@
     },
     "/stores/{storeId}/cases/": {
       "get": {
+        "summary": "List cases",
         "tags": [
           "Cases"
         ],
@@ -7135,6 +7178,7 @@
     },
     "/stores/{storeId}/cases/{caseId}": {
       "get": {
+        "summary": "Get case",
         "tags": [
           "Cases"
         ],
@@ -7230,6 +7274,7 @@
         }
       },
       "patch": {
+        "summary": "Update case",
         "tags": [
           "Cases"
         ],
@@ -7412,6 +7457,7 @@
     },
     "/stores/{storeId}/cases/{caseId}/messages": {
       "get": {
+        "summary": "List case messages",
         "tags": [
           "Cases"
         ],
@@ -7530,9 +7576,11 @@
         }
       },
       "post": {
+        "summary": "Send case message",
         "tags": [
           "Cases"
         ],
+        "description": "Requires `CASES_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -7696,6 +7744,7 @@
     },
     "/stores/{storeId}/cases/{caseId}/read": {
       "post": {
+        "summary": "Mark case as read",
         "tags": [
           "Cases"
         ],
@@ -7780,6 +7829,7 @@
     },
     "/stores/{storeId}/refunds/": {
       "get": {
+        "summary": "List refunds",
         "tags": [
           "Refunds"
         ],
@@ -7945,6 +7995,7 @@
     },
     "/stores/{storeId}/refunds/{refundId}": {
       "get": {
+        "summary": "Get refund",
         "tags": [
           "Refunds"
         ],
@@ -8047,6 +8098,7 @@
     },
     "/stores/{storeId}/refunds/orders/{orderId}": {
       "post": {
+        "summary": "Create refund",
         "tags": [
           "Refunds"
         ],
@@ -8206,6 +8258,7 @@
     },
     "/stores/{storeId}/disputes/": {
       "get": {
+        "summary": "List disputes",
         "tags": [
           "Disputes"
         ],
@@ -8324,7 +8377,6 @@
                     "items": [
                       {
                         "id": "dsp_8h0r1n4tzcbfp2v8q1mzwxj5",
-                        "disputeId": "dp_3jK9w2pQ8mZ5x7Lh1nVt4Bcf",
                         "reason": "FRAUDULENT",
                         "status": "AWAITING_REVIEW",
                         "evidence": null,
@@ -8382,6 +8434,7 @@
     },
     "/stores/{storeId}/disputes/{disputeId}": {
       "get": {
+        "summary": "Get dispute",
         "tags": [
           "Disputes"
         ],
@@ -8433,7 +8486,6 @@
                   "ok": true,
                   "data": {
                     "id": "dsp_8h0r1n4tzcbfp2v8q1mzwxj5",
-                    "disputeId": "dp_3jK9w2pQ8mZ5x7Lh1nVt4Bcf",
                     "reason": "FRAUDULENT",
                     "status": "AWAITING_REVIEW",
                     "evidence": null,
@@ -8490,6 +8542,7 @@
     },
     "/stores/{storeId}/disputes/{disputeId}/evidence": {
       "post": {
+        "summary": "Submit dispute evidence",
         "tags": [
           "Disputes"
         ],
@@ -8561,7 +8614,6 @@
                   "ok": true,
                   "data": {
                     "id": "dsp_8h0r1n4tzcbfp2v8q1mzwxj5",
-                    "disputeId": "dp_3jK9w2pQ8mZ5x7Lh1nVt4Bcf",
                     "reason": "FRAUDULENT",
                     "status": "UNDER_REVIEW",
                     "evidence": {
