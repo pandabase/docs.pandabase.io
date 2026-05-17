@@ -20,12 +20,16 @@
         "description": "HMAC mode — Authorization header carries the public token (`stk_...`). Each request must include an X-Pandabase-Signature header carrying an HMAC-SHA256 of the canonical request string."
       }
     },
-    "schemas": {}
+    "schemas": {
+
+    }
   },
   "paths": {
     "/stores/{storeId}/": {
       "get": {
-        "tags": ["Store"],
+        "tags": [
+          "Store"
+        ],
         "description": "Requires `STORE_READ` scope.",
         "parameters": [
           {
@@ -46,13 +50,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -79,7 +88,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -98,7 +110,9 @@
     },
     "/stores/{storeId}/products/": {
       "get": {
-        "tags": ["Products"],
+        "tags": [
+          "Products"
+        ],
         "description": "Requires `PRODUCTS_READ` scope.",
         "parameters": [
           {
@@ -136,15 +150,21 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["SUBSCRIPTION"]
+                  "enum": [
+                    "SUBSCRIPTION"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["DIGITAL_DOWNLOAD"]
+                  "enum": [
+                    "DIGITAL_DOWNLOAD"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["LICENSE_KEY"]
+                  "enum": [
+                    "LICENSE_KEY"
+                  ]
                 }
               ]
             },
@@ -157,11 +177,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["DRAFT"]
+                  "enum": [
+                    "DRAFT"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["ACTIVE"]
+                  "enum": [
+                    "ACTIVE"
+                  ]
                 }
               ]
             },
@@ -174,15 +198,21 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["STANDARD"]
+                  "enum": [
+                    "STANDARD"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PAY_WHAT_YOU_WANT"]
+                  "enum": [
+                    "PAY_WHAT_YOU_WANT"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["FREE"]
+                  "enum": [
+                    "FREE"
+                  ]
                 }
               ]
             },
@@ -213,19 +243,27 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["title"]
+                  "enum": [
+                    "title"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["price"]
+                  "enum": [
+                    "price"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["createdAt"]
+                  "enum": [
+                    "createdAt"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["updatedAt"]
+                  "enum": [
+                    "updatedAt"
+                  ]
                 }
               ]
             },
@@ -238,11 +276,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -268,13 +310,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -325,7 +372,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -342,7 +392,9 @@
         }
       },
       "post": {
-        "tags": ["Products"],
+        "tags": [
+          "Products"
+        ],
         "description": "Requires `PRODUCTS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -350,7 +402,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "productType", "price"],
+                "required": [
+                  "title",
+                  "productType",
+                  "price"
+                ],
                 "properties": {
                   "title": {
                     "type": "string",
@@ -371,15 +427,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["SUBSCRIPTION"]
+                        "enum": [
+                          "SUBSCRIPTION"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["DIGITAL_DOWNLOAD"]
+                        "enum": [
+                          "DIGITAL_DOWNLOAD"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["LICENSE_KEY"]
+                        "enum": [
+                          "LICENSE_KEY"
+                        ]
                       }
                     ]
                   },
@@ -406,27 +468,39 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["MANAGED_LICENSE"]
+                        "enum": [
+                          "MANAGED_LICENSE"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["LICENSE_POOL"]
+                        "enum": [
+                          "LICENSE_POOL"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["LICENSE_WEBHOOK"]
+                        "enum": [
+                          "LICENSE_WEBHOOK"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["INSTANT_DOWNLOAD"]
+                        "enum": [
+                          "INSTANT_DOWNLOAD"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["REDIRECT"]
+                        "enum": [
+                          "REDIRECT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["MANUAL"]
+                        "enum": [
+                          "MANUAL"
+                        ]
                       }
                     ]
                   },
@@ -434,15 +508,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["STANDARD"]
+                        "enum": [
+                          "STANDARD"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["PAY_WHAT_YOU_WANT"]
+                        "enum": [
+                          "PAY_WHAT_YOU_WANT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["FREE"]
+                        "enum": [
+                          "FREE"
+                        ]
                       }
                     ]
                   },
@@ -450,11 +530,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["DRAFT"]
+                        "enum": [
+                          "DRAFT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["ACTIVE"]
+                        "enum": [
+                          "ACTIVE"
+                        ]
                       }
                     ]
                   },
@@ -486,15 +570,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["ALPHANUMERIC"]
+                        "enum": [
+                          "ALPHANUMERIC"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["UUID"]
+                        "enum": [
+                          "UUID"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["CUSTOM_PREFIX"]
+                        "enum": [
+                          "CUSTOM_PREFIX"
+                        ]
                       }
                     ]
                   },
@@ -510,19 +600,27 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["THIRTY_DAYS"]
+                        "enum": [
+                          "THIRTY_DAYS"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["NINETY_DAYS"]
+                        "enum": [
+                          "NINETY_DAYS"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["ONE_YEAR"]
+                        "enum": [
+                          "ONE_YEAR"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["LIFETIME"]
+                        "enum": [
+                          "LIFETIME"
+                        ]
                       }
                     ]
                   },
@@ -546,15 +644,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["WEEKLY"]
+                        "enum": [
+                          "WEEKLY"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["MONTHLY"]
+                        "enum": [
+                          "MONTHLY"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["YEARLY"]
+                        "enum": [
+                          "YEARLY"
+                        ]
                       }
                     ]
                   },
@@ -562,11 +666,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["IMMEDIATELY"]
+                        "enum": [
+                          "IMMEDIATELY"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["END_OF_PERIOD"]
+                        "enum": [
+                          "END_OF_PERIOD"
+                        ]
                       }
                     ]
                   },
@@ -587,7 +695,11 @@
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["title", "options", "price"],
+                      "required": [
+                        "title",
+                        "options",
+                        "price"
+                      ],
                       "properties": {
                         "title": {
                           "type": "string",
@@ -607,7 +719,9 @@
                           "type": "string",
                           "maxLength": 128
                         },
-                        "options": {},
+                        "options": {
+
+                        },
                         "price": {
                           "type": "integer",
                           "minimum": 0
@@ -647,7 +761,10 @@
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["name", "values"],
+                      "required": [
+                        "name",
+                        "values"
+                      ],
                       "properties": {
                         "name": {
                           "type": "string",
@@ -706,13 +823,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -725,7 +847,9 @@
                     "handle": "pro-plan",
                     "price": 2900,
                     "compareAtPrice": 4900,
-                    "images": ["https://cdn.pandabase.io/products/img_xxx.jpg"],
+                    "images": [
+                      "https://cdn.pandabase.io/products/img_xxx.jpg"
+                    ],
                     "inStock": true,
                     "currency": "USD",
                     "productType": "DIGITAL",
@@ -751,7 +875,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -770,7 +897,9 @@
     },
     "/stores/{storeId}/products/{productId}": {
       "get": {
-        "tags": ["Products"],
+        "tags": [
+          "Products"
+        ],
         "description": "Requires `PRODUCTS_READ` scope.",
         "parameters": [
           {
@@ -801,13 +930,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -820,7 +954,9 @@
                     "handle": "pro-plan",
                     "price": 2900,
                     "compareAtPrice": 4900,
-                    "images": ["https://cdn.pandabase.io/products/img_xxx.jpg"],
+                    "images": [
+                      "https://cdn.pandabase.io/products/img_xxx.jpg"
+                    ],
                     "inStock": true,
                     "currency": "USD",
                     "productType": "DIGITAL",
@@ -846,7 +982,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -863,7 +1002,9 @@
         }
       },
       "patch": {
-        "tags": ["Products"],
+        "tags": [
+          "Products"
+        ],
         "description": "Requires `PRODUCTS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -903,15 +1044,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["SUBSCRIPTION"]
+                        "enum": [
+                          "SUBSCRIPTION"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["DIGITAL_DOWNLOAD"]
+                        "enum": [
+                          "DIGITAL_DOWNLOAD"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["LICENSE_KEY"]
+                        "enum": [
+                          "LICENSE_KEY"
+                        ]
                       }
                     ]
                   },
@@ -957,27 +1104,39 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": ["MANAGED_LICENSE"]
+                            "enum": [
+                              "MANAGED_LICENSE"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["LICENSE_POOL"]
+                            "enum": [
+                              "LICENSE_POOL"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["LICENSE_WEBHOOK"]
+                            "enum": [
+                              "LICENSE_WEBHOOK"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["INSTANT_DOWNLOAD"]
+                            "enum": [
+                              "INSTANT_DOWNLOAD"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["REDIRECT"]
+                            "enum": [
+                              "REDIRECT"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["MANUAL"]
+                            "enum": [
+                              "MANUAL"
+                            ]
                           }
                         ]
                       },
@@ -990,15 +1149,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["STANDARD"]
+                        "enum": [
+                          "STANDARD"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["PAY_WHAT_YOU_WANT"]
+                        "enum": [
+                          "PAY_WHAT_YOU_WANT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["FREE"]
+                        "enum": [
+                          "FREE"
+                        ]
                       }
                     ]
                   },
@@ -1006,11 +1171,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["DRAFT"]
+                        "enum": [
+                          "DRAFT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["ACTIVE"]
+                        "enum": [
+                          "ACTIVE"
+                        ]
                       }
                     ]
                   },
@@ -1086,15 +1255,21 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": ["ALPHANUMERIC"]
+                            "enum": [
+                              "ALPHANUMERIC"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["UUID"]
+                            "enum": [
+                              "UUID"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["CUSTOM_PREFIX"]
+                            "enum": [
+                              "CUSTOM_PREFIX"
+                            ]
                           }
                         ]
                       },
@@ -1131,19 +1306,27 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": ["THIRTY_DAYS"]
+                            "enum": [
+                              "THIRTY_DAYS"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["NINETY_DAYS"]
+                            "enum": [
+                              "NINETY_DAYS"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["ONE_YEAR"]
+                            "enum": [
+                              "ONE_YEAR"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["LIFETIME"]
+                            "enum": [
+                              "LIFETIME"
+                            ]
                           }
                         ]
                       },
@@ -1194,15 +1377,21 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": ["WEEKLY"]
+                            "enum": [
+                              "WEEKLY"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["MONTHLY"]
+                            "enum": [
+                              "MONTHLY"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["YEARLY"]
+                            "enum": [
+                              "YEARLY"
+                            ]
                           }
                         ]
                       },
@@ -1217,11 +1406,15 @@
                         "anyOf": [
                           {
                             "type": "string",
-                            "enum": ["IMMEDIATELY"]
+                            "enum": [
+                              "IMMEDIATELY"
+                            ]
                           },
                           {
                             "type": "string",
-                            "enum": ["END_OF_PERIOD"]
+                            "enum": [
+                              "END_OF_PERIOD"
+                            ]
                           }
                         ]
                       },
@@ -1299,7 +1492,9 @@
                             }
                           ]
                         },
-                        "options": {},
+                        "options": {
+
+                        },
                         "price": {
                           "type": "integer",
                           "minimum": 0
@@ -1351,7 +1546,10 @@
                     "type": "array",
                     "items": {
                       "type": "object",
-                      "required": ["name", "values"],
+                      "required": [
+                        "name",
+                        "values"
+                      ],
                       "properties": {
                         "name": {
                           "type": "string",
@@ -1420,13 +1618,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -1439,7 +1642,9 @@
                     "handle": "pro-plan",
                     "price": 2900,
                     "compareAtPrice": 4900,
-                    "images": ["https://cdn.pandabase.io/products/img_xxx.jpg"],
+                    "images": [
+                      "https://cdn.pandabase.io/products/img_xxx.jpg"
+                    ],
                     "inStock": true,
                     "currency": "USD",
                     "productType": "DIGITAL",
@@ -1465,7 +1670,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -1482,7 +1690,9 @@
         }
       },
       "delete": {
-        "tags": ["Products"],
+        "tags": [
+          "Products"
+        ],
         "description": "Requires `PRODUCTS_WRITE` scope.",
         "parameters": [
           {
@@ -1513,13 +1723,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -1537,7 +1752,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -1556,7 +1774,9 @@
     },
     "/stores/{storeId}/categories/": {
       "get": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "description": "Requires `CATEGORIES_READ` scope.",
         "parameters": [
           {
@@ -1628,19 +1848,27 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["displayOrder"]
+                  "enum": [
+                    "displayOrder"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["name"]
+                  "enum": [
+                    "name"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["createdAt"]
+                  "enum": [
+                    "createdAt"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["updatedAt"]
+                  "enum": [
+                    "updatedAt"
+                  ]
                 }
               ]
             },
@@ -1653,11 +1881,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -1683,13 +1915,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -1731,7 +1968,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -1748,7 +1988,9 @@
         }
       },
       "post": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "description": "Requires `CATEGORIES_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -1756,7 +1998,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["name"],
+                "required": [
+                  "name"
+                ],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -1848,13 +2092,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -1886,7 +2135,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -1905,7 +2157,9 @@
     },
     "/stores/{storeId}/categories/{categoryId}": {
       "get": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "description": "Requires `CATEGORIES_READ` scope.",
         "parameters": [
           {
@@ -1936,13 +2190,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -1974,7 +2233,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -1991,7 +2253,9 @@
         }
       },
       "patch": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "description": "Requires `CATEGORIES_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -2130,13 +2394,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -2168,7 +2437,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -2185,7 +2457,9 @@
         }
       },
       "delete": {
-        "tags": ["Categories"],
+        "tags": [
+          "Categories"
+        ],
         "description": "Requires `CATEGORIES_WRITE` scope.",
         "parameters": [
           {
@@ -2216,13 +2490,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -2240,7 +2519,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -2259,7 +2541,9 @@
     },
     "/stores/{storeId}/coupons/": {
       "get": {
-        "tags": ["Coupons"],
+        "tags": [
+          "Coupons"
+        ],
         "description": "Requires `COUPONS_READ` scope.",
         "parameters": [
           {
@@ -2297,11 +2581,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["FIXED"]
+                  "enum": [
+                    "FIXED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PERCENTAGE"]
+                  "enum": [
+                    "PERCENTAGE"
+                  ]
                 }
               ]
             },
@@ -2322,23 +2610,33 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["code"]
+                  "enum": [
+                    "code"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["createdAt"]
+                  "enum": [
+                    "createdAt"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["updatedAt"]
+                  "enum": [
+                    "updatedAt"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["value"]
+                  "enum": [
+                    "value"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["timesUsed"]
+                  "enum": [
+                    "timesUsed"
+                  ]
                 }
               ]
             },
@@ -2351,11 +2649,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -2381,13 +2683,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -2431,7 +2738,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -2448,7 +2758,9 @@
         }
       },
       "post": {
-        "tags": ["Coupons"],
+        "tags": [
+          "Coupons"
+        ],
         "description": "Requires `COUPONS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -2456,7 +2768,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["code", "type", "value"],
+                "required": [
+                  "code",
+                  "type",
+                  "value"
+                ],
                 "properties": {
                   "code": {
                     "type": "string",
@@ -2477,11 +2793,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["FIXED"]
+                        "enum": [
+                          "FIXED"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["PERCENTAGE"]
+                        "enum": [
+                          "PERCENTAGE"
+                        ]
                       }
                     ]
                   },
@@ -2550,13 +2870,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -2590,7 +2915,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -2609,7 +2937,9 @@
     },
     "/stores/{storeId}/coupons/{couponId}": {
       "get": {
-        "tags": ["Coupons"],
+        "tags": [
+          "Coupons"
+        ],
         "description": "Requires `COUPONS_READ` scope.",
         "parameters": [
           {
@@ -2640,13 +2970,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -2680,7 +3015,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -2697,7 +3035,9 @@
         }
       },
       "patch": {
-        "tags": ["Coupons"],
+        "tags": [
+          "Coupons"
+        ],
         "description": "Requires `COUPONS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -2739,11 +3079,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["FIXED"]
+                        "enum": [
+                          "FIXED"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["PERCENTAGE"]
+                        "enum": [
+                          "PERCENTAGE"
+                        ]
                       }
                     ]
                   },
@@ -2862,13 +3206,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -2902,7 +3251,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -2919,7 +3271,9 @@
         }
       },
       "delete": {
-        "tags": ["Coupons"],
+        "tags": [
+          "Coupons"
+        ],
         "description": "Requires `COUPONS_WRITE` scope.",
         "parameters": [
           {
@@ -2950,13 +3304,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -2974,7 +3333,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -2993,7 +3355,9 @@
     },
     "/stores/{storeId}/webhooks/": {
       "get": {
-        "tags": ["Webhooks"],
+        "tags": [
+          "Webhooks"
+        ],
         "description": "Requires `WEBHOOKS_READ` scope.",
         "parameters": [
           {
@@ -3035,13 +3399,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3080,7 +3449,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3097,7 +3469,9 @@
         }
       },
       "post": {
-        "tags": ["Webhooks"],
+        "tags": [
+          "Webhooks"
+        ],
         "description": "Requires `WEBHOOKS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -3105,7 +3479,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["url", "eventTypes"],
+                "required": [
+                  "url",
+                  "eventTypes"
+                ],
                 "properties": {
                   "url": {
                     "type": "string",
@@ -3119,59 +3496,87 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_PENDING"]
+                          "enum": [
+                            "PAYMENT_PENDING"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_PROCESSING"]
+                          "enum": [
+                            "PAYMENT_PROCESSING"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_COMPLETED"]
+                          "enum": [
+                            "PAYMENT_COMPLETED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_REFUNDED"]
+                          "enum": [
+                            "PAYMENT_REFUNDED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_DISPUTED"]
+                          "enum": [
+                            "PAYMENT_DISPUTED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_DISPUTE_WON"]
+                          "enum": [
+                            "PAYMENT_DISPUTE_WON"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_DISPUTE_LOST"]
+                          "enum": [
+                            "PAYMENT_DISPUTE_LOST"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_FAILED"]
+                          "enum": [
+                            "PAYMENT_FAILED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_CREATED"]
+                          "enum": [
+                            "SUBSCRIPTION_CREATED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_RENEWED"]
+                          "enum": [
+                            "SUBSCRIPTION_RENEWED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_PAST_DUE"]
+                          "enum": [
+                            "SUBSCRIPTION_PAST_DUE"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_CANCELLED"]
+                          "enum": [
+                            "SUBSCRIPTION_CANCELLED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_PAUSED"]
+                          "enum": [
+                            "SUBSCRIPTION_PAUSED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_RESUMED"]
+                          "enum": [
+                            "SUBSCRIPTION_RESUMED"
+                          ]
                         }
                       ]
                     },
@@ -3185,11 +3590,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["V1"]
+                        "enum": [
+                          "V1"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["V2"]
+                        "enum": [
+                          "V2"
+                        ]
                       }
                     ]
                   }
@@ -3217,13 +3626,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3253,7 +3667,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3272,7 +3689,9 @@
     },
     "/stores/{storeId}/webhooks/{webhookId}": {
       "get": {
-        "tags": ["Webhooks"],
+        "tags": [
+          "Webhooks"
+        ],
         "description": "Requires `WEBHOOKS_READ` scope.",
         "parameters": [
           {
@@ -3303,13 +3722,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3338,7 +3762,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3355,7 +3782,9 @@
         }
       },
       "patch": {
-        "tags": ["Webhooks"],
+        "tags": [
+          "Webhooks"
+        ],
         "description": "Requires `WEBHOOKS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -3376,59 +3805,87 @@
                       "anyOf": [
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_PENDING"]
+                          "enum": [
+                            "PAYMENT_PENDING"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_PROCESSING"]
+                          "enum": [
+                            "PAYMENT_PROCESSING"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_COMPLETED"]
+                          "enum": [
+                            "PAYMENT_COMPLETED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_REFUNDED"]
+                          "enum": [
+                            "PAYMENT_REFUNDED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_DISPUTED"]
+                          "enum": [
+                            "PAYMENT_DISPUTED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_DISPUTE_WON"]
+                          "enum": [
+                            "PAYMENT_DISPUTE_WON"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_DISPUTE_LOST"]
+                          "enum": [
+                            "PAYMENT_DISPUTE_LOST"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["PAYMENT_FAILED"]
+                          "enum": [
+                            "PAYMENT_FAILED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_CREATED"]
+                          "enum": [
+                            "SUBSCRIPTION_CREATED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_RENEWED"]
+                          "enum": [
+                            "SUBSCRIPTION_RENEWED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_PAST_DUE"]
+                          "enum": [
+                            "SUBSCRIPTION_PAST_DUE"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_CANCELLED"]
+                          "enum": [
+                            "SUBSCRIPTION_CANCELLED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_PAUSED"]
+                          "enum": [
+                            "SUBSCRIPTION_PAUSED"
+                          ]
                         },
                         {
                           "type": "string",
-                          "enum": ["SUBSCRIPTION_RESUMED"]
+                          "enum": [
+                            "SUBSCRIPTION_RESUMED"
+                          ]
                         }
                       ]
                     },
@@ -3452,11 +3909,15 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["V1"]
+                        "enum": [
+                          "V1"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["V2"]
+                        "enum": [
+                          "V2"
+                        ]
                       }
                     ]
                   }
@@ -3494,13 +3955,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3529,7 +3995,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3546,7 +4015,9 @@
         }
       },
       "delete": {
-        "tags": ["Webhooks"],
+        "tags": [
+          "Webhooks"
+        ],
         "description": "Requires `WEBHOOKS_WRITE` scope.",
         "parameters": [
           {
@@ -3577,13 +4048,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3601,7 +4077,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3620,7 +4099,9 @@
     },
     "/stores/{storeId}/analytics/overview": {
       "get": {
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "description": "Requires `ANALYTICS_READ` scope.",
         "parameters": [
           {
@@ -3628,23 +4109,33 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["7d"]
+                  "enum": [
+                    "7d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["30d"]
+                  "enum": [
+                    "30d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["90d"]
+                  "enum": [
+                    "90d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["all"]
+                  "enum": [
+                    "all"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["custom"]
+                  "enum": [
+                    "custom"
+                  ]
                 }
               ]
             },
@@ -3688,13 +4179,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3721,7 +4217,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3740,7 +4239,9 @@
     },
     "/stores/{storeId}/analytics/gross-volume": {
       "get": {
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "description": "Requires `ANALYTICS_READ` scope.",
         "parameters": [
           {
@@ -3748,23 +4249,33 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["7d"]
+                  "enum": [
+                    "7d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["30d"]
+                  "enum": [
+                    "30d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["90d"]
+                  "enum": [
+                    "90d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["all"]
+                  "enum": [
+                    "all"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["custom"]
+                  "enum": [
+                    "custom"
+                  ]
                 }
               ]
             },
@@ -3808,13 +4319,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3853,7 +4369,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3872,7 +4391,9 @@
     },
     "/stores/{storeId}/analytics/orders-by-country": {
       "get": {
-        "tags": ["Analytics"],
+        "tags": [
+          "Analytics"
+        ],
         "description": "Requires `ANALYTICS_READ` scope.",
         "parameters": [
           {
@@ -3880,23 +4401,33 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["7d"]
+                  "enum": [
+                    "7d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["30d"]
+                  "enum": [
+                    "30d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["90d"]
+                  "enum": [
+                    "90d"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["all"]
+                  "enum": [
+                    "all"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["custom"]
+                  "enum": [
+                    "custom"
+                  ]
                 }
               ]
             },
@@ -3940,13 +4471,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -3978,7 +4514,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -3997,7 +4536,9 @@
     },
     "/stores/{storeId}/payouts/": {
       "get": {
-        "tags": ["Payouts"],
+        "tags": [
+          "Payouts"
+        ],
         "description": "Requires `PAYOUTS_READ` scope.",
         "parameters": [
           {
@@ -4039,13 +4580,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4084,7 +4630,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4103,7 +4652,9 @@
     },
     "/stores/{storeId}/payouts/{payoutId}": {
       "get": {
-        "tags": ["Payouts"],
+        "tags": [
+          "Payouts"
+        ],
         "description": "Requires `PAYOUTS_READ` scope.",
         "parameters": [
           {
@@ -4134,13 +4685,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4169,7 +4725,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4188,7 +4747,9 @@
     },
     "/stores/{storeId}/payouts/bank-accounts": {
       "get": {
-        "tags": ["Payouts"],
+        "tags": [
+          "Payouts"
+        ],
         "description": "Requires `PAYOUTS_READ` scope.",
         "parameters": [
           {
@@ -4209,13 +4770,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4230,8 +4796,13 @@
                       "country": "US",
                       "routingNumber": "021000021",
                       "bankAccountType": "checking",
-                      "supportedCurrencies": ["usd"],
-                      "availablePayoutSpeeds": ["standard", "instant"],
+                      "supportedCurrencies": [
+                        "usd"
+                      ],
+                      "availablePayoutSpeeds": [
+                        "standard",
+                        "instant"
+                      ],
                       "createdAt": "2026-04-15T12:00:00.000Z",
                       "updatedAt": "2026-04-18T15:30:00.000Z"
                     }
@@ -4246,7 +4817,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4265,7 +4839,9 @@
     },
     "/stores/{storeId}/payouts/ledger": {
       "get": {
-        "tags": ["Payouts"],
+        "tags": [
+          "Payouts"
+        ],
         "description": "Requires `PAYOUTS_READ` scope.",
         "parameters": [
           {
@@ -4294,35 +4870,51 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["OPENING_BALANCE"]
+                  "enum": [
+                    "OPENING_BALANCE"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PAYMENT_RECEIVED"]
+                  "enum": [
+                    "PAYMENT_RECEIVED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["REFUND_INSTANT"]
+                  "enum": [
+                    "REFUND_INSTANT"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["REFUND_ASYNC"]
+                  "enum": [
+                    "REFUND_ASYNC"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["REFUND_EXTERNAL"]
+                  "enum": [
+                    "REFUND_EXTERNAL"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["DISPUTE_CREATED"]
+                  "enum": [
+                    "DISPUTE_CREATED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["DISPUTE_WON"]
+                  "enum": [
+                    "DISPUTE_WON"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PAYOUT"]
+                  "enum": [
+                    "PAYOUT"
+                  ]
                 }
               ]
             },
@@ -4348,13 +4940,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4387,7 +4984,9 @@
     },
     "/stores/{storeId}/orders/": {
       "get": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "description": "Requires `ORDERS_READ` scope.",
         "parameters": [
           {
@@ -4416,31 +5015,45 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["PENDING"]
+                  "enum": [
+                    "PENDING"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PROCESSING"]
+                  "enum": [
+                    "PROCESSING"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["COMPLETED"]
+                  "enum": [
+                    "COMPLETED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["CANCELLED"]
+                  "enum": [
+                    "CANCELLED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["FAILED"]
+                  "enum": [
+                    "FAILED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["REFUNDED"]
+                  "enum": [
+                    "REFUNDED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["CHARGEBACK"]
+                  "enum": [
+                    "CHARGEBACK"
+                  ]
                 }
               ]
             },
@@ -4462,11 +5075,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -4492,13 +5109,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4541,7 +5163,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4560,7 +5185,9 @@
     },
     "/stores/{storeId}/orders/{orderId}": {
       "get": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "description": "Requires `ORDERS_READ` scope.",
         "parameters": [
           {
@@ -4591,13 +5218,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4672,7 +5304,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4691,7 +5326,9 @@
     },
     "/stores/{storeId}/orders/{orderId}/refunds": {
       "get": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "description": "Requires `ORDERS_READ` scope.",
         "parameters": [
           {
@@ -4722,13 +5359,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4760,7 +5402,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4779,7 +5424,9 @@
     },
     "/stores/{storeId}/orders/{orderId}/retry-fulfillment": {
       "post": {
-        "tags": ["Orders"],
+        "tags": [
+          "Orders"
+        ],
         "description": "Requires `ORDERS_WRITE` scope.",
         "parameters": [
           {
@@ -4810,13 +5457,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -4835,7 +5487,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4855,7 +5510,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -4874,7 +5532,9 @@
     },
     "/stores/{storeId}/orders/payments/": {
       "get": {
-        "tags": ["Payments"],
+        "tags": [
+          "Payments"
+        ],
         "description": "Requires `ORDERS_READ` scope.",
         "parameters": [
           {
@@ -4903,27 +5563,39 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["PENDING"]
+                  "enum": [
+                    "PENDING"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PROCESSING"]
+                  "enum": [
+                    "PROCESSING"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["COMPLETED"]
+                  "enum": [
+                    "COMPLETED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["REFUNDED"]
+                  "enum": [
+                    "REFUNDED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["DISPUTED"]
+                  "enum": [
+                    "DISPUTED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["FAILED"]
+                  "enum": [
+                    "FAILED"
+                  ]
                 }
               ]
             },
@@ -4945,11 +5617,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -4975,13 +5651,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5026,7 +5707,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5045,7 +5729,9 @@
     },
     "/stores/{storeId}/orders/payments/{paymentId}": {
       "get": {
-        "tags": ["Payments"],
+        "tags": [
+          "Payments"
+        ],
         "description": "Requires `ORDERS_READ` scope.",
         "parameters": [
           {
@@ -5076,13 +5762,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5132,7 +5823,10 @@
                     },
                     "dispute": null,
                     "timeline": [],
-                    "availablePaymentMethods": ["card", "klarna"],
+                    "availablePaymentMethods": [
+                      "card",
+                      "klarna"
+                    ],
                     "network": null,
                     "updatedAt": "2026-05-14T12:35:10.000Z"
                   }
@@ -5146,7 +5840,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5165,7 +5862,9 @@
     },
     "/stores/{storeId}/customers/": {
       "get": {
-        "tags": ["Customers"],
+        "tags": [
+          "Customers"
+        ],
         "description": "Requires `CUSTOMERS_READ` scope.",
         "parameters": [
           {
@@ -5203,19 +5902,27 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["email"]
+                  "enum": [
+                    "email"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["totalSpent"]
+                  "enum": [
+                    "totalSpent"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["orderCount"]
+                  "enum": [
+                    "orderCount"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["createdAt"]
+                  "enum": [
+                    "createdAt"
+                  ]
                 }
               ]
             },
@@ -5228,11 +5935,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -5258,13 +5969,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5299,7 +6015,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5318,7 +6037,9 @@
     },
     "/stores/{storeId}/customers/{customerId}": {
       "get": {
-        "tags": ["Customers"],
+        "tags": [
+          "Customers"
+        ],
         "description": "Requires `CUSTOMERS_READ` scope.",
         "parameters": [
           {
@@ -5349,13 +6070,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5380,7 +6106,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5399,7 +6128,9 @@
     },
     "/stores/{storeId}/licenses/": {
       "get": {
-        "tags": ["Licenses"],
+        "tags": [
+          "Licenses"
+        ],
         "description": "Requires `LICENSES_READ` scope.",
         "parameters": [
           {
@@ -5438,15 +6169,21 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["AVAILABLE"]
+                  "enum": [
+                    "AVAILABLE"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["CLAIMED"]
+                  "enum": [
+                    "CLAIMED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["REVOKED"]
+                  "enum": [
+                    "REVOKED"
+                  ]
                 }
               ]
             },
@@ -5472,13 +6209,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5514,7 +6256,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5533,7 +6278,9 @@
     },
     "/stores/{storeId}/licenses/{licenseId}": {
       "get": {
-        "tags": ["Licenses"],
+        "tags": [
+          "Licenses"
+        ],
         "description": "Requires `LICENSES_READ` scope.",
         "parameters": [
           {
@@ -5564,13 +6311,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5596,7 +6348,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5615,7 +6370,9 @@
     },
     "/stores/{storeId}/licenses/verify": {
       "post": {
-        "tags": ["Licenses"],
+        "tags": [
+          "Licenses"
+        ],
         "description": "Requires `LICENSES_READ` scope.",
         "requestBody": {
           "required": true,
@@ -5623,7 +6380,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["key"],
+                "required": [
+                  "key"
+                ],
                 "properties": {
                   "key": {
                     "type": "string",
@@ -5659,13 +6418,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5687,7 +6451,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5706,7 +6473,9 @@
     },
     "/stores/{storeId}/subscriptions/": {
       "get": {
-        "tags": ["Subscriptions"],
+        "tags": [
+          "Subscriptions"
+        ],
         "description": "Requires `SUBSCRIPTIONS_READ` scope.",
         "parameters": [
           {
@@ -5735,23 +6504,33 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["TRIALING"]
+                  "enum": [
+                    "TRIALING"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["ACTIVE"]
+                  "enum": [
+                    "ACTIVE"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PAST_DUE"]
+                  "enum": [
+                    "PAST_DUE"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["PAUSED"]
+                  "enum": [
+                    "PAUSED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["CANCELLED"]
+                  "enum": [
+                    "CANCELLED"
+                  ]
                 }
               ]
             },
@@ -5797,13 +6576,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5860,7 +6644,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5879,7 +6666,9 @@
     },
     "/stores/{storeId}/subscriptions/{subscriptionId}": {
       "get": {
-        "tags": ["Subscriptions"],
+        "tags": [
+          "Subscriptions"
+        ],
         "description": "Requires `SUBSCRIPTIONS_READ` scope.",
         "parameters": [
           {
@@ -5910,13 +6699,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -5963,7 +6757,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -5982,7 +6779,9 @@
     },
     "/stores/{storeId}/subscriptions/{subscriptionId}/cancel": {
       "post": {
-        "tags": ["Subscriptions"],
+        "tags": [
+          "Subscriptions"
+        ],
         "description": "Requires `SUBSCRIPTIONS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -6029,13 +6828,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6082,7 +6886,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6102,7 +6909,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6121,7 +6931,9 @@
     },
     "/stores/{storeId}/cases/": {
       "get": {
-        "tags": ["Cases"],
+        "tags": [
+          "Cases"
+        ],
         "description": "Requires `CASES_READ` scope.",
         "parameters": [
           {
@@ -6150,19 +6962,27 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["OPEN"]
+                  "enum": [
+                    "OPEN"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["AWAITING_CUSTOMER"]
+                  "enum": [
+                    "AWAITING_CUSTOMER"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["AWAITING_MERCHANT"]
+                  "enum": [
+                    "AWAITING_MERCHANT"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["CLOSED"]
+                  "enum": [
+                    "CLOSED"
+                  ]
                 }
               ]
             },
@@ -6175,19 +6995,27 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["LOW"]
+                  "enum": [
+                    "LOW"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["NORMAL"]
+                  "enum": [
+                    "NORMAL"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["HIGH"]
+                  "enum": [
+                    "HIGH"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["URGENT"]
+                  "enum": [
+                    "URGENT"
+                  ]
                 }
               ]
             },
@@ -6233,13 +7061,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6280,7 +7113,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6299,7 +7135,9 @@
     },
     "/stores/{storeId}/cases/{caseId}": {
       "get": {
-        "tags": ["Cases"],
+        "tags": [
+          "Cases"
+        ],
         "description": "Requires `CASES_READ` scope.",
         "parameters": [
           {
@@ -6330,13 +7168,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6367,7 +7210,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6384,7 +7230,9 @@
         }
       },
       "patch": {
-        "tags": ["Cases"],
+        "tags": [
+          "Cases"
+        ],
         "description": "Requires `CASES_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -6397,19 +7245,27 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["LOW"]
+                        "enum": [
+                          "LOW"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["NORMAL"]
+                        "enum": [
+                          "NORMAL"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["HIGH"]
+                        "enum": [
+                          "HIGH"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["URGENT"]
+                        "enum": [
+                          "URGENT"
+                        ]
                       }
                     ]
                   },
@@ -6417,15 +7273,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["AWAITING_CUSTOMER"]
+                        "enum": [
+                          "AWAITING_CUSTOMER"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["CLOSED"]
+                        "enum": [
+                          "CLOSED"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["OPEN"]
+                        "enum": [
+                          "OPEN"
+                        ]
                       }
                     ]
                   }
@@ -6463,13 +7325,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6500,7 +7367,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6520,7 +7390,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6539,7 +7412,9 @@
     },
     "/stores/{storeId}/cases/{caseId}/messages": {
       "get": {
-        "tags": ["Cases"],
+        "tags": [
+          "Cases"
+        ],
         "description": "Requires `CASES_READ` scope.",
         "parameters": [
           {
@@ -6591,13 +7466,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6630,7 +7510,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6647,14 +7530,18 @@
         }
       },
       "post": {
-        "tags": ["Cases"],
+        "tags": [
+          "Cases"
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["body"],
+                "required": [
+                  "body"
+                ],
                 "properties": {
                   "body": {
                     "type": "string",
@@ -6730,13 +7617,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6759,7 +7651,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6779,7 +7674,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6798,7 +7696,9 @@
     },
     "/stores/{storeId}/cases/{caseId}/read": {
       "post": {
-        "tags": ["Cases"],
+        "tags": [
+          "Cases"
+        ],
         "description": "Requires `CASES_WRITE` scope.",
         "parameters": [
           {
@@ -6829,13 +7729,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6853,7 +7758,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -6872,7 +7780,9 @@
     },
     "/stores/{storeId}/refunds/": {
       "get": {
-        "tags": ["Refunds"],
+        "tags": [
+          "Refunds"
+        ],
         "description": "Requires `REFUNDS_READ` scope.",
         "parameters": [
           {
@@ -6901,15 +7811,21 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["PROCESSING"]
+                  "enum": [
+                    "PROCESSING"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["COMPLETED"]
+                  "enum": [
+                    "COMPLETED"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["FAILED"]
+                  "enum": [
+                    "FAILED"
+                  ]
                 }
               ]
             },
@@ -6922,11 +7838,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -6952,13 +7872,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -6998,7 +7923,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -7017,7 +7945,9 @@
     },
     "/stores/{storeId}/refunds/{refundId}": {
       "get": {
-        "tags": ["Refunds"],
+        "tags": [
+          "Refunds"
+        ],
         "description": "Requires `REFUNDS_READ` scope.",
         "parameters": [
           {
@@ -7048,13 +7978,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -7090,7 +8025,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -7109,7 +8047,9 @@
     },
     "/stores/{storeId}/refunds/orders/{orderId}": {
       "post": {
-        "tags": ["Refunds"],
+        "tags": [
+          "Refunds"
+        ],
         "description": "Requires `REFUNDS_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -7122,15 +8062,21 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "enum": ["DUPLICATE"]
+                        "enum": [
+                          "DUPLICATE"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["FRAUDULENT"]
+                        "enum": [
+                          "FRAUDULENT"
+                        ]
                       },
                       {
                         "type": "string",
-                        "enum": ["REQUESTED_BY_CUSTOMER"]
+                        "enum": [
+                          "REQUESTED_BY_CUSTOMER"
+                        ]
                       }
                     ]
                   }
@@ -7168,13 +8114,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -7210,7 +8161,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -7230,7 +8184,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -7249,7 +8206,9 @@
     },
     "/stores/{storeId}/disputes/": {
       "get": {
-        "tags": ["Disputes"],
+        "tags": [
+          "Disputes"
+        ],
         "description": "Requires `DISPUTES_READ` scope.",
         "parameters": [
           {
@@ -7278,19 +8237,27 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["AWAITING_REVIEW"]
+                  "enum": [
+                    "AWAITING_REVIEW"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["UNDER_REVIEW"]
+                  "enum": [
+                    "UNDER_REVIEW"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["WON"]
+                  "enum": [
+                    "WON"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["LOST"]
+                  "enum": [
+                    "LOST"
+                  ]
                 }
               ]
             },
@@ -7303,11 +8270,15 @@
               "anyOf": [
                 {
                   "type": "string",
-                  "enum": ["asc"]
+                  "enum": [
+                    "asc"
+                  ]
                 },
                 {
                   "type": "string",
-                  "enum": ["desc"]
+                  "enum": [
+                    "desc"
+                  ]
                 }
               ]
             },
@@ -7333,13 +8304,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -7349,7 +8325,7 @@
                       {
                         "id": "dsp_8h0r1n4tzcbfp2v8q1mzwxj5",
                         "disputeId": "dp_3jK9w2pQ8mZ5x7Lh1nVt4Bcf",
-                        "reason": "fraudulent",
+                        "reason": "FRAUDULENT",
                         "status": "AWAITING_REVIEW",
                         "evidence": null,
                         "totalAmount": 2920,
@@ -7384,7 +8360,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -7403,7 +8382,9 @@
     },
     "/stores/{storeId}/disputes/{disputeId}": {
       "get": {
-        "tags": ["Disputes"],
+        "tags": [
+          "Disputes"
+        ],
         "description": "Requires `DISPUTES_READ` scope.",
         "parameters": [
           {
@@ -7434,13 +8415,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -7448,7 +8434,7 @@
                   "data": {
                     "id": "dsp_8h0r1n4tzcbfp2v8q1mzwxj5",
                     "disputeId": "dp_3jK9w2pQ8mZ5x7Lh1nVt4Bcf",
-                    "reason": "fraudulent",
+                    "reason": "FRAUDULENT",
                     "status": "AWAITING_REVIEW",
                     "evidence": null,
                     "totalAmount": 2920,
@@ -7470,14 +8456,7 @@
                       "currency": "USD"
                     },
                     "method": "card",
-                    "updatedAt": "2026-05-14T09:12:00.000Z",
-                    "inboundPayment": {
-                      "id": "pmt_5h7n4tr3bcfp2v8q1mzj0kxw",
-                      "referenceId": "pi_3OXxxxxx0123456789ABCDEF",
-                      "totalAmount": 2920,
-                      "settledAmount": 2553,
-                      "status": "DISPUTED"
-                    }
+                    "updatedAt": "2026-05-14T09:12:00.000Z"
                   }
                 }
               }
@@ -7489,7 +8468,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -7508,7 +8490,9 @@
     },
     "/stores/{storeId}/disputes/{disputeId}/evidence": {
       "post": {
-        "tags": ["Disputes"],
+        "tags": [
+          "Disputes"
+        ],
         "description": "Requires `DISPUTES_WRITE` scope.",
         "requestBody": {
           "required": true,
@@ -7516,7 +8500,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["access_activity_log"],
+                "required": [
+                  "access_activity_log"
+                ],
                 "properties": {
                   "access_activity_log": {
                     "type": "string",
@@ -7557,13 +8543,18 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "data"],
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
                       "enum": [true]
                     },
-                    "data": {}
+                    "data": {
+
+                    }
                   }
                 },
                 "example": {
@@ -7571,7 +8562,7 @@
                   "data": {
                     "id": "dsp_8h0r1n4tzcbfp2v8q1mzwxj5",
                     "disputeId": "dp_3jK9w2pQ8mZ5x7Lh1nVt4Bcf",
-                    "reason": "fraudulent",
+                    "reason": "FRAUDULENT",
                     "status": "UNDER_REVIEW",
                     "evidence": {
                       "access_activity_log": "Customer logged in 14 times..."
@@ -7595,14 +8586,7 @@
                       "currency": "USD"
                     },
                     "method": "card",
-                    "updatedAt": "2026-05-14T09:12:00.000Z",
-                    "inboundPayment": {
-                      "id": "pmt_5h7n4tr3bcfp2v8q1mzj0kxw",
-                      "referenceId": "pi_3OXxxxxx0123456789ABCDEF",
-                      "totalAmount": 2920,
-                      "settledAmount": 2553,
-                      "status": "DISPUTED"
-                    }
+                    "updatedAt": "2026-05-14T09:12:00.000Z"
                   }
                 }
               }
@@ -7614,7 +8598,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
@@ -7634,7 +8621,10 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["ok", "error"],
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
                   "properties": {
                     "ok": {
                       "type": "boolean",
