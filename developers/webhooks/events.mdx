@@ -58,6 +58,7 @@ type WebhookEvent =
   | "PAYMENT_DISPUTED"
   | "PAYMENT_DISPUTE_WON"
   | "PAYMENT_DISPUTE_LOST"
+  | "PAYMENT_DISPUTE_PREVENTED"
   | "SUBSCRIPTION_CREATED"
   | "SUBSCRIPTION_RENEWED"
   | "SUBSCRIPTION_PAST_DUE"
@@ -148,6 +149,14 @@ Fired when a dispute is resolved in the merchant's favor. The disputed amount an
 ### `PAYMENT_DISPUTE_LOST`
 
 Fired when a dispute is resolved against the merchant. The deducted funds remain lost and the order stays in `CHARGEBACK` status.
+
+---
+
+### `PAYMENT_DISPUTE_PREVENTED`
+
+Fired when Verifi (Visa RDR) or Ethoca prevents a chargeback before it becomes a formal dispute. This is terminal — no `PAYMENT_DISPUTE_WON` or `PAYMENT_DISPUTE_LOST` will follow.
+
+The order moves to `CHARGEBACK` status. The disputed amount plus a **$30.00 prevention fee** is deducted from the store's available balance. Prevented disputes do not count toward your dispute rate.
 
 ## Subscription events
 

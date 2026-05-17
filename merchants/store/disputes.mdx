@@ -42,11 +42,12 @@ You have **7 days** from when a dispute is opened to submit evidence. We'll emai
 
 ## Fees
 
-| Outcome        | Effect                                                                    |
-| -------------- | ------------------------------------------------------------------------- |
-| Dispute opened | Disputed amount + \$20.00 fee deducted from your available balance.       |
-| Won            | Disputed amount and dispute fee restored to your balance.                 |
-| Lost           | Deduction stands. Original processing and platform fees are not refunded. |
+| Outcome        | Effect                                                                                       |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| Dispute opened | Disputed amount + \$20.00 fee deducted from your available balance.                          |
+| Won            | Disputed amount and dispute fee restored to your balance.                                    |
+| Lost           | Deduction stands. Original processing and platform fees are not refunded.                    |
+| Prevented      | Disputed amount + **\$30.00** prevention fee deducted. Terminal, doesn't affect your rate. See [Prevented disputes](#prevented-disputes). |
 
 ## Dispute rate
 
@@ -104,6 +105,14 @@ Through our integrations with **Verifi** (Visa) and **Ethoca** (Mastercard), the
 - **Orders > \$50** — you decide whether to refund pre-emptively or contest. We email you with the EFW reason.
 
 Each EFW carries a **\$29 network fee** (charged by Verifi or Ethoca), deducted from your available balance when we receive the alert. The fee itself is higher than the \$20 dispute fee, but the EFW keeps the chargeback off your dispute rate — which is what matters once you're approaching the 0.75% threshold.
+
+### Prevented disputes
+
+If a chargeback is filed without an earlier EFW, Verifi's **Rapid Dispute Resolution (RDR)** and **Ethoca Alerts** can still catch it and resolve it with the issuing bank before it becomes a formal dispute. The cardholder is refunded by the network.
+
+Unlike an EFW, you don't get a chance to contest — the network intercepts after the dispute is filed. The disputed amount plus a **\$30 prevention fee** is deducted from your balance, the order moves to `Chargeback`, and the dispute appears with status **Prevented**.
+
+There is no evidence to submit, no won/lost outcome, and **no impact on your dispute rate** — that's the value: a prevented dispute costs you the sale but keeps the chargeback off your VDMP/ECM ratio.
 
 ### Compelling Evidence 3.0
 

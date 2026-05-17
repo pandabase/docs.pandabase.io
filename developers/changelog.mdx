@@ -4,6 +4,16 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="May 17, 2026" description="Prevented disputes" tags={["V2"]}>
+## Features
+
+- **`PAYMENT_DISPUTE_PREVENTED`**: New webhook event fired when Verifi (Visa RDR) or Ethoca prevents a chargeback before it becomes a formal dispute.
+- **\$30 prevention fee**: Disputed amount plus the prevention fee is deducted from your balance. Prevented disputes do not count toward your dispute rate. The `Dispute` resource exposes the new `PREVENTED` status, and the dispute-list endpoint accepts it as a filter.
+
+You can opt in by adding `PAYMENT_DISPUTE_PREVENTED` to your endpoint's `eventTypes`. See [events](/developers/webhooks/events) and the [disputes guide](/merchants/store/disputes).
+
+</Update>
+
 <Update label="May 15, 2026" description="Standard Webhooks support" tags={["V2"]}>
 ## Features
 
