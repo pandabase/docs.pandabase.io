@@ -3,7 +3,7 @@
   "info": {
     "title": "Pandabase Store API",
     "version": "2.0.0",
-    "description": "Programmatic API for merchant stores. Authenticate with a store token: `sk_` Bearer or `stk_` HMAC."
+    "description": "The Pandabase Store API gives merchants programmatic access to a single store: products, orders, customers, payouts, subscriptions, and usage-based billing. All endpoints are authenticated with a store token in either Bearer (`sk_`) or HMAC (`stk_`) mode."
   },
   "components": {
     "securitySchemes": {
@@ -11,13 +11,13 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "sk_...",
-        "description": "Bearer token mode — passes the secret directly. Token starts with `sk_`."
+        "description": "Bearer token authentication. Pass the secret directly in the `Authorization` header. Token secrets start with `sk_`."
       },
       "hmacAuth": {
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "HMAC mode — Authorization header carries the public token (`stk_...`). Each request must include an X-Pandabase-Signature header carrying an HMAC-SHA256 of the canonical request string."
+        "description": "HMAC token authentication. Pass the token ID in the `Authorization` header as `Bearer \u003Ctoken_id\u003E` (IDs start with `stk_`), and include an `X-Signature` header containing the hex-encoded HMAC-SHA256 of the JSON request body."
       }
     },
     "schemas": {
@@ -31,7 +31,7 @@
         "tags": [
           "Store"
         ],
-        "description": "Requires `STORE_READ` scope.",
+        "description": "Returns the public configuration of the store. Requires the `STORE_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -42,6 +42,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -115,7 +125,7 @@
         "tags": [
           "Products"
         ],
-        "description": "Requires `PRODUCTS_READ` scope.",
+        "description": "Returns a list of products on the store. Soft-deleted products are excluded. Requires the `PRODUCTS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -215,6 +225,12 @@
                   "enum": [
                     "FREE"
                   ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "USAGE_BASED"
+                  ]
                 }
               ]
             },
@@ -303,6 +319,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -334,7 +360,7 @@
                         "id": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
                         "title": "Pro Plan",
                         "subtitle": "Everything you need to ship",
-                        "description": "Full access to the platform — unlimited stores, no transaction caps.",
+                        "description": "Full access to the platform. Unlimited stores, no transaction caps.",
                         "handle": "pro-plan",
                         "price": 2900,
                         "compareAtPrice": 4900,
@@ -398,7 +424,7 @@
         "tags": [
           "Products"
         ],
-        "description": "Requires `PRODUCTS_WRITE` scope.",
+        "description": "Creates a new product on the store. Subscription products require a billing interval. Requires the `PRODUCTS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -525,6 +551,12 @@
                         "type": "string",
                         "enum": [
                           "FREE"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "USAGE_BASED"
                         ]
                       }
                     ]
@@ -817,6 +849,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -846,7 +888,7 @@
                     "id": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
                     "title": "Pro Plan",
                     "subtitle": "Everything you need to ship",
-                    "description": "Full access to the platform — unlimited stores, no transaction caps.",
+                    "description": "Full access to the platform. Unlimited stores, no transaction caps.",
                     "handle": "pro-plan",
                     "price": 2900,
                     "compareAtPrice": 4900,
@@ -904,7 +946,7 @@
         "tags": [
           "Products"
         ],
-        "description": "Requires `PRODUCTS_READ` scope.",
+        "description": "Retrieves a product by ID. Requires the `PRODUCTS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -925,6 +967,16 @@
             "in": "path",
             "name": "productId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -954,7 +1006,7 @@
                     "id": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
                     "title": "Pro Plan",
                     "subtitle": "Everything you need to ship",
-                    "description": "Full access to the platform — unlimited stores, no transaction caps.",
+                    "description": "Full access to the platform. Unlimited stores, no transaction caps.",
                     "handle": "pro-plan",
                     "price": 2900,
                     "compareAtPrice": 4900,
@@ -1010,7 +1062,7 @@
         "tags": [
           "Products"
         ],
-        "description": "Requires `PRODUCTS_WRITE` scope.",
+        "description": "Updates an existing product. Variants and options on the request are upserted by ID. Requires the `PRODUCTS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1168,6 +1220,12 @@
                         "type": "string",
                         "enum": [
                           "FREE"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "USAGE_BASED"
                         ]
                       }
                     ]
@@ -1614,6 +1672,16 @@
             "in": "path",
             "name": "productId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -1643,7 +1711,7 @@
                     "id": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
                     "title": "Pro Plan",
                     "subtitle": "Everything you need to ship",
-                    "description": "Full access to the platform — unlimited stores, no transaction caps.",
+                    "description": "Full access to the platform. Unlimited stores, no transaction caps.",
                     "handle": "pro-plan",
                     "price": 2900,
                     "compareAtPrice": 4900,
@@ -1699,7 +1767,7 @@
         "tags": [
           "Products"
         ],
-        "description": "Requires `PRODUCTS_WRITE` scope.",
+        "description": "Soft-deletes a product so it can no longer be purchased. Existing order line items remain intact for historical reference. Requires the `PRODUCTS_WRITE` scope.",
         "parameters": [
           {
             "schema": {
@@ -1720,6 +1788,16 @@
             "in": "path",
             "name": "productId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -1784,7 +1862,7 @@
         "tags": [
           "Categories"
         ],
-        "description": "Requires `CATEGORIES_READ` scope.",
+        "description": "Returns a list of product categories on the store. Requires the `CATEGORIES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -1913,6 +1991,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -1999,7 +2087,7 @@
         "tags": [
           "Categories"
         ],
-        "description": "Requires `CATEGORIES_WRITE` scope.",
+        "description": "Creates a new product category. Requires the `CATEGORIES_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2091,6 +2179,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -2169,7 +2267,7 @@
         "tags": [
           "Categories"
         ],
-        "description": "Requires `CATEGORIES_READ` scope.",
+        "description": "Retrieves a product category by ID. Requires the `CATEGORIES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -2190,6 +2288,16 @@
             "in": "path",
             "name": "categoryId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -2266,7 +2374,7 @@
         "tags": [
           "Categories"
         ],
-        "description": "Requires `CATEGORIES_WRITE` scope.",
+        "description": "Updates an existing product category. Requires the `CATEGORIES_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2395,6 +2503,16 @@
             "in": "path",
             "name": "categoryId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -2471,7 +2589,7 @@
         "tags": [
           "Categories"
         ],
-        "description": "Requires `CATEGORIES_WRITE` scope.",
+        "description": "Deletes a product category. Products previously assigned to the category remain on the store. Requires the `CATEGORIES_WRITE` scope.",
         "parameters": [
           {
             "schema": {
@@ -2492,6 +2610,16 @@
             "in": "path",
             "name": "categoryId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -2556,7 +2684,7 @@
         "tags": [
           "Coupons"
         ],
-        "description": "Requires `COUPONS_READ` scope.",
+        "description": "Returns a list of coupons on the store. Requires the `COUPONS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -2686,6 +2814,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -2774,7 +2912,7 @@
         "tags": [
           "Coupons"
         ],
-        "description": "Requires `COUPONS_WRITE` scope.",
+        "description": "Creates a coupon that can be redeemed at checkout. Requires the `COUPONS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2874,6 +3012,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -2954,7 +3102,7 @@
         "tags": [
           "Coupons"
         ],
-        "description": "Requires `COUPONS_READ` scope.",
+        "description": "Retrieves a coupon by ID. Requires the `COUPONS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -2975,6 +3123,16 @@
             "in": "path",
             "name": "couponId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -3053,7 +3211,7 @@
         "tags": [
           "Coupons"
         ],
-        "description": "Requires `COUPONS_WRITE` scope.",
+        "description": "Updates an existing coupon. The redemption code itself is immutable. Requires the `COUPONS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3212,6 +3370,16 @@
             "in": "path",
             "name": "couponId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -3290,7 +3458,7 @@
         "tags": [
           "Coupons"
         ],
-        "description": "Requires `COUPONS_WRITE` scope.",
+        "description": "Deletes a coupon. Existing orders that redeemed it are unaffected. Requires the `COUPONS_WRITE` scope.",
         "parameters": [
           {
             "schema": {
@@ -3311,6 +3479,16 @@
             "in": "path",
             "name": "couponId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -3375,7 +3553,7 @@
         "tags": [
           "Webhooks"
         ],
-        "description": "Requires `WEBHOOKS_READ` scope.",
+        "description": "Returns a list of webhook endpoints configured on the store. Requires the `WEBHOOKS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -3407,6 +3585,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -3490,7 +3678,7 @@
         "tags": [
           "Webhooks"
         ],
-        "description": "Requires `WEBHOOKS_WRITE` scope.",
+        "description": "Creates a new webhook endpoint. The secret is returned only on creation and cannot be retrieved later. Requires the `WEBHOOKS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3552,6 +3740,12 @@
                           "type": "string",
                           "enum": [
                             "PAYMENT_DISPUTE_LOST"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAYMENT_DISPUTE_PREVENTED"
                           ]
                         },
                         {
@@ -3635,6 +3829,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -3711,7 +3915,7 @@
         "tags": [
           "Webhooks"
         ],
-        "description": "Requires `WEBHOOKS_READ` scope.",
+        "description": "Retrieves a webhook endpoint by ID. Requires the `WEBHOOKS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -3732,6 +3936,16 @@
             "in": "path",
             "name": "webhookId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -3805,7 +4019,7 @@
         "tags": [
           "Webhooks"
         ],
-        "description": "Requires `WEBHOOKS_WRITE` scope.",
+        "description": "Updates an existing webhook endpoint. Requires the `WEBHOOKS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3863,6 +4077,12 @@
                           "type": "string",
                           "enum": [
                             "PAYMENT_DISPUTE_LOST"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAYMENT_DISPUTE_PREVENTED"
                           ]
                         },
                         {
@@ -3966,6 +4186,16 @@
             "in": "path",
             "name": "webhookId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4039,7 +4269,7 @@
         "tags": [
           "Webhooks"
         ],
-        "description": "Requires `WEBHOOKS_WRITE` scope.",
+        "description": "Deletes a webhook endpoint. Past deliveries are retained for 30 days. Requires the `WEBHOOKS_WRITE` scope.",
         "parameters": [
           {
             "schema": {
@@ -4060,6 +4290,16 @@
             "in": "path",
             "name": "webhookId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4124,7 +4364,7 @@
         "tags": [
           "Analytics"
         ],
-        "description": "Requires `ANALYTICS_READ` scope.",
+        "description": "Returns aggregate metrics for the store across orders, revenue, customers, and refunds. Requires the `ANALYTICS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -4192,6 +4432,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4265,7 +4515,7 @@
         "tags": [
           "Analytics"
         ],
-        "description": "Requires `ANALYTICS_READ` scope.",
+        "description": "Returns gross transaction volume bucketed over the requested time range. Requires the `ANALYTICS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -4333,6 +4583,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4418,7 +4678,7 @@
         "tags": [
           "Analytics"
         ],
-        "description": "Requires `ANALYTICS_READ` scope.",
+        "description": "Returns order counts grouped by customer country. Requires the `ANALYTICS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -4486,6 +4746,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4564,7 +4834,7 @@
         "tags": [
           "Payouts"
         ],
-        "description": "Requires `PAYOUTS_READ` scope.",
+        "description": "Returns a list of payouts requested by the store, most recent first. Requires the `PAYOUTS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -4596,6 +4866,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4681,7 +4961,7 @@
         "tags": [
           "Payouts"
         ],
-        "description": "Requires `PAYOUTS_READ` scope.",
+        "description": "Retrieves a payout by ID. The response includes the trace ID and expected delivery date once the payout has been dispatched. Requires the `PAYOUTS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -4702,6 +4982,16 @@
             "in": "path",
             "name": "payoutId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4777,7 +5067,7 @@
         "tags": [
           "Payouts"
         ],
-        "description": "Requires `PAYOUTS_READ` scope.",
+        "description": "Returns the bank accounts configured for the store's payouts. Requires the `PAYOUTS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -4788,6 +5078,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -4870,7 +5170,7 @@
         "tags": [
           "Payouts"
         ],
-        "description": "Requires `PAYOUTS_READ` scope.",
+        "description": "Returns the store's balance ledger, an immutable record of every balance mutation. Requires the `PAYOUTS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -4959,6 +5259,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -5016,7 +5326,7 @@
         "tags": [
           "Orders"
         ],
-        "description": "Requires `ORDERS_READ` scope.",
+        "description": "Returns a list of orders placed on the store, most recent first. Requires the `ORDERS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -5129,6 +5439,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -5218,7 +5538,7 @@
         "tags": [
           "Orders"
         ],
-        "description": "Requires `ORDERS_READ` scope.",
+        "description": "Retrieves an order by ID. Requires the `ORDERS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -5239,6 +5559,16 @@
             "in": "path",
             "name": "orderId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -5360,7 +5690,7 @@
         "tags": [
           "Orders"
         ],
-        "description": "Requires `ORDERS_READ` scope.",
+        "description": "Returns the refunds issued against the specified order. Requires the `ORDERS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -5381,6 +5711,16 @@
             "in": "path",
             "name": "orderId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -5459,7 +5799,7 @@
         "tags": [
           "Orders"
         ],
-        "description": "Requires `ORDERS_WRITE` scope.",
+        "description": "Re-runs fulfillment for an order whose initial fulfillment attempt failed. Requires the `ORDERS_WRITE` scope.",
         "parameters": [
           {
             "schema": {
@@ -5480,6 +5820,16 @@
             "in": "path",
             "name": "orderId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -5568,7 +5918,7 @@
         "tags": [
           "Payments"
         ],
-        "description": "Requires `ORDERS_READ` scope.",
+        "description": "Returns a list of payments collected on the store, most recent first. Requires the `ORDERS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -5675,6 +6025,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -5766,7 +6126,7 @@
         "tags": [
           "Payments"
         ],
-        "description": "Requires `ORDERS_READ` scope.",
+        "description": "Retrieves a payment by ID. Requires the `ORDERS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -5787,6 +6147,16 @@
             "in": "path",
             "name": "paymentId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -5900,7 +6270,7 @@
         "tags": [
           "Customers"
         ],
-        "description": "Requires `CUSTOMERS_READ` scope.",
+        "description": "Returns a list of customers who have checked out on the store, most recent first. Requires the `CUSTOMERS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -5995,6 +6365,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6076,7 +6456,7 @@
         "tags": [
           "Customers"
         ],
-        "description": "Requires `CUSTOMERS_READ` scope.",
+        "description": "Retrieves a customer by ID. Requires the `CUSTOMERS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -6097,6 +6477,16 @@
             "in": "path",
             "name": "customerId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6168,7 +6558,7 @@
         "tags": [
           "Licenses"
         ],
-        "description": "Requires `LICENSES_READ` scope.",
+        "description": "Returns a list of license keys issued by the store. Requires the `LICENSES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -6237,6 +6627,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6319,7 +6719,7 @@
         "tags": [
           "Licenses"
         ],
-        "description": "Requires `LICENSES_READ` scope.",
+        "description": "Retrieves a license by ID. The response includes the decrypted key. Requires the `LICENSES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -6340,6 +6740,16 @@
             "in": "path",
             "name": "licenseId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6412,7 +6822,7 @@
         "tags": [
           "Licenses"
         ],
-        "description": "Requires `LICENSES_READ` scope.",
+        "description": "Verifies a license key against a product and returns its activation status. Intended for first-party software activation flows. Requires the `LICENSES_READ` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6448,6 +6858,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6516,7 +6936,7 @@
         "tags": [
           "Subscriptions"
         ],
-        "description": "Requires `SUBSCRIPTIONS_READ` scope.",
+        "description": "Returns a list of subscriptions on the store, most recent first. Requires the `SUBSCRIPTIONS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -6607,6 +7027,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6710,7 +7140,7 @@
         "tags": [
           "Subscriptions"
         ],
-        "description": "Requires `SUBSCRIPTIONS_READ` scope.",
+        "description": "Retrieves a subscription by ID. Requires the `SUBSCRIPTIONS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -6731,6 +7161,16 @@
             "in": "path",
             "name": "subscriptionId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6818,13 +7258,143 @@
         }
       }
     },
+    "/stores/{storeId}/subscriptions/{subscriptionId}/usage": {
+      "get": {
+        "summary": "Get subscription usage",
+        "tags": [
+          "Subscriptions"
+        ],
+        "description": "Returns a live projection of the current billing period together with summaries of past periods for the subscription. Non-usage subscriptions return `isUsageBased: false`. Requires the `USAGE_READ` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "subscriptionId": "sub_8h4t6sqzy3x9w5n2k1m0vqbf",
+                    "isUsageBased": true,
+                    "currency": "USD",
+                    "currentPeriod": {
+                      "periodStart": "2026-05-01T00:00:00.000Z",
+                      "periodEnd": "2026-06-01T00:00:00.000Z",
+                      "baseAmount": 0,
+                      "usageAmount": 1970,
+                      "projectedTotal": 1970,
+                      "meters": [
+                        {
+                          "meterId": "umt_5e1q3npwt0u6s2k8h9j7rzbc",
+                          "eventName": "input_tokens",
+                          "quantity": 6566667,
+                          "amountCharged": 1970
+                        }
+                      ]
+                    },
+                    "pastPeriods": [
+                      {
+                        "periodStart": "2026-04-01T00:00:00.000Z",
+                        "periodEnd": "2026-05-01T00:00:00.000Z",
+                        "totalCharged": 4500,
+                        "orderId": "ord_p2v8q1mzj0kxw5h7n4tr3bcf",
+                        "meters": [
+                          {
+                            "meterId": "umt_5e1q3npwt0u6s2k8h9j7rzbc",
+                            "eventName": "input_tokens",
+                            "quantity": 15000000,
+                            "unitPrice": 300,
+                            "unitQuantity": 1000000,
+                            "amountCharged": 4500
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/stores/{storeId}/subscriptions/{subscriptionId}/cancel": {
       "post": {
         "summary": "Cancel subscription",
         "tags": [
           "Subscriptions"
         ],
-        "description": "Requires `SUBSCRIPTIONS_WRITE` scope.",
+        "description": "Cancels a subscription, either at once or at the end of the current billing period depending on the `cancelAt` value. Requires the `SUBSCRIPTIONS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -6861,6 +7431,16 @@
             "in": "path",
             "name": "subscriptionId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -6977,7 +7557,7 @@
         "tags": [
           "Cases"
         ],
-        "description": "Requires `CASES_READ` scope.",
+        "description": "Returns a list of support cases on the store, most recent first. Requires the `CASES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -7095,6 +7675,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -7182,7 +7772,7 @@
         "tags": [
           "Cases"
         ],
-        "description": "Requires `CASES_READ` scope.",
+        "description": "Retrieves a support case by ID. Requires the `CASES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -7203,6 +7793,16 @@
             "in": "path",
             "name": "caseId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -7278,7 +7878,7 @@
         "tags": [
           "Cases"
         ],
-        "description": "Requires `CASES_WRITE` scope.",
+        "description": "Updates a support case, typically to change its status. Requires the `CASES_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -7361,6 +7961,16 @@
             "in": "path",
             "name": "caseId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -7461,7 +8071,7 @@
         "tags": [
           "Cases"
         ],
-        "description": "Requires `CASES_READ` scope.",
+        "description": "Returns the messages on a support case in chronological order. Requires the `CASES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -7503,6 +8113,16 @@
             "in": "path",
             "name": "caseId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -7534,7 +8154,7 @@
                         "id": "cmsg_q1mzj0kxw5h7n4tr3bcfp2v8",
                         "senderType": "CUSTOMER",
                         "senderId": "cus_j8h0r1n4tzcbfp2v8q1mzwx5",
-                        "body": "Hey — the key I got for my order doesn't activate. Can you help?",
+                        "body": "Hi, the key I got for my order doesn't activate. Can you help?",
                         "createdAt": "2026-05-14T13:00:00.000Z",
                         "attachments": []
                       }
@@ -7580,7 +8200,7 @@
         "tags": [
           "Cases"
         ],
-        "description": "Requires `CASES_WRITE` scope.",
+        "description": "Posts a reply to a support case. The customer is notified by email. Requires the `CASES_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -7656,6 +8276,16 @@
             "in": "path",
             "name": "caseId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -7685,7 +8315,7 @@
                     "id": "cmsg_q1mzj0kxw5h7n4tr3bcfp2v8",
                     "senderType": "MERCHANT",
                     "senderId": "cus_j8h0r1n4tzcbfp2v8q1mzwx5",
-                    "body": "Thanks for reaching out — looking into this now.",
+                    "body": "Thanks for reaching out. Looking into this now.",
                     "createdAt": "2026-05-14T13:00:00.000Z",
                     "attachments": []
                   }
@@ -7748,7 +8378,7 @@
         "tags": [
           "Cases"
         ],
-        "description": "Requires `CASES_WRITE` scope.",
+        "description": "Marks all unread customer messages on a case as read. Requires the `CASES_WRITE` scope.",
         "parameters": [
           {
             "schema": {
@@ -7769,6 +8399,16 @@
             "in": "path",
             "name": "caseId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -7833,7 +8473,7 @@
         "tags": [
           "Refunds"
         ],
-        "description": "Requires `REFUNDS_READ` scope.",
+        "description": "Returns a list of refunds issued on the store, most recent first. Requires the `REFUNDS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -7913,6 +8553,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -7999,7 +8649,7 @@
         "tags": [
           "Refunds"
         ],
-        "description": "Requires `REFUNDS_READ` scope.",
+        "description": "Retrieves a refund by ID. Requires the `REFUNDS_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -8020,6 +8670,16 @@
             "in": "path",
             "name": "refundId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -8102,7 +8762,7 @@
         "tags": [
           "Refunds"
         ],
-        "description": "Requires `REFUNDS_WRITE` scope.",
+        "description": "Issues a refund against an order. The order must be completed, have no open dispute, and fall within the 30-day refund window. Requires the `REFUNDS_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -8157,6 +8817,16 @@
             "in": "path",
             "name": "orderId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -8262,7 +8932,7 @@
         "tags": [
           "Disputes"
         ],
-        "description": "Requires `DISPUTES_READ` scope.",
+        "description": "Returns a list of disputes filed against the store's payments. Requires the `DISPUTES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -8311,6 +8981,12 @@
                   "enum": [
                     "LOST"
                   ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "PREVENTED"
+                  ]
                 }
               ]
             },
@@ -8348,6 +9024,16 @@
             "in": "path",
             "name": "storeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -8438,7 +9124,7 @@
         "tags": [
           "Disputes"
         ],
-        "description": "Requires `DISPUTES_READ` scope.",
+        "description": "Retrieves a dispute by ID. Requires the `DISPUTES_READ` scope.",
         "parameters": [
           {
             "schema": {
@@ -8459,6 +9145,16 @@
             "in": "path",
             "name": "disputeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -8546,7 +9242,7 @@
         "tags": [
           "Disputes"
         ],
-        "description": "Requires `DISPUTES_WRITE` scope.",
+        "description": "Submits evidence for a dispute to be reviewed by the card network. Customer-side fields are auto-filled from the original transaction. Requires the `DISPUTES_WRITE` scope.",
         "requestBody": {
           "required": true,
           "content": {
@@ -8587,6 +9283,16 @@
             "in": "path",
             "name": "disputeId",
             "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
           }
         ],
         "responses": {
@@ -8668,6 +9374,1236 @@
             }
           },
           "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stores/{storeId}/usage/": {
+      "post": {
+        "summary": "Report usage events",
+        "tags": [
+          "Usage"
+        ],
+        "description": "Reports usage events against a subscription's meters. Up to 100 events may be reported per call. Duplicate events keyed by `meter_id` and `external_id` are silently skipped. Requires the `USAGE_WRITE` scope.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "subscription_id",
+                  "events"
+                ],
+                "properties": {
+                  "subscription_id": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 48
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "event_name",
+                        "quantity"
+                      ],
+                      "properties": {
+                        "event_name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 64
+                        },
+                        "quantity": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "event_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "external_id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "minItems": 1,
+                    "maxItems": 100
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "subscriptionId": "sub_8h4t6sqzy3x9w5n2k1m0vqbf",
+                    "accepted": 98,
+                    "duplicates": 2,
+                    "rejected": []
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List usage events",
+        "tags": [
+          "Usage"
+        ],
+        "description": "Returns a list of usage events for a subscription, most recent first. Can be filtered by `meter_id` and by an `event_at` range. Requires the `USAGE_READ` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "query",
+            "name": "subscription_id",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "query",
+            "name": "meter_id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "in": "query",
+            "name": "from",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "in": "query",
+            "name": "to",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "in": "query",
+            "name": "page",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "items": [
+                      {
+                        "id": "uev_7g3s5rpyx2w8v4m1j0l9ubae",
+                        "externalId": "req-abc-123",
+                        "subscriptionId": "sub_8h4t6sqzy3x9w5n2k1m0vqbf",
+                        "meterId": "umt_5e1q3npwt0u6s2k8h9j7rzbc",
+                        "customerId": "cus_3c0p1lmuq9t4r5j6g8h2vyab",
+                        "quantity": 1500,
+                        "eventAt": "2026-05-20T14:23:00.000Z",
+                        "receivedAt": "2026-05-20T14:23:01.123Z",
+                        "metadata": {
+                          "endpoint": "/v1/chat",
+                          "model": "claude-opus-4-7"
+                        }
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 25,
+                      "total": 1,
+                      "totalPages": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stores/{storeId}/products/{productId}/meters/": {
+      "get": {
+        "summary": "List meters",
+        "tags": [
+          "Meters"
+        ],
+        "description": "Returns the list of usage meters configured on a product. Requires the `METERS_READ` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "productId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "items": [
+                      {
+                        "id": "umt_5e1q3npwt0u6s2k8h9j7rzbc",
+                        "productId": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
+                        "eventName": "input_tokens",
+                        "unitPrice": 300,
+                        "unitQuantity": 1000000,
+                        "aggregation": "SUM",
+                        "settlement": "ARREARS",
+                        "includedUnits": null,
+                        "createdAt": "2026-05-20T14:00:00.000Z",
+                        "updatedAt": "2026-05-20T14:00:00.000Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create meter",
+        "tags": [
+          "Meters"
+        ],
+        "description": "Creates a usage meter on a product. The product must be a subscription with `pricing_model` set to `USAGE_BASED`. A product can have up to 10 meters. Requires the `METERS_WRITE` scope.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "eventName",
+                  "unitPrice",
+                  "aggregation"
+                ],
+                "properties": {
+                  "eventName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-zA-Z0-9_.-]+$",
+                    "description": "Name reported on POST /v2/core/.../usage; unique per product."
+                  },
+                  "unitPrice": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000,
+                    "description": "Cents per unitQuantity units. Zero allowed for free meters."
+                  },
+                  "unitQuantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000000000,
+                    "default": 1,
+                    "description": "Denominator for unitPrice. E.g. 1_000_000 for '$3 / 1M tokens'."
+                  },
+                  "aggregation": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "SUM"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "MAX"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "LAST"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "COUNT"
+                        ]
+                      }
+                    ]
+                  },
+                  "settlement": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "ARREARS"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "BASE_PLUS_OVERAGE"
+                        ]
+                      }
+                    ]
+                  },
+                  "includedUnits": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Units included in base fee before metering kicks in. Only for BASE_PLUS_OVERAGE."
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "productId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "id": "umt_5e1q3npwt0u6s2k8h9j7rzbc",
+                    "productId": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
+                    "eventName": "input_tokens",
+                    "unitPrice": 300,
+                    "unitQuantity": 1000000,
+                    "aggregation": "SUM",
+                    "settlement": "ARREARS",
+                    "includedUnits": null,
+                    "createdAt": "2026-05-20T14:00:00.000Z",
+                    "updatedAt": "2026-05-20T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stores/{storeId}/products/{productId}/meters/{meterId}": {
+      "get": {
+        "summary": "Get meter",
+        "tags": [
+          "Meters"
+        ],
+        "description": "Retrieves a usage meter by ID. Requires the `METERS_READ` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "productId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "meterId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "id": "umt_5e1q3npwt0u6s2k8h9j7rzbc",
+                    "productId": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
+                    "eventName": "input_tokens",
+                    "unitPrice": 300,
+                    "unitQuantity": 1000000,
+                    "aggregation": "SUM",
+                    "settlement": "ARREARS",
+                    "includedUnits": null,
+                    "createdAt": "2026-05-20T14:00:00.000Z",
+                    "updatedAt": "2026-05-20T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update meter",
+        "tags": [
+          "Meters"
+        ],
+        "description": "Updates a usage meter. The `eventName`, `aggregation`, and `settlement` fields become immutable once any usage event has been reported against the meter. Rate fields remain editable. Requires the `METERS_WRITE` scope.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "eventName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "pattern": "^[a-zA-Z0-9_.-]+$"
+                  },
+                  "unitPrice": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "unitQuantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000000000
+                  },
+                  "aggregation": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "SUM"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "MAX"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "LAST"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "COUNT"
+                        ]
+                      }
+                    ]
+                  },
+                  "settlement": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "ARREARS"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "BASE_PLUS_OVERAGE"
+                        ]
+                      }
+                    ]
+                  },
+                  "includedUnits": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "productId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "meterId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "id": "umt_5e1q3npwt0u6s2k8h9j7rzbc",
+                    "productId": "prd_8h4t6sqzy3x9w5n2k1m0vqbf",
+                    "eventName": "input_tokens",
+                    "unitPrice": 300,
+                    "unitQuantity": 1000000,
+                    "aggregation": "SUM",
+                    "settlement": "ARREARS",
+                    "includedUnits": null,
+                    "createdAt": "2026-05-20T14:00:00.000Z",
+                    "updatedAt": "2026-05-20T14:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete meter",
+        "tags": [
+          "Meters"
+        ],
+        "description": "Deletes a usage meter. Returns a `409` if any usage event or billed period summary references the meter, since audit history is preserved indefinitely. Requires the `METERS_WRITE` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "productId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "meterId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "deleted": true
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
             "description": "Default Response",
             "content": {
               "application/json": {
