@@ -255,6 +255,8 @@ Tokens use granular permissions. Only grant what your integration needs.
 | Licenses | `LICENSES_READ` | `LICENSES_WRITE` |
 | Refunds | `REFUNDS_READ` | `REFUNDS_WRITE` |
 | Subscriptions | `SUBSCRIPTIONS_READ` | `SUBSCRIPTIONS_WRITE` |
+| Usage | `USAGE_READ` | `USAGE_WRITE` |
+| Meters | `METERS_READ` | `METERS_WRITE` |
 | Store | `STORE_READ` | `STORE_WRITE` |
 
 If a request requires a permission the token doesn't have, the API returns `403 Forbidden` with the missing permissions listed in the error message.

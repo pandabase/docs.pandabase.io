@@ -4,6 +4,16 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="May 21, 2026" description="Usage-based billing" tags={["V2"]}>
+## Features
+
+- **Manage meters from the Store API**: List, create, fetch, update, and delete usage meters on a product without leaving your codebase. Gated by new `METERS_READ` / `METERS_WRITE` token scopes.
+- **Subscription usage endpoint**: `GET /v2/core/stores/:storeId/subscriptions/:subscriptionId/usage` returns a live projection of the current billing period together with summaries of past periods. Useful for building your own usage and billing reports. Gated by `USAGE_READ`.
+- **New token scopes selectable in the dashboard**: `USAGE_READ`, `USAGE_WRITE`, `METERS_READ`, and `METERS_WRITE` can now be picked when minting an API token.
+- **Clearer OpenAPI reference**: Every endpoint description in the Store API has been rewritten for consistency and to match the rest of the docs.
+
+</Update>
+
 <Update label="May 17, 2026" description="Prevented disputes" tags={["V2"]}>
 ## Features
 
