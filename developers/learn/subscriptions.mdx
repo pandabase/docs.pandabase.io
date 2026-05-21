@@ -196,6 +196,10 @@ Customers automatically receive a PDF invoice via email on:
 
 Invoices include the product name, amount, billing period, tax breakdown, and next charge date.
 
+## Usage-based billing
+
+If you need to charge per request, per token, per seat, or any other metric where the bill is not known in advance, configure the product with `pricingModel: USAGE_BASED` and attach meters. The lifecycle, retries, invoices, and webhook events described on this page apply unchanged. See [Usage-based billing](/developers/learn/usage-based-billing) for the meter model, event ingestion, and renewal math.
+
 ## Limitations
 
 - Only one subscription item per checkout (no mixing with one-time items)
