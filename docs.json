@@ -62,10 +62,11 @@
                 "pages": ["merchants/store/cases"]
               },
               {
-                "group": "Manage payouts",
+                "group": "Finances",
                 "pages": [
                   "merchants/store/payouts",
-                  "merchants/store/bank-accounts"
+                  "merchants/store/bank-accounts",
+                  "merchants/store/reports"
                 ]
               },
               {
@@ -113,6 +114,7 @@
                   "developers/learn/hosted-checkout",
                   "developers/learn/subscriptions",
                   "developers/learn/usage-based-billing",
+                  "developers/learn/reports",
                   "developers/learn/api-tokens"
                 ]
               },
