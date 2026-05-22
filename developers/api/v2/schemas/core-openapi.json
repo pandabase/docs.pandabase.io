@@ -10628,6 +10628,656 @@
           }
         }
       }
+    },
+    "/stores/{storeId}/reports/": {
+      "post": {
+        "summary": "Create report",
+        "tags": [
+          "Reports"
+        ],
+        "description": "Queues an asynchronous report. The response returns immediately with `status: PENDING`; poll `GET /reports/:reportId` or wait for the merchant email. Periods cannot exceed 90 days. Requires the `REPORTS_WRITE` scope.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "periodStart",
+                  "periodEnd"
+                ],
+                "properties": {
+                  "type": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "PAYMENT_ACTIVITY"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "PAYOUT_RECONCILIATION"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "BALANCE_LEDGER"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "REFUNDS_DISPUTES"
+                        ]
+                      }
+                    ]
+                  },
+                  "periodStart": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "periodEnd": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "formats": {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "CSV"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "JSON"
+                          ]
+                        }
+                      ]
+                    },
+                    "minItems": 1,
+                    "maxItems": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "id": "rpt_8h4t6sqzy3x9w5n2k1m0vqbf",
+                    "type": "PAYMENT_ACTIVITY",
+                    "status": "SUCCEEDED",
+                    "formats": [
+                      "CSV",
+                      "JSON"
+                    ],
+                    "periodStart": "2026-04-01T00:00:00.000Z",
+                    "periodEnd": "2026-05-01T00:00:00.000Z",
+                    "rowCount": 1247,
+                    "sizeBytes": 412980,
+                    "durationMs": 8412,
+                    "errorMessage": null,
+                    "requestedByAccountId": null,
+                    "requestedByTokenId": "stk_4tzcbfp2v8q1mzwxj5h0r1n",
+                    "startedAt": "2026-05-22T10:00:00.100Z",
+                    "completedAt": "2026-05-22T10:00:08.512Z",
+                    "createdAt": "2026-05-22T10:00:00.000Z",
+                    "updatedAt": "2026-05-22T10:00:08.512Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List reports",
+        "tags": [
+          "Reports"
+        ],
+        "description": "Returns the store's reports, most recent first. Filter by `status` or `type`. Requires the `REPORTS_READ` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "in": "query",
+            "name": "page",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "PENDING"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "PROCESSING"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "SUCCEEDED"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "FAILED"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "status",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "PAYMENT_ACTIVITY"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "PAYOUT_RECONCILIATION"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "BALANCE_LEDGER"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "REFUNDS_DISPUTES"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "type",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "items": [
+                      {
+                        "id": "rpt_8h4t6sqzy3x9w5n2k1m0vqbf",
+                        "type": "PAYMENT_ACTIVITY",
+                        "status": "SUCCEEDED",
+                        "formats": [
+                          "CSV",
+                          "JSON"
+                        ],
+                        "periodStart": "2026-04-01T00:00:00.000Z",
+                        "periodEnd": "2026-05-01T00:00:00.000Z",
+                        "rowCount": 1247,
+                        "sizeBytes": 412980,
+                        "durationMs": 8412,
+                        "errorMessage": null,
+                        "requestedByAccountId": null,
+                        "requestedByTokenId": "stk_4tzcbfp2v8q1mzwxj5h0r1n",
+                        "startedAt": "2026-05-22T10:00:00.100Z",
+                        "completedAt": "2026-05-22T10:00:08.512Z",
+                        "createdAt": "2026-05-22T10:00:00.000Z",
+                        "updatedAt": "2026-05-22T10:00:08.512Z"
+                      }
+                    ],
+                    "pagination": {
+                      "page": 1,
+                      "limit": 25,
+                      "total": 1,
+                      "totalPages": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stores/{storeId}/reports/{reportId}": {
+      "get": {
+        "summary": "Get report",
+        "tags": [
+          "Reports"
+        ],
+        "description": "Retrieves a report by ID. Status transitions: `PENDING → PROCESSING → SUCCEEDED | FAILED`. Requires the `REPORTS_READ` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "reportId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "id": "rpt_8h4t6sqzy3x9w5n2k1m0vqbf",
+                    "type": "PAYMENT_ACTIVITY",
+                    "status": "SUCCEEDED",
+                    "formats": [
+                      "CSV",
+                      "JSON"
+                    ],
+                    "periodStart": "2026-04-01T00:00:00.000Z",
+                    "periodEnd": "2026-05-01T00:00:00.000Z",
+                    "rowCount": 1247,
+                    "sizeBytes": 412980,
+                    "durationMs": 8412,
+                    "errorMessage": null,
+                    "requestedByAccountId": null,
+                    "requestedByTokenId": "stk_4tzcbfp2v8q1mzwxj5h0r1n",
+                    "startedAt": "2026-05-22T10:00:00.100Z",
+                    "completedAt": "2026-05-22T10:00:08.512Z",
+                    "createdAt": "2026-05-22T10:00:00.000Z",
+                    "updatedAt": "2026-05-22T10:00:08.512Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stores/{storeId}/reports/{reportId}/download/{format}": {
+      "get": {
+        "summary": "Get download URL",
+        "tags": [
+          "Reports"
+        ],
+        "description": "Returns a 5-minute pre-signed S3 URL for the generated report file. Fetch a fresh URL when the previous one expires. Requires the `REPORTS_READ` scope.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "storeId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 12,
+              "maxLength": 48
+            },
+            "in": "path",
+            "name": "reportId",
+            "required": true
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "csv"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "json"
+                  ]
+                }
+              ]
+            },
+            "in": "path",
+            "name": "format",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 32
+            },
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "data"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [true]
+                    },
+                    "data": {
+
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "data": {
+                    "url": "https://s3.pandabase.io/pandabase-prod/stores/shp_xxx/reports/rpt_xxx.csv?X-Amz-Algorithm=..."
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok",
+                    "error"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "servers": [
