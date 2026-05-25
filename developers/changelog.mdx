@@ -4,6 +4,56 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="May 25, 2026" description="Order metadata in exports" tags={["V2"]}>
+## Features
+
+- **Order metadata in Payment Activity reports**: The Payment Activity report now includes an `order.metadata` column in both CSV and JSON formats. Appended as the last column so existing column order is preserved.
+
+</Update>
+
+<Update label="May 24, 2026" description="Clearer ledger notes" tags={["V2"]}>
+## Improvements
+
+- **Friendlier balance ledger notes**: Entry descriptions across payments, refunds, chargebacks, payouts, and subscription renewals have been rewritten for clarity. Existing entries are unchanged; the new wording applies to entries written from this date forward.
+
+</Update>
+
+<Update label="May 23, 2026" description="Store search endpoint" tags={["V2"]}>
+## Features
+
+- **Search**: New `GET /v2/stores/:storeId/search?q=<input>` resolves any Pandabase resource ID, a customer email, or an order number to a uniform result `{ kind, id, label, sublabel, link, createdAt }`. Accepts up to 10 comma-separated inputs per request and is rate-limited to 30 requests per minute.
+
+</Update>
+
+<Update label="May 22, 2026" description="Reports API, Idempotency Keys & Email References" tags={["V2"]}>
+## Features
+
+- **Reports API**: Generate financial exports asynchronously, delivered as a signed download URL and notification email.
+  - `POST /v2/stores/:storeId/reports` queues a report.
+  - `GET /v2/stores/:storeId/reports` lists reports, filterable by `status` and `type`.
+  - `GET /v2/stores/:storeId/reports/:reportId` returns status and metadata.
+  - `GET /v2/stores/:storeId/reports/:reportId/download/:format` returns a 5-minute pre-signed download URL.
+  - Types: `PAYMENT_ACTIVITY`, `PAYOUT_RECONCILIATION`, `BALANCE_LEDGER`, `REFUNDS_DISPUTES`. Formats: `CSV`, `JSON`.
+  - Period window is capped at 90 days per request. At most 10 reports per store may be `PENDING` or `PROCESSING` concurrently; further requests return `429`.
+  - Statuses: `PENDING → PROCESSING → SUCCEEDED | FAILED`. Generated files are retained for 30 days.
+  - Available on the Store API at `/v2/core/stores/:storeId/reports` behind two new token scopes: `REPORTS_READ` and `REPORTS_WRITE`. Existing tokens are unaffected.
+  - New notification preference `notifications.reportReady` (default `true`) controls the ready and failure emails.
+
+- **Idempotency keys**: Three endpoints now honor an `Idempotency-Key` request header:
+  - `POST /v2/stores/:storeId/orders/:orderId/refund`
+  - `POST /v2/stores/:storeId/payouts`
+  - `POST /v2/stores/:storeId/checkouts/:sessionId/pay`
+
+  Keys must be 1 to 255 characters of `[A-Za-z0-9_-]`. A replayed request with the same key and matching body returns the original response with header `Idempotent-Replay: true`. A reused key with a different body returns `422`. A request that arrives while the original is still in flight returns `409`. Stored results live for 24 hours. `5xx` responses are not stored, so the next attempt re-executes.
+
+- **Email reference numbers**: Every outbound email now ends with a `Ref: <id>` line in the footer. Quote this id when contacting support to locate any message.
+
+## Fixes
+
+- The webhook test endpoint (`POST /v2/stores/:storeId/webhooks/:webhookId/test`) now accepts every `SUBSCRIPTION_*` event type in addition to `PAYMENT_*`.
+
+</Update>
+
 <Update label="May 21, 2026" description="Usage-based billing" tags={["V2"]}>
 ## Features
 
