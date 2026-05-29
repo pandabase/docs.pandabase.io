@@ -4,6 +4,14 @@ description: "Keep track of every change to the Pandabase API."
 rss: true
 ---
 
+<Update label="May 29, 2026" description="Payment method on payments & exports" tags={["V2"]}>
+## Features
+
+- **Payment method on orders and payments**: Order and payment responses now include a `paymentMethod` object describing how the customer paid: `{ type, cardBrand, cardLastFour }`. For card payments, `type` is `"card"` and the brand and last four digits are populated (for example `"visa"` and `"4242"`). For other methods, `type` is the method used, such as `"link"`, `"cashapp"`, `"sepa_debit"`, or `"us_bank_account"`, with the card fields left `null`. Available on order detail, payment detail, and the payments list. The fields are `null` on payments that have not completed yet.
+- **Payment method in Payment Activity reports**: The Payment Activity export now includes `payment_method`, `card_brand`, and `card_last_four` columns in both CSV and JSON formats.
+
+</Update>
+
 <Update label="May 25, 2026" description="Order metadata in exports" tags={["V2"]}>
 ## Features
 
