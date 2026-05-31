@@ -56,6 +56,14 @@ Amounts are integers in **cents**.
 
 This page documents V2.
 
+<Note>
+  The verifiers below — including any Standard Webhooks SDK — only validate **V2**
+  endpoints. V1 sends the same `Webhook-*` header names with hex/millisecond
+  values, so a V2 verifier rejects every V1 delivery. Check your endpoint's
+  `signatureVersion` first; if it's V1, follow the
+  [migration guide](/developers/webhooks/migrate-signatures).
+</Note>
+
 ## Headers
 
 | Header              | Value                                                                         |
