@@ -1,6 +1,6 @@
 {
 	"framework": null,
-	"buildCommand": "pnpm build",
+	"buildCommand": "pnpm dlx @axerity/cli build",
 	"outputDirectory": "build",
 	"cleanUrls": true,
 	"trailingSlash": false
