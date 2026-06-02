@@ -1,80 +1,123 @@
 {
-	"$schema": "https://axerity.com/axerity.schema.json",
-	"name": "Pandabase",
-	"description": "The merchant of record platform for digital commerce.",
-	"url": "https://docs.pandabase.io",
-	"favicon": "/favicon.png",
-	"ogImage": "/favicon.png",
-	"theme": "mintlify",
-	"sidebar": { "variant": "card", "defaultOpen": true },
-	"brand": {
-		"accent": "#0a8237",
-		"accentDark": "#07C983",
-		"radius": "0.8rem"
-	},
-	"og": {
-		"enabled": true,
-		"background": "#0a0f0c",
-		"foreground": "#ffffff",
-		"muted": "#9aa4a0",
-		"accent": "#2bd576"
-	},
-	"logo": { "light": "./docs/logo.png", "dark": "./docs/logo.png", "href": "/" },
-	"github": "https://github.com/pandabase",
-	"dropdowns": [
-		{
-			"label": "For Merchants",
-			"icon": "store",
-			"href": "/",
-			"match": "/",
-			"tabs": [
-				{ "title": "Getting started", "href": "/", "match": "/" },
-				{ "title": "Manage your store", "href": "/store/analytics", "match": "/store" },
-				{ "title": "Your account", "href": "/account", "match": "/account" },
-				{
-					"title": "Trust and safety",
-					"href": "/trust-and-safety/prohibited-businesses",
-					"match": "/trust-and-safety"
-				}
-			]
-		},
-		{
-			"label": "For Developers",
-			"icon": "code",
-			"href": "/developers/learn/lifecycle",
-			"match": "/developers",
-			"tabs": [
-				{ "title": "Documentation", "href": "/developers/learn/lifecycle", "match": "/developers" },
-				{ "title": "API Reference", "href": "/developers/api/introduction", "match": "/developers/api" }
-			]
-		}
-	],
-	"social": [
-		{ "icon": "twitter", "href": "https://x.com/pandabasehq", "label": "X" },
-		{ "icon": "github", "href": "https://github.com/pandabase", "label": "GitHub" },
-		{ "icon": "message-circle", "href": "https://discord.gg/pandabase", "label": "Discord" }
-	],
-	"footer": {
-		"links": [
-			{ "title": "Merchant Portal", "href": "https://merchant.pandabase.io" },
-			{ "title": "Support", "href": "mailto:support@pandabase.io" }
-		]
-	},
-	"openapi": [
-		{
-			"spec": "developers/api/v2/schemas/core-openapi.json",
-			"title": "Store APIs",
-			"output": "developers/api/store-api-reference"
-		},
-		{
-			"spec": "developers/api/v2/schemas/storefront-openapi.json",
-			"title": "Storefront APIs",
-			"output": "developers/api/storefront-api-reference"
-		},
-		{
-			"spec": "developers/api/v2/schemas/checkout-openapi.json",
-			"title": "Billing APIs",
-			"output": "developers/api/billing-api-reference"
-		}
-	]
+  "$schema": "https://axerity.com/axerity.schema.json",
+  "name": "Pandabase",
+  "description": "The merchant of record platform for digital commerce.",
+  "url": "https://docs.pandabase.io",
+  "favicon": "/favicon.png",
+  "ogImage": "/favicon.png",
+  "theme": "mintlify",
+  "sidebar": {
+    "variant": "card",
+    "defaultOpen": true
+  },
+  "brand": {
+    "accent": "#0a8237",
+    "accentDark": "#07C983",
+    "radius": "0.8rem"
+  },
+  "og": {
+    "enabled": true,
+    "background": "#0a0f0c",
+    "foreground": "#ffffff",
+    "muted": "#9aa4a0",
+    "accent": "#2bd576"
+  },
+  "logo": {
+    "light": "./docs/logo.png",
+    "dark": "./docs/logo.png",
+    "href": "/"
+  },
+  "github": "https://github.com/pandabase",
+  "dropdowns": [
+    {
+      "label": "For Merchants",
+      "icon": "store",
+      "href": "/",
+      "match": "/",
+      "tabs": [
+        {
+          "title": "Getting started",
+          "href": "/",
+          "match": "/"
+        },
+        {
+          "title": "Manage your store",
+          "href": "/store/analytics",
+          "match": "/store"
+        },
+        {
+          "title": "Your account",
+          "href": "/account",
+          "match": "/account"
+        },
+        {
+          "title": "Trust and safety",
+          "href": "/trust-and-safety/prohibited-businesses",
+          "match": "/trust-and-safety"
+        }
+      ]
+    },
+    {
+      "label": "For Developers",
+      "icon": "code",
+      "href": "/developers/learn/lifecycle",
+      "match": "/developers",
+      "tabs": [
+        {
+          "title": "Documentation",
+          "href": "/developers/learn/lifecycle",
+          "match": "/developers"
+        },
+        {
+          "title": "API Reference",
+          "href": "/developers/api/introduction",
+          "match": "/developers/api"
+        }
+      ]
+    }
+  ],
+  "social": [
+    {
+      "icon": "twitter",
+      "href": "https://x.com/pandabasehq",
+      "label": "X"
+    },
+    {
+      "icon": "github",
+      "href": "https://github.com/pandabase",
+      "label": "GitHub"
+    },
+    {
+      "icon": "message-circle",
+      "href": "https://discord.gg/pandabase",
+      "label": "Discord"
+    }
+  ],
+  "sidebarLinks": [
+    {
+      "title": "Merchant Portal",
+      "href": "https://merchant.pandabase.io"
+    },
+    {
+      "title": "Support",
+      "href": "mailto:support@pandabase.io"
+    }
+  ],
+  "openapi": [
+    {
+      "spec": "developers/api/v2/schemas/core-openapi.json",
+      "title": "Store APIs",
+      "output": "developers/api/store-api-reference"
+    },
+    {
+      "spec": "developers/api/v2/schemas/storefront-openapi.json",
+      "title": "Storefront APIs",
+      "output": "developers/api/storefront-api-reference"
+    },
+    {
+      "spec": "developers/api/v2/schemas/checkout-openapi.json",
+      "title": "Billing APIs",
+      "output": "developers/api/billing-api-reference"
+    }
+  ]
 }
