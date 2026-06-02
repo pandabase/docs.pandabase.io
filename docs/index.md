@@ -19,21 +19,21 @@ Learn how to set up:
   <Card
     title="Payments"
     icon="credit-card"
-    href="/guides/payments"
+    href="/store/manage-payments/payments"
   >
     How payments, fees, and settlements work.
   </Card>
   <Card
     title="Products"
     icon="shopping-cart"
-    href="/guides/products"
+    href="/store/analytics"
   >
     Product types, fulfillment modes, variants, and pricing.
   </Card>
   <Card
     title="Checkouts"
     icon="credit-card"
-    href="/guides/checkouts"
+    href="/store/paylinks"
   >
     How checkout sessions and the payment flow work.
   </Card>
@@ -43,24 +43,24 @@ Learn how to set up:
   <Card
     title="Payouts"
     icon="landmark"
-    href="/guides/payouts"
+    href="/store/finances/payouts"
   >
     Supported countries, fees, and payout timelines.
   </Card>
   <Card
     title="Disputes"
     icon="shield-alert"
-    href="/guides/disputes"
+    href="/store/manage-payments/disputes"
   >
     What happens when a customer files a chargeback.
   </Card>
-  <Card title="Webhooks" icon="bell" iconType="duotone" href="/webhooks">
+  <Card title="Webhooks" icon="bell" iconType="duotone" href="/developers/webhooks/overview">
     Get notified when events happen in your store.
   </Card>
   <Card
     title="API Reference"
     icon="terminal"
-    href="/developers/introduction"
+    href="/developers/api/introduction"
   >
     Integrate with the Pandabase API programmatically.
   </Card>
