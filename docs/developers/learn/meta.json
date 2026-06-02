@@ -8,8 +8,6 @@
 		"subscriptions",
 		"usage-based-billing",
 		"reports",
-		"api-tokens",
-		"billing-agreements",
-		"storefront-api"
+		"api-tokens"
 	]
 }
