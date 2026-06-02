@@ -1,0 +1,13 @@
+{
+	"title": "API Reference",
+	"icon": "terminal",
+	"pages": [
+		"introduction",
+		"pagination",
+		"rate-limits",
+		"responses",
+		"store-api-reference",
+		"storefront-api-reference",
+		"billing-api-reference"
+	]
+}

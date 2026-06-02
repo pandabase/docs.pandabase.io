@@ -1,0 +1,283 @@
+---
+title: "API Tokens"
+description: "Authenticate with the Store API using Bearer tokens or HMAC signatures."
+---
+
+<Callout type="warn">
+
+We will assume you have a general understanding of programming. This guide is
+intended for developers, and we expect you to have a good understanding of
+REST APIs in general. If you're not a developer, please skip this section.
+
+</Callout>
+
+## Overview
+
+API tokens authenticate requests to the [Store API](/developers/api/introduction) at `/v2/core/stores/:storeId/*`. Each token has a set of permissions and uses one of two authentication modes: **Bearer** or **HMAC**.
+
+Create tokens in your store's dashboard under **Settings → Developers → API Tokens**, or via the tokens API.
+
+## Bearer mode
+
+Send the token secret directly in the `Authorization` header. The secret starts with `sk_`.
+
+```
+Authorization: Bearer sk_live_abc123...
+```
+
+### Example (TypeScript)
+
+```typescript
+const STORE_ID = process.env.PANDABASE_STORE_ID!;
+const API_TOKEN = process.env.PANDABASE_API_TOKEN!; // sk_live_...
+
+// list products
+const res = await fetch(
+  `https://api.pandabase.io/v2/core/stores/${STORE_ID}/products`,
+  {
+    headers: {
+      Authorization: `Bearer ${API_TOKEN}`,
+    },
+  },
+);
+
+const { data } = await res.json();
+console.log(data.items);
+```
+
+### Example (cURL)
+
+```bash
+curl https://api.pandabase.io/v2/core/stores/shp_xxx/products \
+  -H "Authorization: Bearer sk_live_abc123..."
+```
+
+Bearer mode is simple and works well for server-side integrations where the token is stored securely.
+
+## HMAC mode
+
+HMAC mode never sends the secret over the wire. Instead, you sign each request body with your token's secret using HMAC-SHA256, and send the token ID + signature in headers.
+
+When you create an HMAC token, you receive:
+- **Token ID** — starts with `stk_`, sent in the `Authorization` header
+- **Secret** — starts with `sk_`, used to derive the signing key (never sent in requests)
+
+### How signing works
+
+The HMAC key is **not** your raw secret. You must first hash your secret with SHA-256 to derive the signing key, then use that key to compute the HMAC-SHA256 signature of the request body.
+
+```
+signing_key = SHA-256(your_secret)
+signature   = HMAC-SHA256(signing_key, request_body)
+```
+
+This ensures your raw secret is never used directly in cryptographic operations.
+
+### Headers
+
+| Header | Value |
+|--------|-------|
+| `Authorization` | `Bearer stk_your_token_id` |
+| `X-Signature` | HMAC-SHA256 hex digest of the request body, keyed with the derived signing key |
+
+For requests with no body (`GET`, `DELETE`), sign an empty string.
+
+### Example (TypeScript)
+
+```typescript
+import crypto from "crypto";
+
+const STORE_ID = process.env.PANDABASE_STORE_ID!;
+const TOKEN_ID = process.env.PANDABASE_TOKEN_ID!;   // stk_...
+const TOKEN_SECRET = process.env.PANDABASE_TOKEN_SECRET!; // sk_...
+
+// derive the signing key by hashing the secret
+const SIGNING_KEY = crypto
+  .createHash("sha256")
+  .update(TOKEN_SECRET)
+  .digest("hex");
+
+function sign(body: string): string {
+  return crypto
+    .createHmac("sha256", SIGNING_KEY)
+    .update(body)
+    .digest("hex");
+}
+
+// GET request (sign empty string)
+async function listProducts() {
+  const signature = sign("");
+
+  const res = await fetch(
+    `https://api.pandabase.io/v2/core/stores/${STORE_ID}/products`,
+    {
+      headers: {
+        Authorization: `Bearer ${TOKEN_ID}`,
+        "X-Signature": signature,
+      },
+    },
+  );
+
+  return res.json();
+}
+
+// POST request (sign the JSON body)
+async function createProduct() {
+  const body = JSON.stringify({
+    name: "New Product",
+    amount: 2999,
+    type: "ONE_TIME",
+  });
+
+  const signature = sign(body);
+
+  const res = await fetch(
+    `https://api.pandabase.io/v2/core/stores/${STORE_ID}/products`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${TOKEN_ID}`,
+        "X-Signature": signature,
+      },
+      body,
+    },
+  );
+
+  return res.json();
+}
+```
+
+### Example (Python)
+
+```python
+import hmac
+import hashlib
+import json
+import requests
+import os
+
+STORE_ID = os.environ["PANDABASE_STORE_ID"]
+TOKEN_ID = os.environ["PANDABASE_TOKEN_ID"]        # stk_...
+TOKEN_SECRET = os.environ["PANDABASE_TOKEN_SECRET"] # sk_...
+
+# derive the signing key by hashing the secret
+SIGNING_KEY = hashlib.sha256(TOKEN_SECRET.encode()).hexdigest()
+
+def sign(body: str) -> str:
+    return hmac.new(
+        SIGNING_KEY.encode(),
+        body.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+# GET request
+def list_products():
+    signature = sign("")
+    res = requests.get(
+        f"https://api.pandabase.io/v2/core/stores/{STORE_ID}/products",
+        headers={
+            "Authorization": f"Bearer {TOKEN_ID}",
+            "X-Signature": signature,
+        },
+    )
+    return res.json()
+
+# POST request
+def create_product():
+    body = json.dumps({"name": "New Product", "amount": 2999, "type": "ONE_TIME"})
+    signature = sign(body)
+    res = requests.post(
+        f"https://api.pandabase.io/v2/core/stores/{STORE_ID}/products",
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {TOKEN_ID}",
+            "X-Signature": signature,
+        },
+        data=body,
+    )
+    return res.json()
+```
+
+### Example (cURL)
+
+```bash
+# derive signing key: SHA-256 of your secret
+SIGNING_KEY=$(echo -n "$TOKEN_SECRET" | openssl dgst -sha256 | awk '{print $2}')
+
+# GET — sign empty string
+SIGNATURE=$(echo -n "" | openssl dgst -sha256 -hmac "$SIGNING_KEY" | awk '{print $2}')
+
+curl https://api.pandabase.io/v2/core/stores/shp_xxx/products \
+  -H "Authorization: Bearer stk_xxx" \
+  -H "X-Signature: $SIGNATURE"
+```
+
+```bash
+# POST — sign the JSON body
+BODY='{"name":"New Product","amount":2999,"type":"ONE_TIME"}'
+SIGNATURE=$(echo -n "$BODY" | openssl dgst -sha256 -hmac "$SIGNING_KEY" | awk '{print $2}')
+
+curl -X POST https://api.pandabase.io/v2/core/stores/shp_xxx/products \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer stk_xxx" \
+  -H "X-Signature: $SIGNATURE" \
+  -d "$BODY"
+```
+
+## Bearer vs HMAC
+
+| | Bearer | HMAC |
+|---|---|---|
+| **How it works** | Secret sent in every request | Secret never leaves your server — only a derived signature is sent |
+| **Setup** | Simple — one header | More complex — derive signing key + compute signature per request |
+| **Security** | Relies on TLS | Verifies request integrity + TLS |
+| **Best for** | Server-side integrations, scripts | High-security environments, multi-party systems |
+| **Risk if intercepted** | Token can be reused | Signature is only valid for that specific request body |
+
+<Callout type="info">
+
+Both modes use constant-time comparison to prevent timing attacks. HMAC
+signatures are always 64-character hex strings (SHA-256 output).
+
+</Callout>
+
+## Permissions
+
+Tokens use granular permissions. Only grant what your integration needs.
+
+| Resource | Read | Write |
+|----------|------|-------|
+| Products | `PRODUCTS_READ` | `PRODUCTS_WRITE` |
+| Orders | `ORDERS_READ` | `ORDERS_WRITE` |
+| Customers | `CUSTOMERS_READ` | `CUSTOMERS_WRITE` |
+| Categories | `CATEGORIES_READ` | `CATEGORIES_WRITE` |
+| Coupons | `COUPONS_READ` | `COUPONS_WRITE` |
+| Webhooks | `WEBHOOKS_READ` | `WEBHOOKS_WRITE` |
+| Analytics | `ANALYTICS_READ` | — |
+| Payouts | `PAYOUTS_READ` | `PAYOUTS_WRITE` |
+| Licenses | `LICENSES_READ` | `LICENSES_WRITE` |
+| Refunds | `REFUNDS_READ` | `REFUNDS_WRITE` |
+| Subscriptions | `SUBSCRIPTIONS_READ` | `SUBSCRIPTIONS_WRITE` |
+| Usage | `USAGE_READ` | `USAGE_WRITE` |
+| Meters | `METERS_READ` | `METERS_WRITE` |
+| Reports | `REPORTS_READ` | `REPORTS_WRITE` |
+| Store | `STORE_READ` | `STORE_WRITE` |
+
+If a request requires a permission the token doesn't have, the API returns `403 Forbidden` with the missing permissions listed in the error message.
+
+## Secret rotation
+
+Rotate a token's secret at any time via the dashboard or `POST /v2/stores/:storeId/tokens/:tokenId/roll-secret`. The old secret is immediately invalidated — update your integration before rotating.
+
+## Request logging
+
+All Store API requests are automatically logged with 30-day retention. Each log entry captures the method, path, status code, response time, and IP address. View logs in the dashboard or via `GET /v2/stores/:storeId/api-logs`.
+
+<Callout type="warn">
+
+Treat API tokens like passwords. Never expose them in client-side code, public
+repositories, or logs. If a token is compromised, rotate or delete it
+immediately.
+
+</Callout>

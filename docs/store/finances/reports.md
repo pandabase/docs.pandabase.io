@@ -1,0 +1,119 @@
+---
+title: "Reports"
+description: "Export your store's financial activity as CSV or JSON for accounting, reconciliation, and bookkeeping."
+---
+
+Reports turn your store's activity into CSV or JSON files for accounting, reconciliation, and audits. Generation runs in the background. You'll get an email when it's ready. Files are kept for 30 days, then deleted.
+
+## When to use reports
+
+- **Month-end or quarter-end bookkeeping.** Pull a payment activity report for the period and hand it to your accountant.
+- **Reconciling a payout against the underlying transactions.** Run a payout reconciliation report to see exactly which orders, refunds, and disputes are bundled into each payout.
+- **Auditing your balance.** Run a balance ledger report to see every credit and debit on your store, including a tamper-evident hash chain.
+- **Filing taxes.** Payment activity includes the tax we collected and remitted on your behalf, broken down per transaction.
+
+## Available reports
+
+<AccordionGroup>
+  <Accordion title="Payment activity">
+
+    One row per payment we processed. Includes the order number, status, currency, intended amount, discounts, tax, platform and processing fees, settled amount, presentment currency and exchange rate, plus the customer's email, name, country, and IP.
+
+    Use this for revenue recognition, accountant hand-offs, and any analysis that starts with "how much did we make."
+
+  </Accordion>
+  <Accordion title="Payout reconciliation">
+
+    One row per payout request. Includes the payout ID, status, amount, fees, net amount, the bank account it landed in, our internal risk score, and the PSP reference ID for tracing the transfer at your bank.
+
+    Use this when a payout shows up in your bank account and you want to verify it matches what we sent.
+
+  </Accordion>
+  <Accordion title="Balance ledger">
+
+    One row for every credit and debit on your store: payments received, refunds, disputes, payouts, and adjustments. Each row carries the resulting balance, the affected order, payment, refund, dispute, or payout IDs, a short note, and a SHA-256 hash chain so an auditor can verify nothing has been tampered with.
+
+    Use this when you need to prove every dollar that moved on or off your balance.
+
+  </Accordion>
+  <Accordion title="Refunds & disputes">
+
+    Combined export of refunds and chargebacks for the period. One row per event with a `kind` column (`REFUND` or `DISPUTE`), the related order number, amount, fee, status, and reason.
+
+    Use this for chargeback rate analysis and refund pattern reviews.
+
+  </Accordion>
+</AccordionGroup>
+
+## Generating a report
+
+<Steps>
+  <Step title="Open the Reports page">
+
+    From the dashboard sidebar, go to **Finances → Reports**.
+
+  </Step>
+  <Step title="Click New Report">
+
+    Pick the report type, period, and output format(s).
+
+  </Step>
+  <Step title="Wait for it to finish">
+
+    The status column shows **Generating** while the report is in progress, then flips to **Ready** when the file is available. Most reports finish in seconds; larger periods can take a few minutes. You can leave the page. We'll email you when it's done.
+
+  </Step>
+  <Step title="Download">
+
+    Click the **Download** button in the Actions column to grab the file.
+
+  </Step>
+</Steps>
+
+The reports table shows status, type, period, row count, file size, and how long ago the report was requested. Use the tabs at the top to filter by **All / Ready / Generating / Failed**.
+
+## Period and limits
+
+- **Maximum period:** 90 days per report. To export a longer window, run several reports back-to-back (e.g. one per month for a year).
+- **Concurrent reports:** up to 10 reports can be running at a time per store. If you queue an 11th, you'll see a message asking you to wait for the current batch to finish.
+- **Retention:** 30 days from the time you requested it. After that, the file is deleted automatically. Re-run if you need it again.
+
+## Output format
+
+### CSV
+
+A standard comma-separated file with a UTF-8 byte-order mark so Excel, Numbers, and Google Sheets detect the encoding correctly. The first row is a header; every subsequent row is a record.
+
+Amounts are stored in the smallest currency unit (cents for USD/EUR/GBP, whole yen for JPY, etc.). Divide by 100 to get the major-unit display value for most currencies.
+
+### JSON
+
+The same data shaped as a JSON array of objects. Useful if you're feeding the file into a script, a data warehouse, or a custom BI tool.
+
+## Email notifications
+
+We send an email when a report finishes, whether it succeeded or failed, to the email address on your account.
+
+## Troubleshooting
+
+### My download link doesn't work
+
+Download links are signed for security and expire after 5 minutes. Open the report from the dashboard again and click Download to generate a fresh link.
+
+### My report says Failed
+
+We retry a few times before marking a report as failed. When it does fail, the error message in the dashboard explains why (most commonly a transient infrastructure issue). Click **Retry** to re-queue with the same parameters.
+
+If a report fails repeatedly with the same error, [reach out to support](mailto:support@pandabase.io) with the report ID.
+
+### My report doesn't include a recent transaction
+
+Reports include any record whose `created_at` falls in the period you selected. If a transaction completed at 23:59 UTC on the last day of your period, it's included; one at 00:01 UTC the next day is not. Periods are interpreted in UTC.
+
+### Can I schedule reports to run automatically?
+
+Not yet. Every report is generated on demand. If you need a recurring export, ask your developer to run [the Reports API](/developers/learn/reports) on a cron job.
+
+## API access
+
+Everything described above is also available programmatically. See [Reports (Developer guide)](/developers/learn/reports).

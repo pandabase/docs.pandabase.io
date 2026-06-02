@@ -1,2 +1,9 @@
 .next
 node_modules
+build
+
+# axerity:openapi (generated)
+docs/developers/api/store-api-reference
+docs/developers/api/storefront-api-reference
+docs/developers/api/billing-api-reference
+# end axerity:openapi

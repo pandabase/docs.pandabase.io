@@ -1,0 +1,126 @@
+---
+title: "Managing your Account"
+description: "Setting up your account, identity verification, and security."
+---
+
+## Creating an account
+
+Sign up with your email address. Pandabase uses **magic link authentication** — no passwords. Every time you log in, we send a one-time link to your email that expires after 10 minutes.
+
+## Verification requirements
+
+Before your store can accept payments, you need to complete these steps:
+
+<Steps>
+  <Step title="Email verification">
+
+    Confirmed automatically when you sign up via magic link.
+
+  </Step>
+  <Step title="Profile information">
+
+    Add your first name, last name, and country. Your country determines which
+    payout methods are available.
+
+  </Step>
+  <Step title="Phone verification">
+
+    Verify your phone number via SMS code. Your phone number's country must
+    match your account country.
+
+  </Step>
+  <Step title="Identity verification (KYC)">
+
+    Complete identity verification through our KYC provider. This typically
+    involves uploading a government-issued ID and a selfie. Verification usually
+    takes a few minutes.
+
+  </Step>
+</Steps>
+
+Once all steps are complete, you can create stores and start accepting payments.
+
+## Account settings
+
+Manage your profile, KYC documents, and security from **Account Settings** — accessed from the avatar menu in the dashboard.
+
+<Frame>
+
+<img src="/images/guides/account-settings.png" alt="Account Settings page showing My Profile tab with profile information" />
+
+</Frame>
+
+The page is split into three tabs:
+
+- **My Profile** — your legal name, username, email, phone number, country, and account ID. Most fields are read-only since they're tied to your verified identity. Contact support if you need to change anything.
+- **Compliance** — outstanding requirements, KYC documents on file, and current verification status.
+- **Security** — 2FA setup, active sessions, and recent login activity.
+
+### Compliance
+
+<Frame>
+
+<img src="/images/guides/account-compliance.png" alt="Compliance tab listing phone verification, 2FA, identity verification, and default store status" />
+
+</Frame>
+
+Each requirement shows its current state — **Required**, **Complete**, or a direct action button (e.g., **Verify Phone**). Until every item is marked Complete, your account can't receive payouts.
+
+### Security
+
+<Frame>
+
+<img src="/images/guides/account-security.png" alt="Security tab with 2FA toggle, active sessions list, and Delete Account in the danger zone" />
+
+</Frame>
+
+The Security tab covers three things:
+
+- **Two-Factor Authentication** — enable or disable TOTP-based 2FA.
+- **Active Sessions** — every device currently signed in to your account. Click **Revoke** on any row to sign that session out immediately, or **Revoke All** to sign out everything except your current session.
+- **Delete Account** — request account closure. Deletion isn't a self-service action; clicking it shows a dialog directing you to email [support@pandabase.io](mailto:support@pandabase.io) so we can confirm and process the removal manually.
+
+## Two-factor authentication
+
+Add an extra layer of security with **TOTP-based 2FA** using any authenticator app (Google Authenticator, Authy, 1Password, etc.).
+
+When enabled, you'll need to enter a 6-digit code from your authenticator app each time you log in.
+
+<Callout type="info">
+
+We strongly recommend enabling 2FA on all accounts, especially those with
+active stores and balances.
+
+</Callout>
+
+## Sessions
+
+Each login creates a session tied to your device and IP address. You can view all active sessions and revoke any session from the dashboard.
+
+Sessions track:
+
+- Device type and operating system
+- Browser
+- IP address
+- Last active time
+
+## Account limits
+
+| Limit              | Value     |
+| ------------------ | --------- |
+| Stores per account | 10        |
+| Team memberships   | Unlimited |
+
+## Supported countries
+
+Pandabase is available to merchants in the following countries:
+
+**Americas**: Canada, United States
+
+**Europe**: Austria, Belgium, Croatia, Cyprus, Czech Republic, Denmark, Estonia, Finland, France, Germany, Great Britain, Greece, Hungary, Ireland, Italy, Latvia, Lithuania, Luxembourg, Malta, Netherlands, Norway, Poland, Portugal, Romania, Slovakia, Slovenia, Spain, Sweden, Switzerland, Turkiye
+
+**Asia-Pacific**: Australia, Hong Kong, India, New Zealand, Philippines, Singapore, Taiwan, Thailand, Vietnam
+
+**Middle East**: Israel, Qatar, United Arab Emirates
+
+**Africa**: Morocco
