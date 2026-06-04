@@ -3,7 +3,9 @@ title: Changelog
 description: "Keep track of every change to the Pandabase API."
 ---
 
-<Update label="May 29, 2026">
+<Changelog>
+
+<Update label="2026-05-29" tags={['Feature']}>
 
 **Payment method on payments & exports**
 
@@ -14,7 +16,7 @@ description: "Keep track of every change to the Pandabase API."
 
 </Update>
 
-<Update label="May 25, 2026">
+<Update label="2026-05-25" tags={['Feature']}>
 
 **Order metadata in exports**
 
@@ -24,7 +26,7 @@ description: "Keep track of every change to the Pandabase API."
 
 </Update>
 
-<Update label="May 24, 2026">
+<Update label="2026-05-24" tags={['Improvement']}>
 
 **Clearer ledger notes**
 
@@ -34,7 +36,7 @@ description: "Keep track of every change to the Pandabase API."
 
 </Update>
 
-<Update label="May 23, 2026">
+<Update label="2026-05-23" tags={['Feature']}>
 
 **Store search endpoint**
 
@@ -44,7 +46,7 @@ description: "Keep track of every change to the Pandabase API."
 
 </Update>
 
-<Update label="May 22, 2026">
+<Update label="2026-05-22" tags={['Feature', 'Fix']}>
 
 **Reports API, Idempotency Keys & Email References**
 
@@ -76,7 +78,7 @@ description: "Keep track of every change to the Pandabase API."
 
 </Update>
 
-<Update label="May 21, 2026">
+<Update label="2026-05-21" tags={['Feature']}>
 
 **Usage-based billing**
 
@@ -90,7 +92,7 @@ See the [usage-based billing guide](/developers/learn/usage-based-billing) for t
 
 </Update>
 
-<Update label="May 17, 2026">
+<Update label="2026-05-17" tags={['Feature']}>
 
 **Prevented disputes**
 
@@ -103,7 +105,7 @@ You can opt in by adding `PAYMENT_DISPUTE_PREVENTED` to your endpoint's `eventTy
 
 </Update>
 
-<Update label="May 15, 2026">
+<Update label="2026-05-15" tags={['Feature']}>
 
 **Standard Webhooks support**
 
@@ -119,7 +121,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="May 14, 2026">
+<Update label="2026-05-14" tags={['Feature']}>
 
 **Refunds, Disputes, Webhook Signatures & New Payment Methods**
 
@@ -133,7 +135,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="May 12, 2026">
+<Update label="2026-05-12" tags={['Fix']}>
 
 **Dynamic Line Items**
 
@@ -143,7 +145,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="May 10, 2026">
+<Update label="2026-05-10" tags={['Feature']}>
 
 **Credit/Debit Payouts & Verification**
 
@@ -154,7 +156,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="May 7, 2026">
+<Update label="2026-05-07" tags={['Feature']}>
 
 **Case Auto-Reply & Auto-Close**
 
@@ -164,7 +166,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="May 6, 2026">
+<Update label="2026-05-06" tags={['Feature']}>
 
 **Tax Details Endpoint**
 
@@ -174,7 +176,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="May 5, 2026">
+<Update label="2026-05-05" tags={['Feature']}>
 
 **Monthly Revenue Analytics**
 
@@ -184,7 +186,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="May 1, 2026">
+<Update label="2026-05-01" tags={['Feature']}>
 
 **Paylinks & Email Reliability**
 
@@ -195,7 +197,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="April 29, 2026">
+<Update label="2026-04-29" tags={['Fix']}>
 
 **Payout Fee Country Fix**
 
@@ -205,7 +207,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="April 28, 2026">
+<Update label="2026-04-28" tags={['Feature']}>
 
 **Shield (Beta)**
 
@@ -215,7 +217,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="April 25, 2026">
+<Update label="2026-04-25" tags={['Feature']}>
 
 **Cases API & Live Payout Fees**
 
@@ -226,7 +228,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="April 19, 2026">
+<Update label="2026-04-19" tags={['Feature']}>
 
 **Support Cases**
 
@@ -242,7 +244,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="April 19, 2026">
+<Update label="2026-04-19" tags={['Feature']}>
 
 **5 New Supported Countries**
 
@@ -252,7 +254,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="April 18, 2026">
+<Update label="2026-04-18" tags={['Feature']}>
 
 **Payment Methods in Checkout Estimate**
 
@@ -272,7 +274,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="April 3, 2026">
+<Update label="2026-04-03" tags={['Feature']}>
 
 **New Supported Countries**
 
@@ -282,7 +284,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 29, 2026">
+<Update label="2026-03-29" tags={['Feature', 'Fix']}>
 
 **Inclusive Tax, Coupon Restrictions & Async Payment Support**
 
@@ -299,7 +301,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 26, 2026">
+<Update label="2026-03-26" tags={['Feature']}>
 
 **Product-Scoped Coupons**
 
@@ -312,7 +314,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 20, 2026">
+<Update label="2026-03-20" tags={['Feature']}>
 
 **Subscriptions & Recurring Billing (Beta)**
 
@@ -334,7 +336,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 16, 2026">
+<Update label="2026-03-16" tags={['Feature']}>
 
 **Checkout Customization & Store Onboarding**
 
@@ -349,7 +351,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 12, 2026">
+<Update label="2026-03-12" tags={['Feature']}>
 
 **Local Currency Payments & Balance Ledger**
 
@@ -361,7 +363,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 11, 2026">
+<Update label="2026-03-11" tags={['Feature', 'Fix']}>
 
 **Payouts Expansion & New Countries**
 
@@ -379,7 +381,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 10, 2026">
+<Update label="2026-03-10" tags={['Feature', 'Fix']}>
 
 **Checkouts, Storefront, Fraud Protection & Teams**
 
@@ -407,7 +409,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 9, 2026">
+<Update label="2026-03-09" tags={['Feature', 'Fix']}>
 
 **Metadata & Docs**
 
@@ -423,7 +425,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 </Update>
 
-<Update label="March 7, 2026">
+<Update label="2026-03-07" tags={['Feature', 'Deprecation']}>
 
 **V2 API Launch**
 
@@ -516,7 +518,7 @@ Merchants can now onboard from: US, GB, AT, BE, CY, CZ, DE, EE, ES, FI, FR, GR, 
 
 </Update>
 
-<Update label="November 30, 2024">
+<Update label="2024-11-30" tags={['Feature', 'Fix']}>
 
 **Features and Fixes**
 
@@ -535,7 +537,7 @@ Merchants can now onboard from: US, GB, AT, BE, CY, CZ, DE, EE, ES, FI, FR, GR, 
 
 </Update>
 
-<Update label="October 22, 2024">
+<Update label="2024-10-22" tags={['Feature']}>
 
 **API Schema Updates**
 
@@ -556,7 +558,7 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 
 </Update>
 
-<Update label="September 20, 2024">
+<Update label="2024-09-20" tags={['Feature']}>
 
 **Major Features Release**
 
@@ -570,7 +572,7 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 
 </Update>
 
-<Update label="August 30, 2024">
+<Update label="2024-08-30" tags={['Feature']}>
 
 **Public Endpoints**
 
@@ -580,7 +582,7 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 
 </Update>
 
-<Update label="June 6, 2024">
+<Update label="2024-06-06" tags={['Feature']}>
 
 **Categories Support**
 
@@ -589,7 +591,7 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 
 </Update>
 
-<Update label="May 13, 2024">
+<Update label="2024-05-13" tags={['Feature']}>
 
 **Payouts & KYC**
 
@@ -599,7 +601,7 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 
 </Update>
 
-<Update label="April 3, 2024">
+<Update label="2024-04-03" tags={['Feature']}>
 
 **Event Changes**
 
@@ -608,7 +610,7 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 
 </Update>
 
-<Update label="March 12, 2024">
+<Update label="2024-03-12" tags={['Feature']}>
 
 **Property Additions**
 
@@ -620,7 +622,7 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 
 </Update>
 
-<Update label="February 15, 2024">
+<Update label="2024-02-15" tags={['Feature']}>
 
 **Initial Release**
 
@@ -628,3 +630,5 @@ Added optional `filter`, `sort`, and `search` query parameters to list endpoints
 - Sort and filter support for List Orders route.
 
 </Update>
+
+</Changelog>
