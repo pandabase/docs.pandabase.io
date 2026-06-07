@@ -3,6 +3,7 @@
 	"pages": [
 		"payments",
 		"refunds",
-		"disputes"
+		"disputes",
+		"fraud"
 	]
 }

@@ -40,23 +40,23 @@ You have **7 days** from when a dispute is opened to submit evidence. We'll emai
 
 ## Reasons
 
-| Reason                 | What it means                                                |
-| ---------------------- | ------------------------------------------------------------ |
-| Fraudulent             | The cardholder claims they didn't authorize the charge.      |
-| Product not received   | Customer says they never got what they paid for.             |
-| Product unacceptable   | Received but doesn't match the description.                  |
-| Subscription cancelled | Customer says they cancelled but were billed anyway.         |
-| Duplicate              | Customer believes they were charged twice.                   |
-| Credit not processed   | You promised a refund and the customer never received it.    |
-| General                | No specific reason given by the issuing bank.                |
+| Reason                 | What it means                                             |
+| ---------------------- | --------------------------------------------------------- |
+| Fraudulent             | The cardholder claims they didn't authorize the charge.   |
+| Product not received   | Customer says they never got what they paid for.          |
+| Product unacceptable   | Received but doesn't match the description.               |
+| Subscription cancelled | Customer says they cancelled but were billed anyway.      |
+| Duplicate              | Customer believes they were charged twice.                |
+| Credit not processed   | You promised a refund and the customer never received it. |
+| General                | No specific reason given by the issuing bank.             |
 
 ## Fees
 
-| Outcome        | Effect                                                                                       |
-| -------------- | -------------------------------------------------------------------------------------------- |
-| Dispute opened | Disputed amount + \$20.00 fee deducted from your available balance.                          |
-| Won            | Disputed amount and dispute fee restored to your balance.                                    |
-| Lost           | Deduction stands. Original processing and platform fees are not refunded.                    |
+| Outcome        | Effect                                                                                                                                    |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Dispute opened | Disputed amount + \$20.00 fee deducted from your available balance.                                                                       |
+| Won            | Disputed amount and dispute fee restored to your balance.                                                                                 |
+| Lost           | Deduction stands. Original processing and platform fees are not refunded.                                                                 |
 | Prevented      | Disputed amount + **\$30.00** prevention fee deducted. Terminal, doesn't affect your rate. See [Prevented disputes](#prevented-disputes). |
 
 ## Dispute rate
