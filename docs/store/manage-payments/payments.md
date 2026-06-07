@@ -36,6 +36,7 @@ Global methods (cards, Apple Pay, Google Pay) work in every supported currency. 
 | Multibanco                              | EUR                  |
 | MB WAY                                  | EUR                  |
 | EPS                                     | EUR                  |
+| Satispay                                | EUR                  |
 | Bizum                                   | EUR                  |
 | Pay by Bank                             | GBP                  |
 | Przelewy24                              | PLN                  |
