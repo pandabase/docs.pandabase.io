@@ -20,35 +20,31 @@ checkout and settlement. Your USD settlement is unaffected.
 
 Global methods (cards, Apple Pay, Google Pay) work in every supported currency. Local methods appear automatically when the checkout is presented in that region's currency.
 
-<Accordion title="Supported methods">
-
-| Method                                  | Presentment currency |
-| --------------------------------------- | -------------------- |
-| Card (Visa, Mastercard, Amex, Discover) | Any supported        |
-| Apple Pay                               | Any supported        |
-| Google Pay                              | Any supported        |
-| Cash App Pay                            | USD, GBP             |
-| Amazon Pay                              | USD, GBP, EUR        |
-| WeChat Pay                              | USD                  |
-| Alipay                                  | USD                  |
-| iDEAL                                   | EUR                  |
-| Bancontact                              | EUR                  |
-| Multibanco                              | EUR                  |
-| MB WAY                                  | EUR                  |
-| EPS                                     | EUR                  |
-| Satispay                                | EUR                  |
-| Bizum                                   | EUR                  |
-| Pay by Bank                             | GBP                  |
-| Przelewy24                              | PLN                  |
-| BLIK                                    | PLN                  |
-| PIX                                     | BRL                  |
-| UPI                                     | INR                  |
-| Naver Pay                               | KRW                  |
-| Kakao Pay                               | KRW                  |
-| PAYCO                                   | KRW                  |
-| Samsung Pay                             | KRW                  |
-
-</Accordion>
+| Method                                  | Code          | Presentment currency |
+| --------------------------------------- | ------------- | -------------------- |
+| Card (Visa, Mastercard, Amex, Discover) | `card`        | Any supported        |
+| Apple Pay                               | `apple_pay`   | Any supported        |
+| Google Pay                              | `google_pay`  | Any supported        |
+| Alipay                                  | `alipay`      | USD                  |
+| Amazon Pay                              | `amazon_pay`  | USD, GBP, EUR        |
+| Bancontact                              | `bancontact`  | EUR                  |
+| Bizum                                   | `bizum`       | EUR                  |
+| BLIK                                    | `blik`        | PLN                  |
+| Cash App Pay                            | `cash_app`    | USD, GBP             |
+| EPS                                     | `eps`         | EUR                  |
+| iDEAL                                   | `ideal`       | EUR                  |
+| Kakao Pay                               | `kakao_pay`   | KRW                  |
+| MB WAY                                  | `mb_way`      | EUR                  |
+| Multibanco                              | `multibanco`  | EUR                  |
+| Naver Pay                               | `naver_pay`   | KRW                  |
+| Pay by Bank                             | `pay_by_bank` | GBP                  |
+| PAYCO                                   | `payco`       | KRW                  |
+| PIX                                     | `pix`         | BRL                  |
+| Przelewy24                              | `p24`         | PLN                  |
+| Satispay                                | `satispay`    | EUR                  |
+| Samsung Pay                             | `samsung_pay` | KRW                  |
+| UPI                                     | `upi`         | INR                  |
+| WeChat Pay                              | `wechat_pay`  | USD                  |
 
 ## Lifecycle
 

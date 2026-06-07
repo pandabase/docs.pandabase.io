@@ -27,6 +27,12 @@ The bank account **must belong to the verified account holder** for your Pandaba
 
 </Callout>
 
+<Callout type="warn">
+
+The bank account's country **must match the country of the ID** you verified with. For example, if you verified with a US ID, you can only connect a US bank account.
+
+</Callout>
+
 ### Fields by country
 
 | Country     | What you need                                                |

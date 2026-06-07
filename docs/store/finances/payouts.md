@@ -52,7 +52,7 @@ Payouts are available everywhere we support stores. Local rails (ACH, SEPA, BECS
 
 **Europe:** 🇦🇹 Austria, 🇧🇪 Belgium, 🇭🇷 Croatia, 🇨🇾 Cyprus, 🇨🇿 Czech Republic, 🇩🇰 Denmark, 🇪🇪 Estonia, 🇫🇮 Finland, 🇫🇷 France, 🇩🇪 Germany, 🇬🇧 Great Britain, 🇬🇷 Greece, 🇭🇺 Hungary, 🇮🇪 Ireland, 🇮🇹 Italy, 🇱🇻 Latvia, 🇱🇹 Lithuania, 🇱🇺 Luxembourg, 🇲🇹 Malta, 🇳🇱 Netherlands, 🇳🇴 Norway, 🇵🇱 Poland, 🇵🇹 Portugal, 🇷🇴 Romania, 🇸🇰 Slovakia, 🇸🇮 Slovenia, 🇪🇸 Spain, 🇸🇪 Sweden, 🇨🇭 Switzerland, 🇹🇷 Turkiye
 
-**Asia-Pacific:** 🇦🇺 Australia, 🇭🇰 Hong Kong, 🇮🇳 India, 🇳🇿 New Zealand, 🇵🇭 Philippines, 🇸🇬 Singapore, 🇹🇼 Taiwan, 🇹🇭 Thailand, 🇻🇳 Vietnam
+**Asia-Pacific:** 🇦🇺 Australia, 🇭🇰 Hong Kong, 🇮🇳 India, 🇳🇿 New Zealand, 🇵🇭 Philippines, 🇸🇬 Singapore, 🇹🇼 Taiwan, 🇹🇭 Thailand
 
 **Middle East:** 🇮🇱 Israel, 🇶🇦 Qatar, 🇦🇪 United Arab Emirates
 

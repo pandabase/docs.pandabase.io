@@ -318,7 +318,7 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 ## Features
 
-- **9 new supported countries**: Pandabase is now available to merchants in Australia, New Zealand, India, United Arab Emirates, Qatar, Taiwan, Vietnam, Thailand, and Switzerland. Local bank transfers are supported for Australia (BECS), New Zealand, India (NEFT/IMPS), Thailand, and Switzerland (SEPA). Wire (SWIFT) payouts are available for Thailand, Vietnam, United Arab Emirates, Qatar, and Taiwan.
+- **9 new supported countries**: Pandabase is now available to merchants in Australia, New Zealand, India, United Arab Emirates, Qatar, Taiwan, Vietnam, Thailand, and Switzerland. Local bank transfers are supported for Australia (BECS), New Zealand, India (NEFT/IMPS), Thailand, and Switzerland (SEPA). Wire (SWIFT) payouts are available for Thailand, United Arab Emirates, Qatar, and Taiwan.
 
 </Update>
 

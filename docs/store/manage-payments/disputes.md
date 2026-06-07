@@ -3,9 +3,11 @@ title: "Disputes"
 description: "How chargebacks work and how to respond to them."
 ---
 
-A dispute (chargeback) happens when a customer contacts their bank to reverse a payment instead of asking you for a refund. As Merchant of Record, Pandabase receives the dispute from the card network and forwards it to you to respond.
+A dispute (also called a chargeback) is when a customer asks their bank to reverse a payment instead of asking you for a refund. The bank takes the money back, and you get a chance to prove the charge was valid.
 
-You have **7 days** from when a dispute is opened to submit evidence. We'll email you as soon as one is filed.
+As the Merchant of Record, Pandabase handles the dispute with the card network and passes it to you so you can respond.
+
+You have **7 days** to send your evidence once a dispute opens. We'll email you the moment one is filed, so keep an eye on your inbox.
 
 <Frame>
 
@@ -18,22 +20,22 @@ You have **7 days** from when a dispute is opened to submit evidence. We'll emai
 <Steps>
   <Step title="Opened">
 
-    Order moves to `Chargeback`. Disputed amount plus a **\$20.00 dispute fee** is deducted from your available balance.
+    The order moves to `Chargeback`. The disputed amount plus a **\$20.00 dispute fee** is held from your balance until it's resolved.
 
   </Step>
   <Step title="Evidence">
 
-    Submit evidence from the dashboard within 7 days. We forward it to the card network.
+    You submit your evidence from the dashboard within 7 days. We pass it on to the card network for you.
 
   </Step>
   <Step title="Under review">
 
-    The issuing bank reviews. Typically **30 to 75 days**.
+    The customer's bank reviews everything. This usually takes **30 to 75 days** — it's slow, and that's normal.
 
   </Step>
   <Step title="Resolved">
 
-    **Won** — funds and fee restored, order returns to `Completed`. **Lost** — deduction stands.
+    **You win** — the disputed amount comes back and the order returns to `Completed`. The **\$20 dispute fee is not refunded**. **You lose** — the money stays with the customer.
 
   </Step>
 </Steps>
@@ -55,15 +57,15 @@ You have **7 days** from when a dispute is opened to submit evidence. We'll emai
 | Outcome        | Effect                                                                                                                                    |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | Dispute opened | Disputed amount + \$20.00 fee deducted from your available balance.                                                                       |
-| Won            | Disputed amount and dispute fee restored to your balance.                                                                                 |
-| Lost           | Deduction stands. Original processing and platform fees are not refunded.                                                                 |
+| Won            | Disputed amount restored to your balance. The \$20.00 dispute fee is **not** refunded.                                                    |
+| Lost           | Deduction stands. The \$20.00 dispute fee and the original processing and platform fees are not refunded.                                  |
 | Prevented      | Disputed amount + **\$30.00** prevention fee deducted. Terminal, doesn't affect your rate. See [Prevented disputes](#prevented-disputes). |
 
 ## Dispute rate
 
-We expect stores to stay **below 0.75%** disputes over a rolling **3-month** window.
+Your dispute rate is the share of your payments that get disputed, measured over the last **3 months**. Keep it **below 0.75%**.
 
-Sustained rates above 0.75% lead to outreach from us, additional review on new payments, and — if it doesn't come down — restrictions or loss of card acceptance. You can see your current rate on the [Analytics](/store/analytics) page.
+If it stays above 0.75%, we'll reach out and start reviewing your new payments more closely. If it doesn't come back down, the card networks can limit or even cut off your ability to take cards — so it's worth watching. You can check your current rate on the [Analytics](/store/analytics) page.
 
 ## Respond
 
@@ -113,12 +115,12 @@ When a cardholder questions a charge with their bank, the bank pulls rich order 
 
 ### Early Fraud Warnings
 
-Through our integrations with **Verifi** (Visa) and **Ethoca** (Mastercard), the network sometimes tells us a payment is **likely to be disputed** before the chargeback is filed.
+Sometimes the card network tells us a payment is **likely to be disputed** before the chargeback is actually filed. These warnings are **free** — there's no fee to receive one.
 
-- **Orders ≤ \$50** — refunded automatically. No dispute fee, no impact on your dispute rate, fulfillment revoked.
+- **Orders ≤ \$50** — refunded automatically. No impact on your dispute rate, fulfillment revoked.
 - **Orders > \$50** — you decide whether to refund pre-emptively or contest. We email you with the EFW reason.
 
-Each EFW carries a **\$29 network fee** (charged by Verifi or Ethoca), deducted from your available balance when we receive the alert. The fee itself is higher than the \$20 dispute fee, but the EFW keeps the chargeback off your dispute rate — which is what matters once you're approaching the 0.75% threshold.
+Acting on an EFW keeps the chargeback off your dispute rate entirely — which is what matters most once you're approaching the 0.75% threshold.
 
 ### Prevented disputes
 
@@ -143,4 +145,3 @@ CE 3.0 has a high win rate but doesn't apply to every dispute. Disputes where th
 - Use a clear store name and product descriptions. Most "fraudulent" disputes are customers not recognizing the charge.
 - Make refunds easy. Most disputes start because the customer couldn't get a response from you.
 - Send fulfillment confirmations promptly — receipt and access details in the same email.
-- Turn on Pandabase **Shield** (beta) to auto-decline high-risk payments at checkout.

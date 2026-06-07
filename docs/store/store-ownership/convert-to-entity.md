@@ -3,6 +3,12 @@ title: "Convert to an entity"
 description: "Move an individual-owned store under a registered company."
 ---
 
+<Callout type="warn">
+
+This guide is **deprecated**. An updated version is on the way — the steps below may no longer reflect the current process.
+
+</Callout>
+
 Stores start out **individually owned** — tied to the person who signed up and passed KYC. If you've registered a company and want the store operated under that entity instead, you can request a conversion.
 
 Turnaround is up to **14 business days** from a complete submission.
