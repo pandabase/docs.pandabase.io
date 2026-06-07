@@ -5,7 +5,7 @@ description: "Keep track of every change to the Pandabase API."
 
 <Changelog>
 
-<Update label="2026-06-07" tags={['Feature', 'Fix']}>
+<Update label="2026-06-07" tags={['Feature', 'Fix', 'Improvement']}>
 
 **Subscription plan changes, proration & analytics**
 
@@ -24,39 +24,22 @@ description: "Keep track of every change to the Pandabase API."
 - **New webhook events**: `SUBSCRIPTION_UPDATED` (plan, quantity, or payment-method change), `SUBSCRIPTION_TRIAL_ENDING`, and `SUBSCRIPTION_RENEWING`. Add them to an endpoint's `eventTypes` to subscribe; all are available from the webhook test endpoint.
 - **Renewal & trial reminders**: `SUBSCRIPTION_TRIAL_ENDING` and `SUBSCRIPTION_RENEWING` webhooks fire a few days ahead, and customers are emailed before a trial ends. Customers are also notified when a plan changes and when a scheduled cancellation is reversed.
 - **Quantity on subscriptions**: Subscription objects now include a `quantity` field.
-
-## Fixes
-
-- Resuming a subscription now returns the correct next charge date in the response.
-
-</Update>
-
-<Update label="2026-06-07" tags={['Feature']}>
-
-**Saved cards & billing in the customer portal**
-
-## Features
-
 - **Manage saved cards**: Customers can now add, remove, and set a default card from the portal at mypandabase.com. A billing address is required when adding a card.
 - **Update billing details**: Edit the cardholder name and billing address on a saved card.
 - **Change a subscription's card**: Choose which saved card a subscription bills.
 - **Recover a past-due subscription**: Retry a failed renewal after updating the card — if the bank requires authentication, the customer is guided through it.
 - **Card notifications**: Customers receive a confirmation when a card is added or removed and when a subscription's card changes, and a heads-up before a saved card expires.
 
-</Update>
-
-<Update label="2026-06-07" tags={['Feature', 'Improvement']}>
-
-**Active-session indicator & order payment method**
-
-## Features
-
-- **Payment method on customer orders**: The customer order detail now shows how the order was paid (for example, `Visa •••• 4242`) — both in the API under `payment.method` and on the order page in the portal.
-
 ## Improvements
 
 - **Current-session indicator**: The merchant and customer session lists now flag the session you're currently signed in with and sort it first, so it's clear which one not to revoke.
 - **Richer merchant sessions**: New merchant sign-ins now record the device, IP address, and approximate location, shown on the security page. Sessions created before this show these details once you sign in again.
+
+## Fixes
+
+- Resuming a subscription now returns the correct next charge date in the response.
+- **Payment method on customer orders**: The customer order detail now shows how the order was paid (for example, `Visa •••• 4242`) — both in the API under `payment.method` and on the order page in the portal.
+- Customers are now returned to the merchant’s `return_url` based on the latest order status, making redirects more reliable and preventing customers from getting stuck on the checkout confirmation page.
 
 </Update>
 
