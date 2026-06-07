@@ -8,22 +8,25 @@ This page lists every event Pandabase sends and what each one means. For deliver
 
 ## All event types
 
-| Event | Description |
-| --- | --- |
-| `PAYMENT_PENDING` | A customer initiated payment at checkout and the order is awaiting confirmation. |
-| `PAYMENT_COMPLETED` | A payment was successfully collected — the primary event for fulfilling orders. |
-| `PAYMENT_FAILED` | A payment failed, was canceled, or expired without completing. |
-| `PAYMENT_REFUNDED` | A charge was refunded and the order moved to refunded status. |
-| `PAYMENT_DISPUTED` | A customer opened a chargeback dispute on a payment. |
-| `PAYMENT_DISPUTE_WON` | A dispute was resolved in the merchant's favor and funds were restored. |
-| `PAYMENT_DISPUTE_LOST` | A dispute was resolved against the merchant and funds remain lost. |
-| `PAYMENT_DISPUTE_PREVENTED` | A chargeback was prevented before becoming a formal dispute. |
-| `SUBSCRIPTION_CREATED` | A new subscription was activated via checkout or a free trial. |
-| `SUBSCRIPTION_RENEWED` | A recurring subscription payment was successfully collected. |
-| `SUBSCRIPTION_PAST_DUE` | A renewal payment failed or requires additional authentication. |
-| `SUBSCRIPTION_CANCELLED` | A subscription was cancelled by the merchant, customer, or failed retries. |
-| `SUBSCRIPTION_PAUSED` | A merchant paused a subscription, halting further charges. |
-| `SUBSCRIPTION_RESUMED` | A merchant resumed a previously paused subscription. |
+| Event                       | Description                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| `PAYMENT_PENDING`           | A customer initiated payment at checkout and the order is awaiting confirmation. |
+| `PAYMENT_COMPLETED`         | A payment was successfully collected — the primary event for fulfilling orders.  |
+| `PAYMENT_FAILED`            | A payment failed, was canceled, or expired without completing.                   |
+| `PAYMENT_REFUNDED`          | A charge was refunded and the order moved to refunded status.                    |
+| `PAYMENT_DISPUTED`          | A customer opened a chargeback dispute on a payment.                             |
+| `PAYMENT_DISPUTE_WON`       | A dispute was resolved in the merchant's favor and funds were restored.          |
+| `PAYMENT_DISPUTE_LOST`      | A dispute was resolved against the merchant and funds remain lost.               |
+| `PAYMENT_DISPUTE_PREVENTED` | A chargeback was prevented before becoming a formal dispute.                     |
+| `SUBSCRIPTION_CREATED`      | A new subscription was activated via checkout or a free trial.                   |
+| `SUBSCRIPTION_RENEWED`      | A recurring subscription payment was successfully collected.                     |
+| `SUBSCRIPTION_PAST_DUE`     | A renewal payment failed or requires additional authentication.                  |
+| `SUBSCRIPTION_CANCELLED`    | A subscription was cancelled by the merchant, customer, or failed retries.       |
+| `SUBSCRIPTION_PAUSED`       | A merchant paused a subscription, halting further charges.                       |
+| `SUBSCRIPTION_RESUMED`      | A merchant resumed a previously paused subscription.                             |
+| `SUBSCRIPTION_UPDATED`      | A subscription's plan, quantity, or payment method changed.                      |
+| `SUBSCRIPTION_TRIAL_ENDING` | A trial is ending soon and billing is about to begin.                           |
+| `SUBSCRIPTION_RENEWING`     | A subscription is about to renew (sent a few days before the charge).            |
 
 ## Payload shape
 
@@ -44,7 +47,10 @@ type WebhookEvent =
   | "SUBSCRIPTION_PAST_DUE"
   | "SUBSCRIPTION_CANCELLED"
   | "SUBSCRIPTION_PAUSED"
-  | "SUBSCRIPTION_RESUMED";
+  | "SUBSCRIPTION_RESUMED"
+  | "SUBSCRIPTION_UPDATED"
+  | "SUBSCRIPTION_TRIAL_ENDING"
+  | "SUBSCRIPTION_RENEWING";
 ```
 
 All monetary values are in **cents** (integers, no floats).
@@ -480,19 +486,18 @@ The order moves to `CHARGEBACK` status. The disputed amount plus a **$30.00 prev
 
 ---
 
-
 Subscription events include the same `order`, `customer`, and `geo` fields as payment events, plus a `subscription` object with the current subscription state. They are fired **alongside** (not instead of) payment events — for example, a successful renewal triggers both `PAYMENT_COMPLETED` and `SUBSCRIPTION_RENEWED`.
 
 ```typescript title="Subscription type"
 interface WebhookSubscription {
-  id: string;                    // sub_ prefixed
+  id: string; // sub_ prefixed
   status: "TRIALING" | "ACTIVE" | "PAST_DUE" | "PAUSED" | "CANCELLED";
   billingInterval: "WEEKLY" | "MONTHLY" | "YEARLY";
-  amount: number;                // cents
+  amount: number; // cents
   currency: string;
-  currentPeriodStart: string;    // ISO 8601
+  currentPeriodStart: string; // ISO 8601
   currentPeriodEnd: string;
-  nextChargeAt: string | null;   // null when cancelled/paused
+  nextChargeAt: string | null; // null when cancelled/paused
   trialEnd: string | null;
   cancelledAt: string | null;
 }
@@ -507,6 +512,7 @@ The `subscription` field is only present on `SUBSCRIPTION_*` events. Payment eve
 <Webhook event="SUBSCRIPTION_CREATED" method="POST" description="A new subscription was activated via checkout or a free trial.">
 
 Fired when a new subscription is activated:
+
 - A customer completes checkout for a subscription product (first payment collected), or
 - A customer starts a free trial (card saved, no charge).
 
@@ -605,6 +611,7 @@ Fired when a recurring payment is successfully collected. Sent on every billing 
 <Webhook event="SUBSCRIPTION_PAST_DUE" method="POST" description="A renewal payment failed or requires additional authentication.">
 
 Fired when a renewal payment fails or requires additional authentication (3D Secure). The subscription moves to `PAST_DUE` status. Causes include:
+
 - The customer's card was declined
 - The card requires 3DS verification (customer is emailed an authentication link)
 - The payment method has expired
@@ -663,6 +670,7 @@ Do not revoke access on `SUBSCRIPTION_PAST_DUE` — the customer may still authe
 <Webhook event="SUBSCRIPTION_CANCELLED" method="POST" description="A subscription was cancelled by the merchant, customer, or failed retries.">
 
 Fired when a subscription is cancelled. Causes include:
+
 - The merchant cancels the subscription (immediately or at period end)
 - The customer cancels from the customer portal (always at period end)
 - All automatic payment retries are exhausted
@@ -793,6 +801,141 @@ Fired when a merchant resumes a previously paused subscription. Billing resumes 
       "currentPeriodStart": "2026-04-18T00:00:00.000Z",
       "currentPeriodEnd": "2026-05-18T00:00:00.000Z",
       "nextChargeAt": "2026-05-18T00:00:00.000Z",
+      "trialEnd": null,
+      "cancelledAt": null
+    }
+  }
+}
+```
+
+</ResponseExample>
+
+</Webhook>
+
+<Webhook event="SUBSCRIPTION_UPDATED" method="POST" description="A subscription's plan, quantity, or payment method changed.">
+
+Fired when a subscription is changed — its product, variant, billing interval, or quantity is updated, or the card it bills is changed. For an immediate upgrade that prorates, this fires alongside `PAYMENT_COMPLETED` for the prorated charge; an end-of-period change takes effect at the next renewal. The `subscription` object reflects the new plan.
+
+## Payload
+
+<ResponseField name="event" type="string" required>The event type — always `SUBSCRIPTION_UPDATED`.</ResponseField>
+<ResponseField name="id" type="string" required>Unique identifier for the event, prefixed with `evt_`.</ResponseField>
+<ResponseField name="timestamp" type="string" required>ISO 8601 timestamp of when the event occurred.</ResponseField>
+<ResponseField name="data.order" type="object" required>The order associated with the subscription.</ResponseField>
+<ResponseField name="data.customer" type="object | null">The customer, or `null` if not available.</ResponseField>
+<ResponseField name="data.geo" type="object | null">Geo data for the request, or `null` if not available.</ResponseField>
+<ResponseField name="data.subscription" type="object" required>The subscription with its new plan applied.</ResponseField>
+
+<ResponseExample title="Example event">
+
+```json
+{
+  "event": "SUBSCRIPTION_UPDATED",
+  "id": "evt_cm5x7k2a000001j0g8h3f9d2e",
+  "timestamp": "2026-06-07T00:00:00.000Z",
+  "data": {
+    "order": {},
+    "customer": {},
+    "geo": null,
+    "subscription": {
+      "id": "sub_cm5x7k2a000001j0g8h3f9d2e",
+      "status": "ACTIVE",
+      "billingInterval": "YEARLY",
+      "amount": 19999,
+      "currency": "USD",
+      "currentPeriodStart": "2026-06-07T00:00:00.000Z",
+      "currentPeriodEnd": "2027-06-07T00:00:00.000Z",
+      "nextChargeAt": "2027-06-07T00:00:00.000Z",
+      "trialEnd": null,
+      "cancelledAt": null
+    }
+  }
+}
+```
+
+</ResponseExample>
+
+</Webhook>
+
+<Webhook event="SUBSCRIPTION_TRIAL_ENDING" method="POST" description="A trial is ending soon and billing is about to begin.">
+
+Fired a few days before a free trial ends, so you can remind the customer that billing is about to start. The first charge is attempted when the trial ends (`trialEnd`). This is an advisory event and is not tied to a payment.
+
+## Payload
+
+<ResponseField name="event" type="string" required>The event type — always `SUBSCRIPTION_TRIAL_ENDING`.</ResponseField>
+<ResponseField name="id" type="string" required>Unique identifier for the event, prefixed with `evt_`.</ResponseField>
+<ResponseField name="timestamp" type="string" required>ISO 8601 timestamp of when the event occurred.</ResponseField>
+<ResponseField name="data.order" type="object" required>The order associated with the subscription.</ResponseField>
+<ResponseField name="data.customer" type="object | null">The customer, or `null` if not available.</ResponseField>
+<ResponseField name="data.geo" type="object | null">Geo data for the request, or `null` if not available.</ResponseField>
+<ResponseField name="data.subscription" type="object" required>The trialing subscription, with `trialEnd` set to when billing begins.</ResponseField>
+
+<ResponseExample title="Example event">
+
+```json
+{
+  "event": "SUBSCRIPTION_TRIAL_ENDING",
+  "id": "evt_cm5x7k2a000001j0g8h3f9d2e",
+  "timestamp": "2026-06-07T00:00:00.000Z",
+  "data": {
+    "order": {},
+    "customer": {},
+    "geo": null,
+    "subscription": {
+      "id": "sub_cm5x7k2a000001j0g8h3f9d2e",
+      "status": "TRIALING",
+      "billingInterval": "MONTHLY",
+      "amount": 1999,
+      "currency": "USD",
+      "currentPeriodStart": "2026-06-07T00:00:00.000Z",
+      "currentPeriodEnd": "2026-06-14T00:00:00.000Z",
+      "nextChargeAt": "2026-06-14T00:00:00.000Z",
+      "trialEnd": "2026-06-14T00:00:00.000Z",
+      "cancelledAt": null
+    }
+  }
+}
+```
+
+</ResponseExample>
+
+</Webhook>
+
+<Webhook event="SUBSCRIPTION_RENEWING" method="POST" description="A subscription is about to renew.">
+
+Fired a few days before a subscription's next renewal, so you can notify the customer ahead of the charge. For the exact amount — including metered usage and tax — call the [upcoming invoice](/developers/api/store-api-reference/subscriptions) endpoint. This is an advisory event and is not tied to a payment.
+
+## Payload
+
+<ResponseField name="event" type="string" required>The event type — always `SUBSCRIPTION_RENEWING`.</ResponseField>
+<ResponseField name="id" type="string" required>Unique identifier for the event, prefixed with `evt_`.</ResponseField>
+<ResponseField name="timestamp" type="string" required>ISO 8601 timestamp of when the event occurred.</ResponseField>
+<ResponseField name="data.order" type="object" required>The order associated with the subscription.</ResponseField>
+<ResponseField name="data.customer" type="object | null">The customer, or `null` if not available.</ResponseField>
+<ResponseField name="data.geo" type="object | null">Geo data for the request, or `null` if not available.</ResponseField>
+<ResponseField name="data.subscription" type="object" required>The subscription due to renew, with `nextChargeAt` set to the upcoming charge date.</ResponseField>
+
+<ResponseExample title="Example event">
+
+```json
+{
+  "event": "SUBSCRIPTION_RENEWING",
+  "id": "evt_cm5x7k2a000001j0g8h3f9d2e",
+  "timestamp": "2026-06-07T00:00:00.000Z",
+  "data": {
+    "order": {},
+    "customer": {},
+    "geo": null,
+    "subscription": {
+      "id": "sub_cm5x7k2a000001j0g8h3f9d2e",
+      "status": "ACTIVE",
+      "billingInterval": "MONTHLY",
+      "amount": 1999,
+      "currency": "USD",
+      "currentPeriodStart": "2026-05-10T00:00:00.000Z",
+      "currentPeriodEnd": "2026-06-10T00:00:00.000Z",
+      "nextChargeAt": "2026-06-10T00:00:00.000Z",
       "trialEnd": null,
       "cancelledAt": null
     }
