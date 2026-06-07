@@ -812,6 +812,8 @@ Fired when a merchant resumes a previously paused subscription. Billing resumes 
 
 </Webhook>
 
+---
+
 <Webhook event="SUBSCRIPTION_UPDATED" method="POST" description="A subscription's plan, quantity, or payment method changed.">
 
 Fired when a subscription is changed — its product, variant, billing interval, or quantity is updated, or the card it bills is changed. For an immediate upgrade that prorates, this fires alongside `PAYMENT_COMPLETED` for the prorated charge; an end-of-period change takes effect at the next renewal. The `subscription` object reflects the new plan.
@@ -857,6 +859,8 @@ Fired when a subscription is changed — its product, variant, billing interval,
 
 </Webhook>
 
+---
+
 <Webhook event="SUBSCRIPTION_TRIAL_ENDING" method="POST" description="A trial is ending soon and billing is about to begin.">
 
 Fired a few days before a free trial ends, so you can remind the customer that billing is about to start. The first charge is attempted when the trial ends (`trialEnd`). This is an advisory event and is not tied to a payment.
@@ -901,6 +905,8 @@ Fired a few days before a free trial ends, so you can remind the customer that b
 </ResponseExample>
 
 </Webhook>
+
+---
 
 <Webhook event="SUBSCRIPTION_RENEWING" method="POST" description="A subscription is about to renew.">
 
