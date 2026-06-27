@@ -15,9 +15,9 @@ REST APIs in general. If you're not a developer, please skip this section.
 
 Every checkout session returns a `checkout_url` that points to Pandabase's hosted checkout page. There are three ways to use it:
 
-1. **Redirect** — send the customer to the checkout URL
-2. **SDK embed** — use the Pandabase Checkout SDK to embed checkout as a modal or inline on your page
-3. **Direct link** — share the checkout URL directly
+1. **Redirect**: send the customer to the checkout URL
+2. **SDK embed**: drop the Pandabase Checkout SDK into your page to render checkout as a modal, drawer, overlay, or inline element
+3. **Direct link**: share the checkout URL directly
 
 The checkout page is hosted at `checkout.pandabase.io` with two routes:
 
@@ -55,7 +55,7 @@ After payment, the customer is redirected to your `return_url`. If no `return_ur
 
 <Callout type="warn">
 
-The redirect only means the customer completed the flow — it does not
+The redirect only means the customer completed the flow. It does not
 guarantee payment success. Always use
 [webhooks](/developers/webhooks/overview) to confirm payments on your backend.
 
@@ -63,171 +63,320 @@ guarantee payment success. Always use
 
 ## Checkout SDK
 
-The Pandabase Checkout SDK lets you embed checkout directly on your site as a **modal** or **inline** element. It handles the iframe, resizing, theming, and payment lifecycle events.
+<Callout type="info">
+
+SDK v2 is in **public preview**. It's fairly stable and safe for production use,
+but the API may still see minor changes before general availability.
+
+</Callout>
+
+The Pandabase Checkout SDK drops checkout into any website with a single script
+tag. Checkout renders inside a sandboxed iframe, so card data never touches
+your page, and is fully themeable to match your brand.
+
+- **No framework required.** A vanilla `<script>` and a global `Pandabase` object.
+- **Four presentations.** Modal, drawer, full-page overlay, or inline.
+- **Themeable.** Colors, radius, fonts, and light/dark, all via tokens.
+
+### Prerequisites
+
+You need two things:
+
+| Value       | Where it comes from                                                                                         |
+| ----------- | ----------------------------------------------------------------------------------------------------------- |
+| `storeId`   | Your store identifier (`shp_…`).                                                                            |
+| `sessionId` | A checkout session created **server-side** (`cs_…`). It carries the cart, amounts, and `return_url`. Single-use. |
+
+<Callout type="warn">
+
+Always create the session from your backend, then pass its id to the SDK in the
+browser. Never embed API secrets in the page.
+
+</Callout>
 
 ### Installation
 
 Add the SDK script to your page:
 
 ```html
-<script src="https://secure.pandabase.io/sdk.js"></script>
+<script src="https://secure.pandabase.io/v2/sdk.js"></script>
 ```
 
-This exposes `Pandabase.checkout()` globally.
+This exposes a global `Pandabase` with one method, `Pandabase.checkout(options)`,
+which returns an instance with `open()`, `close()`, and `destroy()`.
 
-### Modal mode
+<Callout type="warn">
 
-Opens the checkout in a centered overlay. This is the default mode.
+Always load the SDK from `https://secure.pandabase.io/v2/sdk.js`. **Never**
+self-host, bundle, vendor, or proxy this script. We push security and PCI-scope
+updates to the hosted version continuously, so a self-hosted copy will go stale,
+break the iframe's origin checks, and is unsupported.
+
+</Callout>
+
+### Quick start
+
+Open checkout in a modal, which is the default presentation:
 
 ```html
-<button id="buy-btn">Buy now</button>
+<button id="pay">Checkout</button>
 
-<script src="https://secure.pandabase.io/sdk.js"></script>
+<script src="https://secure.pandabase.io/v2/sdk.js"></script>
 <script>
-  document.getElementById("buy-btn").addEventListener("click", async () => {
-    // create session on your backend
-    const res = await fetch("/api/create-checkout", { method: "POST" });
-    const { storeId, sessionId } = await res.json();
+  const checkout = Pandabase.checkout({
+    storeId: "shp_abc123",
+    sessionId: "cs_xyz789",
+    on: {
+      payment_success: (e) => {
+        window.location.href = e.returnUrl ?? "/thank-you";
+      },
+    },
+  });
 
-    const checkout = Pandabase.checkout({
-      storeId: storeId,
-      sessionId: sessionId,
-      mode: "modal",
-      onPaymentSuccess: (e) => {
-        console.log("Payment succeeded:", e.orderId);
-        checkout.close();
-        window.location.href = "/thank-you";
-      },
-      onPaymentFailed: (e) => {
-        console.error("Payment failed:", e.error);
-      },
-      onClose: () => {
-        console.log("Customer closed the modal");
-      },
-    });
+  document.getElementById("pay").addEventListener("click", () => checkout.open());
+</script>
+```
 
-    checkout.open();
+### Presentation modes
+
+Set `mode` to choose how checkout appears. Each mode has its own layout.
+
+| Mode                  | Appearance                                                        | Open with     |
+| --------------------- | ---------------------------------------------------------------- | ------------- |
+| `modal` *(default)*   | Compact centered card over a dimmed backdrop                     | `.open()`     |
+| `drawer`              | Panel that slides in from the right, full height                 | `.open()`     |
+| `overlay`             | Full-page blurred backdrop, wide two-column (summary + form)     | `.open()`     |
+| `inline`              | Mounts directly into an element on your page                     | auto-mounts   |
+
+#### Modal, drawer & overlay
+
+These three open imperatively. Call `open()` to show checkout and `close()` to
+dismiss it.
+
+```js
+const checkout = Pandabase.checkout({
+  storeId: "shp_abc123",
+  sessionId: "cs_xyz789",
+  mode: "overlay", // or "modal" | "drawer"
+});
+
+checkout.open();
+// later: checkout.close();
+```
+
+#### Inline
+
+Inline mounts immediately into the `container` you provide, so no `open()` is needed.
+
+```html
+<div id="checkout"></div>
+
+<script src="https://secure.pandabase.io/v2/sdk.js"></script>
+<script>
+  Pandabase.checkout({
+    storeId: "shp_abc123",
+    sessionId: "cs_xyz789",
+    mode: "inline",
+    container: "#checkout", // CSS selector or an HTMLElement
   });
 </script>
 ```
 
-### Inline mode
+### Theming
 
-Renders the checkout inside a container element on your page.
+Pass an `appearance` object to match your brand. All colors accept any CSS color
+string; `radius` and `fontSizeBase` are numbers (px). The same tokens style both
+the checkout UI and the payment fields, so everything stays consistent.
 
-```html
-<div id="checkout-container"></div>
+```js
+Pandabase.checkout({
+  storeId,
+  sessionId,
+  theme: "auto", // "light" | "dark" | "auto" (default)
+  appearance: {
+    accent: "#6d28d9",
+    accentForeground: "#ffffff",
+    background: "#ffffff",
+    foreground: "#0a0a0a",
+    muted: "#f4f4f5",
+    border: "#e5e5e5",
+    summaryBackground: "#f5f3ff",
+    radius: 10,
+    fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
+    summaryPosition: "left", // overlay only: "left" | "right" | "top"
 
-<script src="https://secure.pandabase.io/sdk.js"></script>
-<script>
-  async function mountCheckout() {
-    const res = await fetch("/api/create-checkout", { method: "POST" });
-    const { storeId, sessionId } = await res.json();
-
-    const checkout = Pandabase.checkout({
-      storeId: storeId,
-      sessionId: sessionId,
-      mode: "inline",
-      container: "#checkout-container",
-      onPaymentSuccess: (e) => {
-        console.log("Payment succeeded:", e.orderId);
-      },
-      onPaymentFailed: (e) => {
-        console.error("Payment failed:", e.error);
-      },
-    });
-  }
-
-  mountCheckout();
-</script>
+    // Optional: ship a distinct dark palette, applied when the resolved
+    // scheme is dark (system preference, `theme: "dark"`, or colorScheme).
+    dark: {
+      background: "#0b0b12",
+      foreground: "#e0e7ff",
+      muted: "#17171f",
+      border: "#262633",
+      summaryBackground: "#101019",
+    },
+  },
+});
 ```
+
+#### Appearance tokens
+
+| Token                 | Type                  | Description                                                  |
+| --------------------- | --------------------- | ----------------------------------------------------------- |
+| `colorScheme`         | `"light" \| "dark"`   | Force a scheme regardless of system/`theme`.                |
+| `accent`              | color                 | Primary action color (buttons, focus, selected).            |
+| `accentForeground`    | color                 | Text/icon on top of `accent`.                               |
+| `background`          | color                 | Page/surface background.                                    |
+| `foreground`          | color                 | Primary text.                                               |
+| `muted`               | color                 | Subtle/secondary surface.                                   |
+| `mutedForeground`     | color                 | Secondary text.                                             |
+| `secondary`           | color                 | Secondary button/surface.                                   |
+| `secondaryForeground` | color                 | Text on `secondary`.                                        |
+| `card`                | color                 | Card surface.                                               |
+| `cardForeground`      | color                 | Text on cards.                                              |
+| `popover`             | color                 | Dropdown/popover surface.                                   |
+| `popoverForeground`   | color                 | Text in dropdowns/popovers.                                 |
+| `ring`                | color                 | Focus-ring color.                                           |
+| `border`              | color                 | Borders, dividers, input outlines.                          |
+| `input`               | color                 | Input field background.                                     |
+| `danger`              | color                 | Error/danger color.                                         |
+| `summaryBackground`   | color                 | Order-summary panel background.                             |
+| `radius`              | number (px)           | Corner radius for inputs/buttons/cards.                     |
+| `fontFamily`          | string                | Sans font stack.                                            |
+| `fontMono`            | string                | Monospace font stack.                                       |
+| `fontSizeBase`        | number (px)           | Base font size for payment fields.                          |
+| `summaryPosition`     | `"left" \| "right" \| "top"` | Summary placement (overlay only).                    |
+| `logo`                | string (URL)          | Override the merchant logo in the summary.                  |
+| `dark`                | object                | Any of the above (except `colorScheme`/`summaryPosition`), applied in dark scheme. |
+
+Scheme precedence: `appearance.colorScheme` → `theme` option → system
+preference. Tokens you omit fall back to the default light/dark theme.
+
+### Handling results & redirects
+
+<Callout type="warn">
+
+For inline, modal, and drawer, handle `payment_success` to send the buyer
+onward. Card payments that complete in-place do **not** auto-redirect.
+
+</Callout>
+
+```js
+Pandabase.checkout({
+  storeId,
+  sessionId,
+  on: {
+    payment_success: (e) => {
+      window.location.href = e.returnUrl ?? "/thank-you";
+    },
+  },
+});
+```
+
+Behavior depends on the payment type:
+
+- **Redirect-based methods** (Cash App, bank debits, some 3-D Secure) bounce the
+  buyer off-site and back; the embed auto-redirects them to your `return_url`.
+  Nothing extra to do.
+- **In-page card success** fires `payment_success` (with `returnUrl`) and leaves
+  the navigation to you. The SDK never takes over the merchant's page.
 
 ### SDK options
 
-| Option                | Type                  | Default   | Description                                                  |
-| --------------------- | --------------------- | --------- | ------------------------------------------------------------ |
-| `storeId`             | string                | —         | **Required.** Your store ID                                  |
-| `sessionId`           | string                | —         | **Required.** The checkout session ID                        |
-| `mode`                | string                | `"modal"` | `"modal"` or `"inline"`                                      |
-| `container`           | string \| HTMLElement | —         | CSS selector or element. Required for inline mode            |
-| `theme`               | string                | `"auto"`  | `"light"`, `"dark"`, or `"auto"` (follows system preference) |
-| `onLoaded`            | function              | —         | Called when the checkout iframe has loaded                   |
-| `onPaymentSuccess`    | function              | —         | Called on successful payment. Receives `{ orderId }`         |
-| `onPaymentProcessing` | function              | —         | Called when payment is processing                            |
-| `onPaymentFailed`     | function              | —         | Called on payment failure. Receives `{ error }`              |
-| `onError`             | function              | —         | Called on checkout errors. Receives `{ error }`              |
-| `onClose`             | function              | —         | Called when the modal is closed (modal mode only)            |
+```js
+Pandabase.checkout(options) → instance
+```
+
+| Option       | Type                                          | Default   | Notes                                                        |
+| ------------ | --------------------------------------------- | --------- | ------------------------------------------------------------ |
+| `storeId`    | string                                        | —         | **Required.**                                                |
+| `sessionId`  | string                                        | —         | **Required.**                                                |
+| `mode`       | `"modal" \| "drawer" \| "overlay" \| "inline"` | `"modal"` |                                                              |
+| `container`  | string \| HTMLElement                         | —         | **Required for `inline`.** CSS selector or element.          |
+| `theme`      | `"light" \| "dark" \| "auto"`                 | `"auto"`  |                                                              |
+| `appearance` | object                                        | —         | See [Theming](#theming).                                     |
+| `locale`     | string                                        | —         | BCP-47 (e.g. `"en"`, `"fr-FR"`); localizes payment fields.   |
+| `on`         | object                                        | —         | Event handlers, see [Events](#events).                       |
 
 ### SDK methods
 
-| Method               | Description                                             |
-| -------------------- | ------------------------------------------------------- |
-| `checkout.open()`    | Open the modal (modal mode only)                        |
-| `checkout.close()`   | Close the modal (modal mode only)                       |
-| `checkout.destroy()` | Remove the checkout iframe and clean up event listeners |
+| Method               | Description                                          |
+| -------------------- | --------------------------------------------------- |
+| `checkout.open()`    | Open (modal/drawer/overlay). No-op for inline.      |
+| `checkout.close()`   | Close (modal/drawer/overlay). No-op for inline.     |
+| `checkout.destroy()` | Remove listeners and all DOM created by the instance. |
+
+### Events
+
+Supply event handlers as `on: { … }`.
+
+| Event                 | Payload                    | Fires when                                  |
+| --------------------- | -------------------------- | ------------------------------------------- |
+| `loaded`              | `{ sessionId }`            | The checkout iframe loaded.                 |
+| `ready`               | —                          | The checkout UI is mounted.                 |
+| `payment_success`     | `{ orderId?, returnUrl? }` | Payment confirmed.                          |
+| `payment_processing`  | —                          | Async payment is pending.                   |
+| `payment_failed`      | `{ error? }`               | Payment failed.                             |
+| `error`               | `{ error }`                | Session/load error (incl. iframe failed to load). |
+| `close`               | —                          | The buyer closed the checkout.              |
+
+```js
+Pandabase.checkout({
+  storeId,
+  sessionId,
+  on: {
+    loaded: (e) => console.log("loaded", e.sessionId),
+    ready: () => console.log("ready"),
+    payment_success: (e) => (window.location.href = e.returnUrl ?? "/done"),
+    payment_processing: () => console.log("processing"),
+    payment_failed: (e) => console.warn("failed:", e.error),
+    error: (e) => console.error(e.error),
+    close: () => console.log("closed"),
+  },
+});
+```
+
+<Callout type="info">
+
+Legacy flat callbacks (`onPaymentSuccess`, `onClose`, …) are still accepted for
+backwards compatibility, but the grouped `on` object is preferred.
+
+</Callout>
 
 ### Full example
 
-A complete Express + HTML integration:
-
-```typescript
-// server.ts
-import express from "express";
-
-const app = express();
-const STORE_ID = process.env.PANDABASE_STORE_ID!;
-
-app.post("/api/create-checkout", async (req, res) => {
-  const response = await fetch(
-    `https://api.pandabase.io/v2/stores/${STORE_ID}/checkouts`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items: [{ name: "Premium Plan", amount: 2999, quantity: 1 }],
-      }),
-    },
-  );
-
-  const { data } = await response.json();
-  res.json({ storeId: STORE_ID, sessionId: data.session_id });
-});
-
-app.listen(3000);
-```
-
 ```html
-<!-- index.html -->
-<button id="buy">Buy Premium Plan — $29.99</button>
+<!doctype html>
+<html>
+  <body>
+    <button id="buy">Buy now</button>
 
-<script src="https://secure.pandabase.io/sdk.js"></script>
-<script>
-  var currentCheckout = null;
+    <script src="https://secure.pandabase.io/v2/sdk.js"></script>
+    <script>
+      const checkout = Pandabase.checkout({
+        storeId: "shp_abc123",
+        sessionId: "cs_xyz789",
+        mode: "overlay",
+        theme: "auto",
+        locale: "en",
+        appearance: {
+          accent: "#0284c7",
+          radius: 10,
+          summaryPosition: "left",
+          dark: { background: "#071726", foreground: "#e0f2fe" },
+        },
+        on: {
+          payment_success: (e) => {
+            window.location.href = e.returnUrl ?? "/thank-you";
+          },
+          payment_failed: (e) => alert(e.error ?? "Payment failed"),
+          error: (e) => console.error(e.error),
+        },
+      });
 
-  document.getElementById("buy").addEventListener("click", async function () {
-    // clean up previous checkout if any
-    if (currentCheckout) currentCheckout.destroy();
-
-    var res = await fetch("/api/create-checkout", { method: "POST" });
-    var data = await res.json();
-
-    currentCheckout = Pandabase.checkout({
-      storeId: data.storeId,
-      sessionId: data.sessionId,
-      mode: "modal",
-      theme: "auto",
-      onPaymentSuccess: function (e) {
-        alert("Payment complete! Order: " + e.orderId);
-        currentCheckout.close();
-      },
-      onPaymentFailed: function (e) {
-        alert("Payment failed: " + e.error);
-      },
-    });
-
-    currentCheckout.open();
-  });
-</script>
+      document.getElementById("buy").addEventListener("click", () => checkout.open());
+    </script>
+  </body>
+</html>
 ```
 
 ### React
@@ -246,18 +395,25 @@ declare global {
   }
 }
 
+type CheckoutMode = "modal" | "drawer" | "overlay" | "inline";
+
 interface PandabaseCheckoutOptions {
   storeId: string;
   sessionId: string;
-  mode?: "modal" | "inline";
+  mode?: CheckoutMode;
   container?: string | HTMLElement;
   theme?: "light" | "dark" | "auto";
-  onLoaded?: (e: any) => void;
-  onPaymentSuccess?: (e: any) => void;
-  onPaymentProcessing?: () => void;
-  onPaymentFailed?: (e: any) => void;
-  onError?: (e: any) => void;
-  onClose?: () => void;
+  appearance?: Record<string, unknown>;
+  locale?: string;
+  on?: {
+    loaded?: (e: { sessionId: string }) => void;
+    ready?: () => void;
+    payment_success?: (e: { orderId?: string; returnUrl?: string }) => void;
+    payment_processing?: () => void;
+    payment_failed?: (e: { error?: string }) => void;
+    error?: (e: { error: unknown }) => void;
+    close?: () => void;
+  };
 }
 
 interface PandabaseCheckout {
@@ -266,7 +422,7 @@ interface PandabaseCheckout {
   destroy: () => void;
 }
 
-const SDK_URL = "https://secure.pandabase.io/sdk.js";
+const SDK_URL = "https://secure.pandabase.io/v2/sdk.js";
 
 let sdkLoaded = false;
 let sdkPromise: Promise<void> | null = null;
@@ -341,13 +497,12 @@ export function BuyButton() {
       checkout.open({
         storeId,
         sessionId,
-        onPaymentSuccess: (e) => {
-          console.log("paid:", e.orderId);
-          checkout.close();
-          window.location.href = "/thank-you";
-        },
-        onPaymentFailed: (e) => {
-          console.error("failed:", e.error);
+        mode: "overlay",
+        on: {
+          payment_success: (e) => {
+            window.location.href = e.returnUrl ?? "/thank-you";
+          },
+          payment_failed: (e) => console.error("failed:", e.error),
         },
       });
     } finally {
@@ -369,10 +524,12 @@ For inline mode in React, pass a ref as the container:
 import { useRef, useEffect } from "react";
 import { useCheckout } from "@/hooks/use-checkout";
 
-export function InlineCheckout({ storeId, sessionId }: {
+interface InlineCheckoutProps {
   storeId: string;
   sessionId: string;
-}) {
+}
+
+export function InlineCheckout({ storeId, sessionId }: InlineCheckoutProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const checkout = useCheckout();
 
@@ -384,8 +541,8 @@ export function InlineCheckout({ storeId, sessionId }: {
       sessionId,
       mode: "inline",
       container: containerRef.current,
-      onPaymentSuccess: (e) => {
-        console.log("paid:", e.orderId);
+      on: {
+        payment_success: (e) => console.log("paid:", e.orderId),
       },
     });
   }, [storeId, sessionId]);
@@ -394,9 +551,21 @@ export function InlineCheckout({ storeId, sessionId }: {
 }
 ```
 
+## Notes & limits
+
+- **`summaryPosition`** (`left`/`right`) only applies to the **overlay** mode,
+  which is wide enough for two columns; other modes stack the summary on top.
+- **Cleanup:** call `destroy()` if you remove the checkout (e.g. on an SPA route
+  change) to detach listeners and DOM.
+- **Multiple instances:** each `checkout()` call is independent; don't open two
+  modals at once.
+
 ## Return URL
 
-Set a `return_url` when creating the session to redirect customers back to your site after payment. This applies to the full-page checkout (`/pay/` route) — the SDK handles post-payment via callbacks instead.
+Set a `return_url` when creating the session to redirect customers back to your
+site after payment. It applies to the full-page checkout (`/pay/` route) and to
+redirect-based methods in the embed. For in-page card success, the SDK hands the
+`returnUrl` to your `payment_success` handler so you control the navigation.
 
 ```json
 {
