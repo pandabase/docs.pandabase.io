@@ -90,3 +90,15 @@ Once the funds are back in your balance, fix the bank details and request a new 
 Wait until at least **5 business days** have passed since the payout was marked as paid. Most local rails clear in 1 to 2 business days, but interbank delays are common and the funds usually land within this window.
 
 If 5 business days have passed and you still don't see the deposit, contact your bank first. They can trace incoming transfers using the reference shown on the payout in your dashboard. If your bank confirms nothing has arrived, reach out to support with the payout ID.
+
+Expected arrival times vary by payment method and country. Banks sometimes hold incoming funds for a short period before making them available, even after the payout shows as **Completed** in your Dashboard. Your bank has the most direct access to information about incoming transfers, so work with them first.
+
+If the payout still hasn't arrived, contact your bank and provide the following details so they can investigate the transfer:
+
+- Trace ID
+- Amount
+- Date the payment was initiated
+- Your bank's name
+- Last four digits of your account number
+
+If your bank can't locate the funds, ask them for a written statement confirming this. Send that statement to support and we'll investigate further and help resolve the issue with our payout provider.
