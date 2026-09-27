@@ -119,13 +119,13 @@ body::after {
 
 /* glass surfaces so the grain shows through */
 #nd-notebook-layout header {
-  background-color: color-mix(in oklab, var(--background) 60%, transparent);
-  backdrop-filter: blur(14px) saturate(140%);
+  background-color: color-mix(in oklab, var(--background) 50%, transparent);
+  backdrop-filter: blur(28px) saturate(160%);
 }
 
 #nd-sidebar {
-  background-color: color-mix(in oklab, var(--sidebar) 55%, transparent);
-  backdrop-filter: blur(18px) saturate(150%);
+  background-color: color-mix(in oklab, var(--sidebar) 45%, transparent);
+  backdrop-filter: blur(40px) saturate(170%);
 }
 
 #nd-sidebar[data-collapsed='false'] {
@@ -144,15 +144,20 @@ body::after {
 }
 
 #nd-sidebar-mobile {
-  background-color: color-mix(in oklab, var(--background) 70%, transparent);
-  backdrop-filter: blur(20px) saturate(150%);
+  background-color: color-mix(in oklab, var(--background) 60%, transparent);
+  backdrop-filter: blur(40px) saturate(170%);
 }
 
 /* card, popover and secondary surfaces are translucent, frost whatever sits behind them */
 [class*='bg-fd-card'],
 [class*='bg-fd-popover'],
 [class*='bg-fd-secondary'] {
-  backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+/* dim and blur the page behind the search dialog and mobile menu */
+[class*='bg-fd-overlay'] {
+  backdrop-filter: blur(10px);
 }
 
 #nd-page :is([class*='bg-fd-card'], [class*='bg-fd-secondary']) {

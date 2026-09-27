@@ -5,7 +5,6 @@ import {
   DocsPage,
   DocsTitle,
   MarkdownCopyButton,
-  PageLastUpdate,
   ViewOptionsPopover,
 } from 'fumadocs-ui/layouts/notebook/page';
 import { notFound } from 'next/navigation';
@@ -18,6 +17,14 @@ import { socials } from '@/lib/layout.shared';
 import { type GroupId, getGroup, getGroupOf } from '@/lib/navigation';
 import { openapi } from '@/lib/openapi';
 import { OpenAPIPage } from '@/components/api-page';
+
+const dateFormat = new Intl.DateTimeFormat('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
 
 function getDocsPage(slug: string[], group: GroupId) {
   const page = source.getPage(slug);
@@ -54,7 +61,13 @@ async function DocsPageView({ slug, group }: { slug: string[]; group: GroupId })
         />
       </DocsBody>
       <div className="flex items-center justify-between gap-4 border-t pt-4 text-sm text-fd-muted-foreground tabular-nums">
-        {page.data.lastModified ? <PageLastUpdate date={page.data.lastModified} /> : <span />}
+        {page.data.lastModified ? (
+          <p>
+            Last updated on <time dateTime={page.data.lastModified.toISOString()}>{dateFormat.format(page.data.lastModified)}</time>
+          </p>
+        ) : (
+          <span />
+        )}
         <div className="flex items-center gap-1">
           {socials.map(({ label, url, Icon }) => (
             <a
