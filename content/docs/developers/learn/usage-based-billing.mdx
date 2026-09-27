@@ -1,21 +1,13 @@
 ---
 title: "Usage-based billing"
-description: "Charge subscription customers for what they actually use, with metered events, flexible aggregation, and per-unit pricing."
+description: "Set up meters, report usage, and bill customers at renewal."
 ---
-
-<Callout type="warn">
-
-We will assume you have a general understanding of programming. This guide is
-intended for developers, and we expect you to have a good understanding of
-REST APIs in general. If you're not a developer, please skip this section.
-
-</Callout>
 
 ## Overview
 
 Usage-based billing lets you charge a subscription customer based on how much of your product they use during a billing period. You define one or more **meters** on a subscription product, report **usage events** as they happen, and Pandabase aggregates the totals and bills the customer at each renewal.
 
-This is the right model for APIs (priced per request or per token), seats (priced per active user), storage (priced per gigabyte stored), or anything else where the bill cannot be known in advance.
+Use this for API requests, tokens, active users, storage, or other charges that vary with usage.
 
 ```mermaid
 sequenceDiagram
@@ -158,7 +150,7 @@ After the customer completes the checkout, your `SUBSCRIPTION_CREATED` webhook f
 
 ## Step 4: Report usage events
 
-Each time your app does the billable thing, post a usage event. The Store API accepts up to **100 events per call** for a single subscription.
+Send a usage event for each billable action. The Store API accepts up to **100 events per call** for a single subscription.
 
 <Callout type="info">
 
@@ -204,7 +196,7 @@ The response tells you which events were accepted, which were silently deduplica
 }
 ```
 
-The top-level call returns `201` even if some events were rejected. Always check `rejected[]` and surface per-event problems back to your reporter.
+The top-level call returns `201` even if some events were rejected. Check `rejected[]` and handle errors for each rejected event.
 
 ### Rejection reasons
 
@@ -340,7 +332,7 @@ Call `reporter.flush()` on graceful shutdown so in-flight events are not lost.
 
 ### Listing reported events
 
-Use the list endpoint to audit what your reporter has actually been sending. Results come back most-recent-first and are paginated.
+Use the list endpoint to review reported events. Results are paginated, with the most recent events first.
 
 ```bash
 curl "https://api.pandabase.io/v2/core/stores/{storeId}/usage?subscription_id=sub_xxx&meter_id=umt_xxx&from=2026-05-01T00:00:00Z&to=2026-06-01T00:00:00Z&page=1&limit=50" \
@@ -497,9 +489,9 @@ Usage-based subscriptions are **USD only** today. The product's `price` and ever
 | `USAGE_WRITE` | Report usage events. |
 | `USAGE_READ` | List raw events and read subscription usage projections. |
 
-Provision a separate token for your high-throughput reporting workload, scoped to just `USAGE_WRITE`, so a compromised reporter cannot reshape your pricing.
+Provision a separate token for your high-throughput reporting workload, scoped to just `USAGE_WRITE`, so the reporting service cannot change your pricing.
 
-Bearer mode is shown in every example on this page. HMAC mode works identically: pass the token ID in `Authorization: Bearer stk_...` and the request body's HMAC-SHA256 signature in `X-Signature`. See [API Tokens](/developers/learn/api-tokens) for the full signing recipe.
+Bearer mode is shown in every example on this page. HMAC mode works identically: pass the token ID in `Authorization: Bearer stk_...` and the request body's HMAC-SHA256 signature in `X-Signature`. See [API Tokens](/developers/learn/api-tokens) for signing instructions.
 
 ## Webhook events
 

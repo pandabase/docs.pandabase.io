@@ -1,14 +1,9 @@
 ---
 title: "Introduction"
-description: "Learn how to use the Pandabase API programmatically."
+description: "Base URL, request format, versioning, and request IDs."
 ---
 
-Pandabase HTTP API allows developers to interact programmatically with their resources using HTTP requests.
-
-The API supports any programming language or framework that can send HTTP
-requests.
-
-You can use the commands listed below with `curl` by providing your token.
+Use the Pandabase HTTP API to manage your store from any language that can send HTTP requests. See [API tokens](/developers/learn/api-tokens) for authentication.
 
 ## API Basics
 
@@ -40,7 +35,7 @@ errors, are encoded exclusively as JSON as well.
 
 ### Versioning
 
-The Pandabase API uses a hybrid versioning system that combines major versions with date-based increments to ensure stability while providing continuous improvements.
+The API uses major versions for breaking changes and dated updates for backward-compatible changes.
 
 **How It Works**
 
@@ -55,9 +50,8 @@ The Pandabase API uses a hybrid versioning system that combines major versions w
    - These updates are backward compatible within the same major version
 
 **Version Header**
-ba
 
-Every API response includes the current version in the `X-Version` header, allowing you to track which version you're using.
+The `X-Version` response header identifies the API version used for the request.
 
 ### Request IDs
 
@@ -68,4 +62,4 @@ Every API response includes the following headers:
 | `X-Request-ID` | Unique request identifier for tracking and troubleshooting |
 | `X-Version`    | Current API version in `YYYY/MM/DD-v2` format              |
 
-If you encounter an issue with our service, providing the `X-Request-ID` to our support team will expedite the resolution process.
+Include the `X-Request-ID` when contacting support so we can find the request.

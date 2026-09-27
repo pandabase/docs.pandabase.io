@@ -61,8 +61,6 @@ All monetary values are in **cents** (integers, no floats).
 
 ### PAYMENT_PENDING
 
-A customer initiated payment at checkout and the order is awaiting confirmation.
-
 Fired when a customer initiates payment at checkout. The order has been created and a payment intent is awaiting confirmation.
 
 <Callout type="info">
@@ -118,8 +116,6 @@ At this stage, geo data (`city`, `region`, `country`) may be `null` — it is en
 ---
 
 ### PAYMENT_COMPLETED
-
-A payment was successfully collected — the primary event for fulfilling orders.
 
 Fired when a payment is successfully collected. **This is the primary event to listen for when fulfilling orders.**
 
@@ -178,8 +174,6 @@ The order status will be `PROCESSING` (if fulfillment is in progress) or `COMPLE
 
 ### PAYMENT_FAILED
 
-A payment failed, was canceled, or expired without completing.
-
 Fired when a payment fails, is canceled by the customer, or expires without being completed. The order is moved to `CANCELLED` status. If a coupon was applied, its usage count is automatically restored.
 
 #### Payload
@@ -229,8 +223,6 @@ Fired when a payment fails, is canceled by the customer, or expires without bein
 ---
 
 ### PAYMENT_REFUNDED
-
-A charge was refunded and the order moved to refunded status.
 
 Fired when a charge is refunded, whether initiated through the Pandabase dashboard or detected from an external refund. The order status is set to `REFUNDED`.
 
@@ -282,8 +274,6 @@ Fired when a charge is refunded, whether initiated through the Pandabase dashboa
 
 ### PAYMENT_DISPUTED
 
-A customer opened a chargeback dispute on a payment.
-
 Fired when a customer opens a chargeback dispute on a payment. The order moves to `CHARGEBACK` status and the disputed amount plus a $20.00 dispute fee is deducted from the store's available balance.
 
 #### Payload
@@ -333,8 +323,6 @@ Fired when a customer opens a chargeback dispute on a payment. The order moves t
 ---
 
 ### PAYMENT_DISPUTE_WON
-
-A dispute was resolved in the merchant's favor and funds were restored.
 
 Fired when a dispute is resolved in the merchant's favor. The disputed amount and fee are restored to the store's available balance and the order returns to `COMPLETED` status.
 
@@ -386,8 +374,6 @@ Fired when a dispute is resolved in the merchant's favor. The disputed amount an
 
 ### PAYMENT_DISPUTE_LOST
 
-A dispute was resolved against the merchant and funds remain lost.
-
 Fired when a dispute is resolved against the merchant. The deducted funds remain lost and the order stays in `CHARGEBACK` status.
 
 #### Payload
@@ -437,8 +423,6 @@ Fired when a dispute is resolved against the merchant. The deducted funds remain
 ---
 
 ### PAYMENT_DISPUTE_PREVENTED
-
-A chargeback was prevented before becoming a formal dispute.
 
 Fired when Verifi (Visa RDR) or Ethoca prevents a chargeback before it becomes a formal dispute. This is terminal — no `PAYMENT_DISPUTE_WON` or `PAYMENT_DISPUTE_LOST` will follow.
 
@@ -519,8 +503,6 @@ The `subscription` field is only present on `SUBSCRIPTION_*` events. Payment eve
 
 ### SUBSCRIPTION_CREATED
 
-A new subscription was activated via checkout or a free trial.
-
 Fired when a new subscription is activated:
 
 - A customer completes checkout for a subscription product (first payment collected), or
@@ -572,8 +554,6 @@ The `order` in the payload is the initial order that created the subscription. F
 
 ### SUBSCRIPTION_RENEWED
 
-A recurring subscription payment was successfully collected.
-
 Fired when a recurring payment is successfully collected. Sent on every billing cycle — weekly, monthly, or yearly depending on the subscription's billing interval. Use this event to extend access, deliver license keys, or update entitlements.
 
 #### Payload
@@ -619,8 +599,6 @@ Fired when a recurring payment is successfully collected. Sent on every billing 
 ---
 
 ### SUBSCRIPTION_PAST_DUE
-
-A renewal payment failed or requires additional authentication.
 
 Fired when a renewal payment fails or requires additional authentication (3D Secure). The subscription moves to `PAST_DUE` status. Causes include:
 
@@ -680,8 +658,6 @@ Do not revoke access on `SUBSCRIPTION_PAST_DUE` — the customer may still authe
 
 ### SUBSCRIPTION_CANCELLED
 
-A subscription was cancelled by the merchant, customer, or failed retries.
-
 Fired when a subscription is cancelled. Causes include:
 
 - The merchant cancels the subscription (immediately or at period end)
@@ -734,8 +710,6 @@ If cancelled at period end, the customer retains access until the current billin
 
 ### SUBSCRIPTION_PAUSED
 
-A merchant paused a subscription, halting further charges.
-
 Fired when a merchant pauses a subscription. No further charges are made until the subscription is resumed. The customer retains access during the pause.
 
 #### Payload
@@ -781,8 +755,6 @@ Fired when a merchant pauses a subscription. No further charges are made until t
 ---
 
 ### SUBSCRIPTION_RESUMED
-
-A merchant resumed a previously paused subscription.
 
 Fired when a merchant resumes a previously paused subscription. Billing resumes at the end of the current period (or immediately if the period has already ended).
 
@@ -830,8 +802,6 @@ Fired when a merchant resumes a previously paused subscription. Billing resumes 
 
 ### SUBSCRIPTION_UPDATED
 
-A subscription's plan, quantity, or payment method changed.
-
 Fired when a subscription is changed — its product, variant, billing interval, or quantity is updated, or the card it bills is changed. For an immediate upgrade that prorates, this fires alongside `PAYMENT_COMPLETED` for the prorated charge; an end-of-period change takes effect at the next renewal. The `subscription` object reflects the new plan.
 
 #### Payload
@@ -878,8 +848,6 @@ Fired when a subscription is changed — its product, variant, billing interval,
 
 ### SUBSCRIPTION_TRIAL_ENDING
 
-A trial is ending soon and billing is about to begin.
-
 Fired a few days before a free trial ends, so you can remind the customer that billing is about to start. The first charge is attempted when the trial ends (`trialEnd`). This is an advisory event and is not tied to a payment.
 
 #### Payload
@@ -925,8 +893,6 @@ Fired a few days before a free trial ends, so you can remind the customer that b
 ---
 
 ### SUBSCRIPTION_RENEWING
-
-A subscription is about to renew.
 
 Fired a few days before a subscription's next renewal, so you can notify the customer ahead of the charge. For the exact amount — including metered usage and tax — call the [upcoming invoice](/developers/api/store-api-reference/subscriptions) endpoint. This is an advisory event and is not tied to a payment.
 

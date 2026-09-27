@@ -3,14 +3,6 @@ title: "Reports"
 description: "Generate async CSV and JSON exports of financial activity via the Reports API."
 ---
 
-<Callout type="warn">
-
-We will assume you have a general understanding of programming. This guide is
-intended for developers, and we expect you to have a good understanding of
-REST APIs in general. If you're not a developer, please skip this section.
-
-</Callout>
-
 ## Overview
 
 The Reports API generates large financial exports asynchronously. You queue a report, poll for completion, then download a CSV or JSON file from a short-lived pre-signed URL.
@@ -62,7 +54,7 @@ Reports endpoints sit on both the dashboard API (session JWT) and the Store API 
 | `POST /reports`                                                         | `REPORTS_WRITE` |
 | `GET /reports`, `GET /reports/:id`, `GET /reports/:id/download/:format` | `REPORTS_READ`  |
 
-Mint a token in the dashboard under **Settings → Developers → API Tokens**, granting only the scopes you need.
+Create a token in the dashboard under **Settings → Developers → API Tokens**, granting only the scopes you need.
 
 ## Step 1: Queue a report
 
@@ -136,9 +128,9 @@ PENDING ──► PROCESSING ──► SUCCEEDED  (download available)
                        └─► FAILED     (errorMessage populated)
 ```
 
-Poll on a reasonable interval. Every 3 to 5 seconds is typical. Stop polling once the status is `SUCCEEDED` or `FAILED`.
+Poll every 3 to 5 seconds. Stop polling once the status is `SUCCEEDED` or `FAILED`.
 
-Once successful, the row carries:
+When the report succeeds, the response includes:
 
 ```json
 {
@@ -169,7 +161,7 @@ Response:
 }
 ```
 
-Then GET the signed URL to retrieve the file bytes. The URL is valid for **5 minutes**, so don't cache it. Re-fetch the download endpoint whenever you need a fresh URL.
+Send a `GET` request to the signed URL to download the file. The URL is valid for **5 minutes**, so don't cache it. Re-fetch the download endpoint whenever you need a fresh URL.
 
 For `format`, use `csv` or `json` (lowercase). If the report wasn't generated with that format, you'll get `404`. If the report hasn't finished yet, you'll get `409`.
 

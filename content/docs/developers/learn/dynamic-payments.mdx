@@ -3,19 +3,11 @@ title: "Dynamic Payments"
 description: "Collect additional information from customers during checkout using custom fields and metadata."
 ---
 
-<Callout type="warn">
-
-We will assume you have a general understanding of programming. This guide is
-intended for developers, and we expect you to have a good understanding of
-REST APIs in general. If you're not a developer, please skip this section.
-
-</Callout>
-
 ## Custom Fields
 
 Custom fields let you collect structured data from customers during the checkout process. You can define up to **3 fields** per checkout session, supporting text inputs, numeric inputs, and dropdowns.
 
-A practical use case is if you run a Discord server and need to grant roles after purchase. You can add a custom field for `discord_username` during checkout. When the customer pays, the `PAYMENT_COMPLETED` webhook event is triggered. You can then use the submitted `discord_username` value to automate the role assignment.
+For example, collect a `discord_username` at checkout, then use its value from the `PAYMENT_COMPLETED` webhook to assign a Discord role.
 
 Other examples include collecting server preferences, referral codes, or any data your fulfillment logic needs.
 
@@ -23,7 +15,7 @@ Other examples include collecting server preferences, referral codes, or any dat
 
 Metadata lets you attach arbitrary key-value string pairs to a checkout session. Unlike custom fields (which are filled by the customer), metadata is set by your application when creating the session and is immutable after creation.
 
-Metadata flows through the entire pipeline: checkout session → order → webhook payloads → fulfillment webhooks.
+Metadata is included in each stage: checkout session → order → webhook payloads → fulfillment webhooks.
 
 **Constraints:**
 - Maximum 20 keys per session
@@ -37,7 +29,7 @@ Use metadata for internal tracking like campaign IDs, referral sources, or any c
 
 <Step>
 
-### Grab the secrets
+### Get your webhook secret
 
 
 In your store, create a new webhook. Copy and securely store the webhook secret.
@@ -53,7 +45,7 @@ PANDABASE_STORE_ID="shp_xxxx"
 
 <Step>
 
-### Prepare backend
+### Set up your backend
 
 
 Set up an Express server with TypeScript:
@@ -164,7 +156,7 @@ The response includes a `session_id`. Use it to build the checkout URL or redire
 
 <Step>
 
-### Build webhook receiver
+### Add a webhook receiver
 
 
 Add a route to receive webhooks and verify the signature:
@@ -236,7 +228,7 @@ function grantDiscordRole(username: string) {
 
 <Step>
 
-### Send checkout link
+### Send the checkout link
 
 
 Create an endpoint to initiate the payment process:
@@ -252,12 +244,6 @@ app.post("/create-payment", async (req, res) => {
   }
 });
 ```
-
-</Step>
-
-<Step>
-
-### You've finished!
 
 </Step>
 

@@ -3,14 +3,6 @@ title: "API Tokens"
 description: "Authenticate with the Store API using Bearer tokens or HMAC signatures."
 ---
 
-<Callout type="warn">
-
-We will assume you have a general understanding of programming. This guide is
-intended for developers, and we expect you to have a good understanding of
-REST APIs in general. If you're not a developer, please skip this section.
-
-</Callout>
-
 ## Overview
 
 API tokens authenticate requests to the [Store API](/developers/api/introduction) at `/v2/core/stores/:storeId/*`. Each token has a set of permissions and uses one of two authentication modes: **Bearer** or **HMAC**.
@@ -56,7 +48,7 @@ Bearer mode is simple and works well for server-side integrations where the toke
 
 ## HMAC mode
 
-HMAC mode never sends the secret over the wire. Instead, you sign each request body with your token's secret using HMAC-SHA256, and send the token ID + signature in headers.
+In HMAC mode, you sign the request body with a key derived from your secret. Send the token ID and signature in the headers; the secret stays on your server.
 
 When you create an HMAC token, you receive:
 - **Token ID** — starts with `stk_`, sent in the `Authorization` header
@@ -71,7 +63,7 @@ signing_key = SHA-256(your_secret)
 signature   = HMAC-SHA256(signing_key, request_body)
 ```
 
-This ensures your raw secret is never used directly in cryptographic operations.
+Use the derived key to sign the request body.
 
 ### Headers
 

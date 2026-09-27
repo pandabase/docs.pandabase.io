@@ -24,9 +24,9 @@ https://api.pandabase.io/v3/stores/[store_id]/connected-accounts
 
 Use this endpoint to create a connected account under your platform.
 
-Important notes:
+Before you start:
 
-- The user must not already have an existing Pandabase account
+- The user must not already have a Pandabase account
 - You can request supported capabilities during creation (for example: payments and payouts)
 
 ### Request
@@ -80,4 +80,4 @@ curl -X POST 'https://api.pandabase.io/v3/stores/[store_id]/connected-accounts' 
 
 - The `onboarding_link` should be shared with the user to complete setup.
 - Capability eligibility may depend on compliance checks.
-- Ensure you securely store your API key and never expose it in client-side code.
+- Keep your API key on your server. Never expose it in client-side code.

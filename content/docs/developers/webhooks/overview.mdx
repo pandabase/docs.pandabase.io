@@ -5,8 +5,7 @@ description: "Listen for store events and trigger actions in your application."
 
 Pandabase sends each event to your webhook endpoint using an HTTP `POST` request.
 
-Use webhooks to stay in sync with activity in your store, automate workflows,
-or trigger actions inside your application whenever an event occurs.
+Use webhooks to fulfill orders, update subscriptions, or respond to other store activity.
 
 See the [event reference](/developers/webhooks/events) for the full list of supported events.
 
@@ -91,7 +90,7 @@ values, so a V2 verifier rejects every V1 delivery. Check your endpoint's
 | 9       | 20h   | 51:35:05 |
 | 10      | 24h   | 75:35:05 |
 
-After all 10 fail, the store owner is emailed (max 1 per endpoint per 6 hours).
+If all 10 attempts fail, the store owner receives an email, limited to one per endpoint every 6 hours.
 
 ## Verification
 
@@ -291,7 +290,7 @@ func Verify(h http.Header, rawBody []byte, secret string) bool {
 
 ## Best practices
 
-- Return 2xx fast. Do work asynchronously.
+- Return a 2xx response promptly, then process the event asynchronously.
 - Verify every request. Reject stale timestamps.
 - Deduplicate on `Webhook-Id`.
 - Subscribe only to events you need.

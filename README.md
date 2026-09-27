@@ -4,7 +4,7 @@ Pandabase documentation for merchants and developers.
 
 ## Local development
 
-Use Node.js 24 or newer and pnpm. The OpenAPI generator runs TypeScript directly through Node.js.
+Use Node.js 24 or newer and pnpm. Node.js runs the TypeScript OpenAPI generator directly.
 
 ```sh
 pnpm install
@@ -49,7 +49,7 @@ description: A short description of the page.
 Write your documentation here.
 ```
 
-Update the relevant `meta.json` file to control navigation order and grouping. Shared MDX components are configured in `components/mdx.tsx`, and content loading is configured in `lib/source.ts`.
+Set navigation order and groups in the folder's `meta.json`. Shared MDX components live in `components/mdx.tsx`; content loading is defined in `lib/source.ts`.
 
 Preview changes with `pnpm dev`, then run `pnpm lint`, `pnpm types:check`, and `pnpm build` before submitting changes.
 
@@ -61,7 +61,7 @@ Edit the relevant specification in `openapi/store.json`, `openapi/storefront.jso
 pnpm generate:openapi
 ```
 
-The generator replaces the `store-api-reference`, `storefront-api-reference`, and `billing-api-reference` folders under `content/docs/developers/api/`. Make API reference changes in the specifications rather than editing generated pages directly. Specification mappings and output names are defined in `lib/openapi.ts`.
+The generator replaces the `store-api-reference`, `storefront-api-reference`, and `billing-api-reference` folders under `content/docs/developers/api/`. Edit the specifications to update these pages. Set specification paths and output names in `lib/openapi.ts`.
 
 Review the regenerated pages alongside the specification changes and verify the site builds.
 

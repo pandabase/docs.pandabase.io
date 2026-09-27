@@ -3,7 +3,7 @@ title: "Reports"
 description: "Export your store's financial activity as CSV or JSON for accounting, reconciliation, and bookkeeping."
 ---
 
-Reports turn your store's activity into CSV or JSON files for accounting, reconciliation, and audits. Generation runs in the background. You'll get an email when it's ready. Files are kept for 30 days, then deleted.
+Export your store's activity as CSV or JSON for accounting, reconciliation, and audits. Reports run in the background, and we'll email you when they're ready. Files are deleted after 30 days.
 
 ## When to use reports
 
@@ -19,7 +19,7 @@ Reports turn your store's activity into CSV or JSON files for accounting, reconc
 
     One row per payment we processed. Includes the order number, status, currency, intended amount, discounts, tax, platform and processing fees, settled amount, presentment currency and exchange rate, plus the customer's email, name, country, and IP.
 
-    Use this for revenue recognition, accountant hand-offs, and any analysis that starts with "how much did we make."
+    Use this to review revenue or share payment records with your accountant.
 
   </Accordion>
   <Accordion title="Payout reconciliation">
@@ -33,7 +33,7 @@ Reports turn your store's activity into CSV or JSON files for accounting, reconc
 
     One row for every credit and debit on your store: payments received, refunds, disputes, payouts, and adjustments. Each row carries the resulting balance, the affected order, payment, refund, dispute, or payout IDs, a short note, and a SHA-256 hash chain so an auditor can verify nothing has been tampered with.
 
-    Use this when you need to prove every dollar that moved on or off your balance.
+    Use this to audit changes to your balance.
 
   </Accordion>
   <Accordion title="Refunds & disputes">
@@ -66,14 +66,14 @@ Reports turn your store's activity into CSV or JSON files for accounting, reconc
   ### Wait for it to finish
 
 
-    The status column shows **Generating** while the report is in progress, then flips to **Ready** when the file is available. Most reports finish in seconds; larger periods can take a few minutes. You can leave the page. We'll email you when it's done.
+    The status column shows **Generating** while the report is in progress, then changes to **Ready** when the file is available. Most reports finish in seconds; larger periods can take a few minutes. You can leave the page. We'll email you when it's done.
 
   </Step>
   <Step>
   ### Download
 
 
-    Click the **Download** button in the Actions column to grab the file.
+    Click the **Download** button in the Actions column to save the file.
 
   </Step>
 </Steps>
@@ -96,7 +96,7 @@ Amounts are stored in the smallest currency unit (cents for USD/EUR/GBP, whole y
 
 ### JSON
 
-The same data shaped as a JSON array of objects. Useful if you're feeding the file into a script, a data warehouse, or a custom BI tool.
+The same data as a JSON array of objects, for use in scripts, data warehouses, or reporting tools.
 
 ## Email notifications
 

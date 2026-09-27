@@ -1,11 +1,11 @@
 ---
 title: Go
-description: "Use our Go SDK to interact with our API."
+description: "Call the Pandabase API from Go."
 ---
 
 <Callout type="warn">
 
-This is a work in progress page.
+This guide is a work in progress.
 
 </Callout>
 
@@ -17,7 +17,7 @@ Make sure your project is using Go Modules (it will have a `go.mod` file in its 
 go mod init
 ```
 
-Then, reference `pandabase-go` in a Go program with import:
+Import `pandabase-go` in your code:
 
 ```go
 import (
@@ -27,7 +27,7 @@ import (
 
 Run any of the normal `go` commands (`build`/`install`/`test`). The Go toolchain will resolve and fetch the `pandabase-go` module automatically.
 
-Alternatively, you can also explicitly `go get` the package into a project:
+You can also add the package explicitly:
 
 ```sh
 go get -u github.com/pandabase/pandabase-go/v1

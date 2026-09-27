@@ -5,7 +5,7 @@ description: "Learn about API rate limits and how to work with them."
 
 ## Overview
 
-To ensure fair usage and maintain the stability of our API, we implement intelligent rate limiting based on multiple factors.
+Pandabase limits request rates by IP address, account, and store.
 
 ### Rate Limiter Types
 
@@ -17,11 +17,11 @@ Pandabase uses three types of rate limiters, depending on the endpoint and resou
 
 ### How It Works
 
-We provide generous rate limits designed to accommodate normal usage patterns. The account-based rate limiter is generally stricter and more dynamic than the global IP-based limiter, but both are set at levels sufficient for most use cases.
+Account limits are generally stricter and change more often than IP limits.
 
 <Callout type="warn">
 
-Rate limits may change over time as we optimize our system. Always implement
+Rate limits can change. Implement
 retry logic and respect the rate limit headers in API responses.
 
 </Callout>
@@ -99,10 +99,10 @@ if (data.ok) {
 
 ## Rate Limit Variations
 
-Be aware that rate limits may vary:
+Limits vary by endpoint and plan:
 
-- Different endpoints have different rate limits based on their resource intensity
-- Rate limits can change over time as we optimize our infrastructure
+- Endpoints have different limits based on the resources they use
+- Limits can change over time
 - Higher-tier plans may have increased rate limits
 
 <Callout type="info">

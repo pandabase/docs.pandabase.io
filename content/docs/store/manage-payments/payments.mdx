@@ -67,14 +67,14 @@ Global methods (cards, Apple Pay, Google Pay) work in every supported currency. 
   ### Fulfillment
 
 
-    On success, an order is created and fulfillment fires (license keys, downloads, webhooks).
+    On success, an order is created and fulfillment starts (license keys, downloads, webhooks).
 
   </Step>
   <Step>
   ### Settlement
 
 
-    The net amount (sale minus fees) lands in your available balance, ready to [pay out](/store/finances/payouts).
+    The net amount (sale minus fees) is added to your available balance, ready to [pay out](/store/finances/payouts).
 
   </Step>
 </Steps>
@@ -84,7 +84,7 @@ Global methods (cards, Apple Pay, Google Pay) work in every supported currency. 
 | Status     | Meaning                                    |
 | ---------- | ------------------------------------------ |
 | Pending    | Awaiting customer or network confirmation. |
-| Processing | Payment is in flight.                      |
+| Processing | Payment is being processed.                      |
 | Completed  | Payment succeeded, order fulfilled.        |
 | Failed     | Declined or rejected.                      |
 | Cancelled  | Cancelled before completion.               |
@@ -111,4 +111,4 @@ Refunds are issued from the action button in the top right. See [Refunds](/store
 
 ## Fees
 
-Pay-as-you-go. No monthly fees, setup fees, or hidden charges. You only pay when you make a sale. See [Pricing](/pricing) for the full breakdown with examples.
+You pay per sale, with no monthly or setup fees. See [Pricing](/pricing) for the full breakdown with examples.

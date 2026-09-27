@@ -1,6 +1,6 @@
 ---
 title: Changelog
-description: "Keep track of every change to the Pandabase API."
+description: "API releases, improvements, and fixes."
 ---
 
 ## 2026-06-07
@@ -28,7 +28,7 @@ description: "Keep track of every change to the Pandabase API."
 - **Update billing details**: Edit the cardholder name and billing address on a saved card.
 - **Change a subscription's card**: Choose which saved card a subscription bills.
 - **Recover a past-due subscription**: Retry a failed renewal after updating the card — if the bank requires authentication, the customer is guided through it.
-- **Card notifications**: Customers receive a confirmation when a card is added or removed and when a subscription's card changes, and a heads-up before a saved card expires.
+- **Card notifications**: Customers receive a confirmation when a card is added or removed and when a subscription's card changes, and a reminder before a saved card expires.
 
 ### Improvements
 
@@ -176,9 +176,9 @@ See the [webhook overview](/developers/webhooks/overview) and [migration guide](
 
 - **Refunds & Disputes in the Store API**: Programmatic endpoints to list refunds, fetch a refund, issue a refund, list disputes, fetch a dispute, and submit dispute evidence. Gated by new `REFUNDS_READ` / `REFUNDS_WRITE` / `DISPUTES_READ` / `DISPUTES_WRITE` token scopes.
 - **`Webhook-Signature` header on outgoing webhooks**: New, replay-resistant signature alongside the existing `X-Pandabase-Signature`. We recommend migrating verification logic; the legacy header stays for backwards compatibility for now. Verification details and migration guide in the docs.
-- **Failed-webhook email alerts**: Store owners now get an email when an endpoint stops accepting deliveries, so a quietly-broken integration doesn't go unnoticed.
+- **Failed-webhook email alerts**: Store owners now get an email when an endpoint stops accepting deliveries, so they can investigate failed deliveries.
 - **New payment methods**: Bizum (EUR) and Pay by Bank (GBP) are now available at checkout in their respective regions.
-- **More resilient subscription renewals**: Same renewal can no longer fire twice within a billing cycle, and transient errors (e.g., upstream payment blip) reschedule a quick retry without counting against the retry budget.
+- **More resilient subscription renewals**: Same renewal can no longer fire twice within a billing cycle, and transient errors (e.g., temporary payment provider error) reschedule a quick retry without counting against the retry budget.
 
 
 ## 2026-05-12

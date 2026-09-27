@@ -3,9 +3,9 @@ title: "Fraud"
 description: "How Pandabase detects and blocks fraudulent payments before they reach your store."
 ---
 
-Fraudulent payments are a leading cause of disputes and can quickly damage your store's standing with the card networks. Pandabase is equipped to handle even sophisticated fraud — card testing, stolen cards, and account takeover — so most of it never reaches you.
+Pandabase checks payments for card testing, stolen cards, and account takeover to reduce fraud and disputes.
 
-## Four-layer defense
+## Fraud checks
 
 <Steps>
   <Step>
@@ -40,11 +40,11 @@ Fraudulent payments are a leading cause of disputes and can quickly damage your 
 
 ## Dispute prevention
 
-Beyond detection, our integrations with **Verifi** (Visa) and **Ethoca** (Mastercard) intercept disputes before they become formal chargebacks. This is highly effective but carries a per-event fee. See [Disputes → Prevention](/store/manage-payments/disputes#prevention) for the full breakdown of fees and outcomes.
+Beyond detection, our integrations with **Verifi** (Visa) and **Ethoca** (Mastercard) intercept disputes before they become formal chargebacks. A fee applies to each prevented dispute. See [Disputes → Prevention](/store/manage-payments/disputes#prevention) for the full breakdown of fees and outcomes.
 
 ## What you can do
 
-No system catches everything, so layer your own defenses on top of ours:
+To help reduce disputes:
 
 - Use a clear store name and product descriptions — most "fraudulent" disputes are customers not recognizing the charge.
 - Send fulfillment confirmations, with receipt and access details in the same email.
@@ -65,7 +65,7 @@ We received an **early fraud warning** for that payment from the card network. A
 
 That's a **prevented dispute**. A chargeback was filed without an earlier warning, and Verifi or Ethoca intercepted it and resolved it directly with the issuing bank before it became a formal dispute. The customer is refunded by the network, the disputed amount plus a **\$30 prevention fee** is deducted from your balance, and the order moves to `Chargeback` with status **Prevented**.
 
-There's no evidence to submit and no won/lost outcome — but it also has **no impact on your dispute rate**, which is the trade-off: you lose the sale but keep the chargeback off your ratio. See [Prevented disputes](/store/manage-payments/disputes#prevented-disputes).
+You don't need to submit evidence, and there is no won or lost outcome. Prevented disputes have **no impact on your dispute rate**. See [Prevented disputes](/store/manage-payments/disputes#prevented-disputes).
 
 </Accordion>
 

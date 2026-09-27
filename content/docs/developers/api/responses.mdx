@@ -5,7 +5,7 @@ description: "Learn how the Pandabase API structures responses and handles error
 
 ## Response Structure
 
-All Pandabase API responses follow a consistent format that includes an `ok` field to indicate success or failure.
+API responses include an `ok` field that indicates whether the request succeeded.
 
 ### Success Response
 
@@ -100,7 +100,6 @@ if (result.ok) {
 
 <Callout type="idea">
 
-Use the `X-Request-Id` header from the response when reporting issues to
-support. This helps us quickly identify and resolve problems.
+Include the `X-Request-Id` response header when contacting support so we can find the request.
 
 </Callout>

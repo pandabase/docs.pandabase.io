@@ -7,7 +7,7 @@ A dispute (also called a chargeback) is when a customer asks their bank to rever
 
 As the Merchant of Record, Pandabase handles the dispute with the card network and passes it to you so you can respond.
 
-You have **7 days** to send your evidence once a dispute opens. We'll email you the moment one is filed, so keep an eye on your inbox.
+You have **7 days** to send your evidence once a dispute opens. We'll email you when a dispute is filed.
 
 ![Disputes list view with Needs Response, Under Review, Won, and Lost tabs](/images/guides/disputes-page.png)
 
@@ -32,7 +32,7 @@ You have **7 days** to send your evidence once a dispute opens. We'll email you 
   ### Under review
 
 
-    The customer's bank reviews everything. This usually takes **30 to 75 days** — it's slow, and that's normal.
+    The customer's bank reviews the evidence. This usually takes **30 to 75 days**.
 
   </Step>
   <Step>
@@ -69,7 +69,7 @@ You have **7 days** to send your evidence once a dispute opens. We'll email you 
 
 Your dispute rate is the share of your payments that get disputed, measured over the last **3 months**. Keep it **below 0.75%**.
 
-If it stays above 0.75%, we'll reach out and start reviewing your new payments more closely. If it doesn't come back down, the card networks can limit or even cut off your ability to take cards — so it's worth watching. You can check your current rate on the [Analytics](/store/analytics) page.
+If it stays above 0.75%, we'll contact you and review new payments more closely. Card networks can restrict or stop card payments if the rate remains high. You can check your current rate on the [Analytics](/store/analytics) page.
 
 ## Respond
 
@@ -93,7 +93,7 @@ You can submit evidence once. Gather everything before submitting.
 
 ## Accepting a dispute
 
-There's no "Accept" button. If you don't want to fight a dispute, just don't submit evidence — once the 7-day window closes, the chargeback finalizes against you. The disputed funds and fee stay deducted.
+To accept a dispute, leave it without submitting evidence. There is no "Accept" button. After 7 days, the chargeback is finalized and the disputed amount and fee remain deducted.
 
 ## Prevention
 
@@ -107,7 +107,7 @@ Successful 3DS shifts liability for fraud disputes from you to the issuing bank 
 
 ### Order Insight & Consumer Clarity
 
-When a cardholder questions a charge with their bank, the bank pulls rich order details (product, merchant name, billing address, fulfillment info) directly from Pandabase. Most "I don't recognize this charge" disputes resolve here.
+When a cardholder questions a charge with their bank, the bank receives order details (product, merchant name, billing address, fulfillment info) directly from Pandabase. Most "I don't recognize this charge" disputes resolve here.
 
 ### Early Fraud Warnings
 
@@ -124,7 +124,7 @@ If a chargeback is filed without an earlier EFW, Verifi's **Rapid Dispute Resolu
 
 Unlike an EFW, you don't get a chance to contest — the network intercepts after the dispute is filed. The disputed amount plus a **\$30 prevention fee** is deducted from your balance, the order moves to `Chargeback`, and the dispute appears with status **Prevented**.
 
-There is no evidence to submit, no won/lost outcome, and **no impact on your dispute rate** — that's the value: a prevented dispute costs you the sale but keeps the chargeback off your VDMP/ECM ratio.
+Prevented disputes require no evidence and have no won or lost outcome. They have **no impact on your dispute rate** or VDMP/ECM ratio.
 
 ### Compelling Evidence 3.0
 

@@ -3,20 +3,12 @@ title: "Hosted Checkout"
 description: "Embed or redirect to Pandabase's hosted checkout page."
 ---
 
-<Callout type="warn">
-
-We will assume you have a general understanding of programming. This guide is
-intended for developers, and we expect you to have a good understanding of
-REST APIs in general. If you're not a developer, please skip this section.
-
-</Callout>
-
 ## Overview
 
 Every checkout session returns a `checkout_url` that points to Pandabase's hosted checkout page. There are three ways to use it:
 
 1. **Redirect**: send the customer to the checkout URL
-2. **SDK embed**: drop the Pandabase Checkout SDK into your page to render checkout as a modal, drawer, overlay, or inline element
+2. **SDK embed**: use the Pandabase Checkout SDK to render checkout as a modal, drawer, overlay, or inline element
 3. **Direct link**: share the checkout URL directly
 
 The checkout page is hosted at `checkout.pandabase.io` with two routes:
@@ -28,7 +20,7 @@ The checkout page is hosted at `checkout.pandabase.io` with two routes:
 
 ## Redirect
 
-The simplest integration. Create a session on your backend and redirect the customer to the `checkout_url`.
+Create a session on your backend and redirect the customer to its `checkout_url`.
 
 ```typescript
 const STORE_ID = process.env.PANDABASE_STORE_ID!;
@@ -65,14 +57,13 @@ guarantee payment success. Always use
 
 <Callout type="info">
 
-SDK v2 is in **public preview**. It's fairly stable and safe for production use,
-but the API may still see minor changes before general availability.
+SDK v2 is in **public preview**. The API may change before general availability.
 
 </Callout>
 
-The Pandabase Checkout SDK drops checkout into any website with a single script
-tag. Checkout renders inside a sandboxed iframe, so card data never touches
-your page, and is fully themeable to match your brand.
+Add the Checkout SDK to your site with a script tag. It renders checkout in a
+sandboxed iframe that keeps card data separate from your page. You can customize
+its colors, fonts, and layout.
 
 - **No framework required.** A vanilla `<script>` and a global `Pandabase` object.
 - **Four presentations.** Modal, drawer, full-page overlay, or inline.
@@ -150,8 +141,7 @@ Set `mode` to choose how checkout appears. Each mode has its own layout.
 
 #### Modal, drawer & overlay
 
-These three open imperatively. Call `open()` to show checkout and `close()` to
-dismiss it.
+Call `open()` to show checkout and `close()` to dismiss it.
 
 ```js
 const checkout = Pandabase.checkout({
@@ -274,9 +264,8 @@ Pandabase.checkout({
 
 Behavior depends on the payment type:
 
-- **Redirect-based methods** (Cash App, bank debits, some 3-D Secure) bounce the
-  buyer off-site and back; the embed auto-redirects them to your `return_url`.
-  Nothing extra to do.
+- **Redirect-based methods** (Cash App, bank debits, some 3-D Secure) send the
+  customer to another site and back; the embed auto-redirects them to your `return_url`.
 - **In-page card success** fires `payment_success` (with `returnUrl`) and leaves
   the navigation to you. The SDK never takes over the merchant's page.
 
