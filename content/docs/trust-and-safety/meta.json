@@ -1,0 +1,9 @@
+{
+  "title": "Trust and safety",
+  "icon": "Shield",
+  "pages": [
+    "---[Shield]Trust and safety---",
+    "prohibited-businesses"
+  ],
+  "root": true
+}

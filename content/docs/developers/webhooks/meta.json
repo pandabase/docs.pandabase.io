@@ -1,0 +1,9 @@
+{
+  "title": "Webhooks",
+  "icon": "Webhook",
+  "pages": [
+    "overview",
+    "events",
+    "migrate-signatures"
+  ]
+}

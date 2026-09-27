@@ -1,8 +1,0 @@
-{
-	"title": "SDKs",
-	"icon": "braces",
-	"pages": [
-		"typescript",
-		"go"
-	]
-}

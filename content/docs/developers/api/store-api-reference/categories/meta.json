@@ -1,0 +1,10 @@
+{
+  "title": "Categories",
+  "pages": [
+    "get-stores-storeid-categories",
+    "post-stores-storeid-categories",
+    "get-stores-storeid-categories-categoryid",
+    "patch-stores-storeid-categories-categoryid",
+    "delete-stores-storeid-categories-categoryid"
+  ]
+}

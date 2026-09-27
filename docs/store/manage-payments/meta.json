@@ -1,9 +1,0 @@
-{
-	"title": "Manage payments",
-	"pages": [
-		"payments",
-		"refunds",
-		"disputes",
-		"fraud"
-	]
-}

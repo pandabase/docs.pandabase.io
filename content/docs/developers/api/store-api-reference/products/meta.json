@@ -1,0 +1,10 @@
+{
+  "title": "Products",
+  "pages": [
+    "get-stores-storeid-products",
+    "post-stores-storeid-products",
+    "get-stores-storeid-products-productid",
+    "patch-stores-storeid-products-productid",
+    "delete-stores-storeid-products-productid"
+  ]
+}

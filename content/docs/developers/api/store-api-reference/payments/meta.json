@@ -1,0 +1,7 @@
+{
+  "title": "Payments",
+  "pages": [
+    "get-stores-storeid-orders-payments",
+    "get-stores-storeid-orders-payments-paymentid"
+  ]
+}

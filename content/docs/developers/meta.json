@@ -1,0 +1,15 @@
+{
+  "title": "Developers",
+  "icon": "Code",
+  "pages": [
+    "---[Code]Developers---",
+    "learn",
+    "websdk",
+    "webhooks",
+    "sdks",
+    "connected-accounts",
+    "changelog",
+    "api"
+  ],
+  "root": true
+}

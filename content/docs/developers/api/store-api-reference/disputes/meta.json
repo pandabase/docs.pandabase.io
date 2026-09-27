@@ -1,0 +1,8 @@
+{
+  "title": "Disputes",
+  "pages": [
+    "get-stores-storeid-disputes",
+    "get-stores-storeid-disputes-disputeid",
+    "post-stores-storeid-disputes-disputeid-evidence"
+  ]
+}

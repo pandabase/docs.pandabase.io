@@ -1,0 +1,9 @@
+{
+  "title": "Your account",
+  "icon": "User",
+  "pages": [
+    "---[User]Your account---",
+    "index"
+  ],
+  "root": true
+}

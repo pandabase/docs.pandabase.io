@@ -1,0 +1,8 @@
+{
+  "title": "Checkouts",
+  "description": "Checkout session management",
+  "pages": [
+    "estimatecheckout",
+    "createcheckoutsession"
+  ]
+}

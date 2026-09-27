@@ -1,0 +1,14 @@
+{
+  "title": "Learn",
+  "icon": "BookOpen",
+  "pages": [
+    "lifecycle",
+    "dynamic-payments",
+    "hosted-checkout",
+    "subscriptions",
+    "usage-based-billing",
+    "reports",
+    "api-tokens",
+    "storefront-api"
+  ]
+}

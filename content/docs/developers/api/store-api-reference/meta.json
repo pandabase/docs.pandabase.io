@@ -1,0 +1,24 @@
+{
+  "pages": [
+    "store",
+    "products",
+    "categories",
+    "coupons",
+    "webhooks",
+    "analytics",
+    "payouts",
+    "orders",
+    "payments",
+    "customers",
+    "licenses",
+    "subscriptions",
+    "cases",
+    "refunds",
+    "disputes",
+    "usage",
+    "meters",
+    "reports"
+  ],
+  "title": "Store APIs",
+  "icon": "Code"
+}

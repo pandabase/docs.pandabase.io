@@ -1,0 +1,8 @@
+{
+  "title": "Categories",
+  "description": "Public category listings",
+  "pages": [
+    "liststorefrontcategories",
+    "getstorefrontcategory"
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "title": "Platforms",
+  "icon": "Blocks",
+  "root": true,
+  "pages": ["---[Blocks]Platforms---", "index"]
+}

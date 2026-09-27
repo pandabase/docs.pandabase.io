@@ -1,0 +1,11 @@
+{
+  "title": "Getting started",
+  "icon": "Rocket",
+  "pages": [
+    "---[Rocket]Quickstart---",
+    "index",
+    "quickstart",
+    "pricing"
+  ],
+  "root": true
+}

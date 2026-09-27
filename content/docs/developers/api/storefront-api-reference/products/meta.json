@@ -1,0 +1,8 @@
+{
+  "title": "Products",
+  "description": "Public product listings",
+  "pages": [
+    "liststorefrontproducts",
+    "getstorefrontproduct"
+  ]
+}

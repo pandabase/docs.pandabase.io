@@ -1,0 +1,8 @@
+{
+  "title": "Licenses",
+  "pages": [
+    "get-stores-storeid-licenses",
+    "get-stores-storeid-licenses-licenseid",
+    "post-stores-storeid-licenses-verify"
+  ]
+}

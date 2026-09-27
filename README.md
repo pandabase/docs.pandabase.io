@@ -1,16 +1,70 @@
-# Pandabase Docs
+# docs.pandabase.io
 
-## Development
+Pandabase documentation for merchants and developers.
 
-Install the [Axerity CLI](https://www.npmjs.com/package/@axerity/cli) to preview your documentation changes locally. To install, use the following command:
+## Local development
 
-```sh
-
-npm i -g axerity
-```
-
-Run the following command at the root of your documentation, where your `axerity.json` is located:
+Use Node.js 24 or newer and pnpm. The OpenAPI generator runs TypeScript directly through Node.js.
 
 ```sh
-axerity dev
+pnpm install
+pnpm dev
 ```
+
+Open [localhost:3000](http://localhost:3000) to view the site.
+
+## Commands
+
+| Command                 | Description                                                           |
+| ----------------------- | --------------------------------------------------------------------- |
+| `pnpm dev`              | Start the development server.                                         |
+| `pnpm build`            | Build the production site.                                            |
+| `pnpm start`            | Serve the production build.                                           |
+| `pnpm lint`             | Run Oxlint.                                                           |
+| `pnpm types:check`      | Generate Next.js route types and check TypeScript.                    |
+| `pnpm generate:openapi` | Regenerate API reference pages from the local OpenAPI specifications. |
+
+## Project structure
+
+```text
+app/          Page layouts, routes, search, and LLM endpoints
+components/   Shared documentation, API, and Mermaid components
+content/docs/ MDX pages and navigation metadata, including v2 content
+lib/          Content loading, navigation, and OpenAPI configuration
+openapi/      Store, Storefront, and Billing API specifications
+public/       Static assets
+scripts/      OpenAPI generation script
+```
+
+## Writing documentation
+
+Add or edit `.mdx` files in `content/docs/`. Pages use frontmatter for their title and description:
+
+```mdx
+---
+title: Your page title
+description: A short description of the page.
+---
+
+Write your documentation here.
+```
+
+Update the relevant `meta.json` file to control navigation order and grouping. Shared MDX components are configured in `components/mdx.tsx`, and content loading is configured in `lib/source.ts`.
+
+Preview changes with `pnpm dev`, then run `pnpm lint`, `pnpm types:check`, and `pnpm build` before submitting changes.
+
+## Updating API references
+
+Edit the relevant specification in `openapi/store.json`, `openapi/storefront.json`, or `openapi/billing.json`, then run:
+
+```sh
+pnpm generate:openapi
+```
+
+The generator replaces the `store-api-reference`, `storefront-api-reference`, and `billing-api-reference` folders under `content/docs/developers/api/`. Make API reference changes in the specifications rather than editing generated pages directly. Specification mappings and output names are defined in `lib/openapi.ts`.
+
+Review the regenerated pages alongside the specification changes and verify the site builds.
+
+## License
+
+Licensed under the [MIT License](LICENSE).

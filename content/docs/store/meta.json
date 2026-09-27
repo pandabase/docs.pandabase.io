@@ -1,0 +1,14 @@
+{
+  "title": "Manage your store",
+  "icon": "ShoppingBag",
+  "pages": [
+    "---[ShoppingBag]Manage your store---",
+    "analytics",
+    "manage-payments",
+    "paylinks",
+    "cases",
+    "finances",
+    "store-ownership"
+  ],
+  "root": true
+}
