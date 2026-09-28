@@ -4,6 +4,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
+  "packageManager": "pnpm@11.26.0",
   "scripts": {
     "generate:openapi": "node scripts/generate-openapi.mts",
     "build": "next build",
