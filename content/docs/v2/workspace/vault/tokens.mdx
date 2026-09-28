@@ -1,0 +1,153 @@
+---
+title: "Tokens"
+description: "Save sensitive data, use its token, and manage how long it is kept."
+---
+
+<Callout type="warn">
+Vault is in alpha. There are no Vault fees during alpha.
+</Callout>
+
+A token refers to sensitive data saved in Vault, such as a card or bank account. Store its ID in your application so you can use the saved data in later requests.
+
+Use [Elements](/v2/workspace/vault/elements) to collect data in the browser without sending raw values through your server. The server-side creation example below is for integrations where your server already handles that data.
+
+Paths are relative to your [vault URL](/v2/workspace/vault#requests-and-responses).
+
+| Method | Endpoint | Result |
+| --- | --- | --- |
+| POST | `/tokens` | `201`: token. Requires an idempotency key. |
+| GET | `/tokens` | `200`: list of tokens. |
+| GET | `/tokens/{id}` | `200`: token, without raw data. |
+| PATCH | `/tokens/{id}` | `200`: updated token. |
+| POST | `/tokens/{id}/reveal` | `200`: token with raw data. Requires the `tokens:reveal` permission. |
+| DELETE | `/tokens/{id}` | `200`: deletion acknowledgement. |
+
+## Token types
+
+| Type | Holds | Mask |
+| --- | --- | --- |
+| `card` | Card number, expiry, and optionally the CVC | Brand, last four digits, expiry, funding, and country |
+| `bank_account` | Account and routing numbers | Bank name, last four digits, and country |
+| `pii` | A personal value, such as a tax ID or date of birth | The last few characters, depending on the format |
+| `custom` | Any JSON object up to 16 KiB | None |
+
+## Create a token
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | string | **Required.** `card`, `bank_account`, `pii`, or `custom`. |
+| `data` | object | **Required.** The sensitive data. Its shape depends on the type. |
+| `deduplicate` | boolean | Default `false`. Return the existing token if one already holds the same data. |
+| `expires_at` | timestamp | When the token and its data are deleted. Omit to keep it until you delete it. |
+| `metadata` | object | Your own attributes. |
+
+```sh
+curl https://api.pandabase.io/v2/workspaces/wks_01j9zk2m4p6r8t0v2x4z6b8d0f/vaults/vlt_01j9zm3n5q7s9u1w3y5a7c9e1g/tokens \
+  -H "Authorization: Bearer sk_live_..." \
+  -H "Idempotency-Key: cus_123-card" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "card",
+    "data": {
+      "number": "4242424242424242",
+      "exp_month": 12,
+      "exp_year": 2030,
+      "cvc": "123"
+    },
+    "metadata": { "customer": "cus_123" }
+  }'
+```
+
+```json
+{
+  "object": "token",
+  "id": "tok_01j9zq3c7mfx8v2k5n6p4r8t0w",
+  "type": "card",
+  "fingerprint": "fp_4kq9zx2mt7vb1nr8",
+  "mask": {
+    "brand": "visa",
+    "last4": "4242",
+    "exp_month": 12,
+    "exp_year": 2030,
+    "funding": "credit",
+    "country": "US"
+  },
+  "metadata": { "customer": "cus_123" },
+  "expires_at": null,
+  "created_at": "2026-09-01T12:00:00Z",
+  "updated_at": "2026-09-01T12:00:00Z"
+}
+```
+
+<Callout>
+The CVC is available only for a [proxy request](/v2/workspace/vault/proxy). Vault deletes it after its first use or after one hour, whichever comes first. A reveal request never returns it.
+</Callout>
+
+## Retrieve and list tokens
+
+Retrieving a token returns its type, mask, fingerprint, and metadata, but never its raw data.
+
+To narrow the list, filter by `type`, `fingerprint`, or `metadata[key]=value`. Metadata filters match top-level string values. Results show the newest tokens first.
+
+```sh
+curl -G https://api.pandabase.io/v2/workspaces/wks_01j9zk2m4p6r8t0v2x4z6b8d0f/vaults/vlt_01j9zm3n5q7s9u1w3y5a7c9e1g/tokens \
+  -H "Authorization: Bearer sk_live_..." \
+  --data-urlencode "type=card" \
+  --data-urlencode "metadata[customer]=cus_123"
+```
+
+### Find duplicate cards
+
+Tokens containing the same data share a `fingerprint`, even if they were created separately. Filter by that fingerprint to find duplicates.
+
+To reuse an existing token during creation, set `deduplicate: true`. Vault returns the matching token if one already exists.
+
+## Update a token
+
+You can change a token's `metadata` and `expires_at`. Send only the fields you want to update.
+
+The token's type and raw data can't be edited. To replace the saved data, create a new token and delete the old one.
+
+```json
+{
+  "metadata": { "customer": "cus_123", "default": "true", "old_reference": null }
+}
+```
+
+## Reveal a token
+
+A reveal request returns the raw values in the token's `data` field. It requires a secret key with `tokens:reveal`. Each reveal is recorded in the token's [access log](/v2/workspace/vault/access-and-security#access-logs).
+
+```json
+{
+  "object": "token",
+  "id": "tok_01j9zq3c7mfx8v2k5n6p4r8t0w",
+  "type": "card",
+  "data": {
+    "number": "4242424242424242",
+    "exp_month": 12,
+    "exp_year": 2030
+  },
+  "mask": {
+    "brand": "visa",
+    "last4": "4242",
+    "exp_month": 12,
+    "exp_year": 2030,
+    "funding": "credit",
+    "country": "US"
+  },
+  "created_at": "2026-09-01T12:00:00Z"
+}
+```
+
+<Callout type="warn">
+Revealing a token sends its raw data to your server. If you only need to forward that data to another service, use the [proxy](/v2/workspace/vault/proxy) to send it directly from Vault.
+</Callout>
+
+## Delete a token
+
+Deleting a token permanently erases its saved data. You can no longer retrieve or reveal the token, or use it in a proxy request. Its ID remains in the access logs.
+
+```json
+{ "object": "token", "id": "tok_01j9zq3c7mfx8v2k5n6p4r8t0w", "deleted": true }
+```

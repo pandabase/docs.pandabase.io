@@ -1,0 +1,11 @@
+{
+  "title": "Stores",
+  "icon": "Store",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "create-a-store",
+    "settings",
+    "team-members"
+  ]
+}

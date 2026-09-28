@@ -1,0 +1,68 @@
+---
+title: "Ledger overview"
+description: "How Pandabase tracks your money, and how to use ledgers in your own application."
+---
+
+import { ArrowLeftRight, BookOpen, Hand, Wallet } from 'lucide-react';
+
+<Callout type="warn">
+Ledger is in alpha. There are no Ledger fees during alpha.
+</Callout>
+
+Pandabase uses ledgers internally to keep track of your money. A ledger records changes to balances so each amount can be traced back to the entries that explain it.
+
+You can also use Ledger in your own application to track balances, reserve funds, and record settlements. It records the movement of money between accounts. Your application and payment providers handle the actual bank, card, or blockchain transfers.
+
+Ledger is built on [Astrum](https://github.com/pandabase/astrum), our open-source double-entry ledger core. The repository includes API documentation and examples.
+
+## How it works
+
+Each **account** tracks a balance in one currency. A **transaction** records a change through two or more **entries**, each of which debits or credits an account.
+
+The total debits and credits must match in each currency. This is called double-entry accounting. Instead of overwriting a balance, you add entries that explain why it changed. The posted balance comes from posted entries; pending transactions and holds also affect what's available.
+
+For example, a USD wallet with $50 posted and a pending $15 withdrawal has $35 available. The ledger keeps the posted balance and the reserved amount separate until the withdrawal is posted or canceled.
+
+<Cards>
+  <Card title="Accounts and balances" icon={<Wallet />} href="/v2/workspace/ledger/accounts">
+    Accounts hold one currency and track posted, pending, and available balances.
+  </Card>
+  <Card title="Transactions" icon={<ArrowLeftRight />} href="/v2/workspace/ledger/transactions">
+    Record a balance change, reserve it as pending, or reverse a posted transaction.
+  </Card>
+  <Card title="Holds" icon={<Hand />} href="/v2/workspace/ledger/holds">
+    Reserve available funds now and capture them later.
+  </Card>
+  <Card title="Statements and settlements" icon={<BookOpen />} href="/v2/workspace/ledger/statements-and-settlements">
+    Save account records for a period and record which entries have been settled.
+  </Card>
+</Cards>
+
+## Terms used in these guides
+
+| Concept | What it is |
+| --- | --- |
+| Ledger | A group of accounts that can transact with each other. Transactions can't cross ledger boundaries. |
+| Account | Holds one currency. Its normal side decides which entries increase its balance. |
+| Transaction | A balanced set of 2–1,000 entries. Can be pending, posted, or archived. |
+| Entry | A single debit or credit to one account. |
+| Hold | A reservation of available funds that you capture, void, or let expire. |
+| Scheduled transaction | A transaction that runs at or after a given time. |
+| Statement | A saved snapshot of an account's balances and entries for a period. |
+| Settlement | Records the net unsettled amount against another account, called the contra account. |
+| Account category | Groups account balances into totals, with up to seven levels of categories. |
+| Balance monitor | Emits an event when an account's balance crosses a condition. |
+| Event | A snapshot of a change, delivered to your webhook endpoints. |
+
+## Amounts, dates, and IDs
+
+- **Amounts** are integer minor units as strings, up to 38 digits. `"100"` is USD 1.00. Entry, hold, and capture amounts must be positive; balances can be negative.
+- **Times** are RFC 3339 strings, such as `2026-09-01T00:00:00Z`.
+- **IDs** carry a resource prefix, such as `ldg_` for ledgers, `acct_` for accounts, and `txn_` for transactions.
+- **Metadata** is a JSON object up to 16 KiB for your own attributes. Updates merge: keys you omit stay, and a key set to `null` is removed.
+
+## More guides
+
+Use [Closing periods](/v2/workspace/ledger/closing-periods) to prevent changes to a period you've already reported on. Use [Events and webhooks](/v2/workspace/ledger/events) to notify your application when ledger records change.
+
+Astrum's repository also includes examples for marketplaces, wallets, usage-based billing, and card authorizations.

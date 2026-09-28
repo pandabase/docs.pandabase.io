@@ -1,0 +1,155 @@
+---
+title: "Elements"
+description: "Collect sensitive data in your page and send it directly to Vault."
+---
+
+<Callout type="warn">
+Vault is in alpha. There are no Vault fees during alpha.
+</Callout>
+
+Elements are input fields hosted by Pandabase and embedded in your page. Each field runs in an iframe and sends the customer's input directly to Vault. Your page receives a token and display details, such as a card's last four digits, without reading the raw input.
+
+Elements are part of the [WebSDK](/developers/websdk/getting-started). Load the SDK from `https://js.pandabase.io`.
+
+<Steps>
+<Step>
+
+### Create a session on your server
+
+Create a session from your server with a secret key. The session lets the browser create one token. Pass its `client_secret` to the page that contains your form.
+
+```sh
+curl https://api.pandabase.io/v2/workspaces/wks_01j9zk2m4p6r8t0v2x4z6b8d0f/vaults/vlt_01j9zm3n5q7s9u1w3y5a7c9e1g/sessions \
+  -H "Authorization: Bearer sk_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{ "type": "card", "metadata": { "customer": "cus_123" } }'
+```
+
+```json
+{
+  "object": "vault_session",
+  "id": "vss_01j9zr8k2p4m6q8s0u2w4y6a8c",
+  "type": "card",
+  "client_secret": "vss_01j9zr8k2p4m6q8s0u2w4y6a8c_secret_7Hq2Lm9xR4",
+  "metadata": { "customer": "cus_123" },
+  "expires_at": "2026-09-01T12:30:00Z",
+  "created_at": "2026-09-01T12:00:00Z"
+}
+```
+
+A session expires after 30 minutes or when it creates a token. The token belongs to the session's vault and inherits its `metadata`. Create a new session when the previous one has been used or has expired.
+
+</Step>
+<Step>
+
+### Mount Elements on your page
+
+Add an empty container where the field should appear, then create and mount the Element with your publishable key and the session's `client_secret`.
+
+```html
+<form id="card-form">
+  <div id="card-element"></div>
+  <button type="submit">Save card</button>
+</form>
+```
+
+```js
+const pandabase = Pandabase('pk_live_...');
+
+const elements = pandabase.vault.elements({ clientSecret });
+const card = elements.create('card');
+
+card.mount('#card-element');
+```
+
+</Step>
+<Step>
+
+### Save the data as a token
+
+```js
+const form = document.getElementById('card-form');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const { token, error } = await pandabase.vault.tokenize(card);
+  if (error) {
+    showError(error.message);
+    return;
+  }
+
+  await fetch('/api/save-card', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tokenId: token.id }),
+  });
+});
+```
+
+`tokenize` returns the token and its `mask`. Use the mask to display a label such as "Visa ending in 4242", and send the token ID to your server to save. The result does not include raw data.
+
+</Step>
+</Steps>
+
+## Element types
+
+| Type | Collects | Token type |
+| --- | --- | --- |
+| `card` | Number, expiry, and CVC in one field | `card` |
+| `cardNumber`, `cardExpiry`, `cardCvc` | Each part of a card in its own field | `card` |
+| `bankAccount` | Account and routing numbers | `bank_account` |
+| `text` | A single sensitive value, such as a tax ID | `pii` |
+
+For separate card fields, create the number, expiry, and CVC fields from the same `elements` instance. Calling `tokenize` on any one of them combines all three into one card token.
+
+```js
+const number = elements.create('cardNumber');
+const expiry = elements.create('cardExpiry');
+const cvc = elements.create('cardCvc');
+
+number.mount('#card-number');
+expiry.mount('#card-expiry');
+cvc.mount('#card-cvc');
+
+const { token } = await pandabase.vault.tokenize(number);
+```
+
+For a `text` Element, pass a `format` to validate and mask the input, such as `us_ssn` or `iban`.
+
+## Respond to field changes
+
+Use field events to show errors and enable the submit button when the input is complete.
+
+```js
+card.on('change', (event) => {
+  submitButton.disabled = !event.complete;
+  errorMessage.textContent = event.error ? event.error.message : '';
+});
+```
+
+| Event | Fires when |
+| --- | --- |
+| `ready` | The Element has loaded and can accept input. |
+| `change` | The value changes. Includes `complete`, `empty`, `error`, and for cards, `brand`. |
+| `focus`, `blur` | The Element gains or loses focus. |
+
+## Style the fields
+
+Your page's CSS can't style the fields inside the iframe. Pass a `style` object when creating an Element. Set the default appearance in `base`, then add `invalid` or `complete` styles if needed.
+
+```js
+const card = elements.create('card', {
+  style: {
+    base: {
+      color: '#0a0f0c',
+      fontFamily: 'Geist, sans-serif',
+      fontSize: '15px',
+      '::placeholder': { color: '#9aa4a0' },
+    },
+    invalid: { color: '#dc2626' },
+  },
+});
+```
+
+Load custom fonts by passing `fonts` to `pandabase.vault.elements()`, as a list of CSS URLs from a font provider.

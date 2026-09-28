@@ -1,0 +1,67 @@
+---
+title: "Proxy"
+description: "Use saved data in requests to payment processors and other services."
+---
+
+<Callout type="warn">
+Vault is in alpha. There are no Vault fees during alpha.
+</Callout>
+
+The proxy sends a request from Vault to another service, such as a payment processor. Your server supplies token references. Vault replaces them with the saved values before forwarding the request.
+
+This lets you send saved data without first revealing it to your server.
+
+## Send a proxy request
+
+Send the destination's expected request body to `/proxy`. Set `Forward-Url` to the destination URL and put `{{ token_id.field }}` where each saved value belongs.
+
+The example below uses a placeholder processor URL. Replace it with an allowed destination and use the request format that service expects.
+
+```sh
+curl https://api.pandabase.io/v2/workspaces/wks_01j9zk2m4p6r8t0v2x4z6b8d0f/vaults/vlt_01j9zm3n5q7s9u1w3y5a7c9e1g/proxy \
+  -H "Authorization: Bearer sk_live_..." \
+  -H "Forward-Url: https://api.processor.example/v1/charges" \
+  -H "Idempotency-Key: order-1001-charge" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 4900,
+    "currency": "usd",
+    "card": {
+      "number": "{{ tok_01j9zq3c7mfx8v2k5n6p4r8t0w.number }}",
+      "exp_month": "{{ tok_01j9zq3c7mfx8v2k5n6p4r8t0w.exp_month }}",
+      "exp_year": "{{ tok_01j9zq3c7mfx8v2k5n6p4r8t0w.exp_year }}",
+      "cvc": "{{ tok_01j9zq3c7mfx8v2k5n6p4r8t0w.cvc }}"
+    }
+  }'
+```
+
+Vault forwards the request method, body, and headers, except `Authorization`, `Forward-Url`, and headers starting with `Pandabase-`.
+
+The `Authorization` header authenticates your request to Vault. To authenticate with the destination as well, send its credentials in `Pandabase-Proxy-Authorization`. Vault forwards that value as the destination's `Authorization` header.
+
+## Responses
+
+Vault returns the destination's status code, headers, and response body unchanged. Check how the destination handles sensitive values before logging its response. Vault adds two headers:
+
+| Header | Description |
+| --- | --- |
+| `Pandabase-Proxy-Request-Id` | The proxy request's ID, which also appears in the token's access log. |
+| `Pandabase-Proxy-Status` | `forwarded` if the destination was reached, or `failed` if Vault couldn't reach it. |
+
+If Vault rejects the request before forwarding it, such as for an unknown token or a destination that isn't allowed, it returns its own [error](/v2/workspace/vault/access-and-security#errors) instead.
+
+## Token references
+
+| Reference | Replaced with |
+| --- | --- |
+| `{{ tok_....number }}` | The card number. |
+| `{{ tok_....exp_month }}`, `{{ tok_....exp_year }}` | The expiry month and year. |
+| `{{ tok_....cvc }}` | The CVC, if it hasn't been used or expired yet. |
+| `{{ tok_....value }}` | The value of a `pii` token. |
+| `{{ tok_....field.path }}` | A field inside a `custom` token, using dot notation. |
+
+You can use references in the request body and header values. A single request can use more than one token.
+
+## Allowed destinations
+
+Add destination hosts in your Workspace settings under **Vault → Proxy destinations** before sending requests. Destinations must use HTTPS. A request to a host outside this list returns `403 proxy_destination_not_allowed`.

@@ -1,0 +1,37 @@
+---
+title: "Closing periods"
+description: "Prevent new entries in an accounting period you have finished reporting on."
+---
+
+<Callout type="warn">
+Ledger is in alpha. There are no Ledger fees during alpha.
+</Callout>
+
+Close a period when you have finished reporting on it and want to prevent later changes. Set the ledger's `closed_before` to the start of the next period.
+
+For example, this closes accounting dates before September 1, 2026:
+
+```json
+{ "closed_before": "2026-09-01T00:00:00Z" }
+```
+
+## What's blocked
+
+The ledger rejects these operations when their accounting date is before `closed_before`:
+
+- New transactions
+- New pending transactions
+- Changes to pending transactions
+- Transactions inside a batch
+
+## What still works
+
+- Archiving a pending transaction, since it doesn't change a closed period.
+- Reversals, which are always dated now.
+- Retrying a request that succeeded before the close, which returns its original result.
+
+The close waits for changes already in progress to finish. Once it completes, new postings can't enter the closed period. `closed_before` can't be in the future.
+
+## Reopen a period
+
+Set `closed_before` to an earlier time to reopen part of the closed period. Set it to `null` to remove the cutoff entirely.

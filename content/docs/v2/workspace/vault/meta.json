@@ -1,0 +1,12 @@
+{
+  "title": "Vault",
+  "icon": "Lock",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "tokens",
+    "elements",
+    "proxy",
+    "access-and-security"
+  ]
+}

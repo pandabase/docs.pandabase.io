@@ -2,5 +2,12 @@
   "title": "Getting started",
   "icon": "Rocket",
   "root": true,
-  "pages": ["---[Rocket]Quickstart---", "index"]
+  "pages": [
+    "---[Rocket]Quickstart---",
+    "index",
+    "quickstart",
+    "pricing",
+    "merchant-of-record",
+    "direct"
+  ]
 }

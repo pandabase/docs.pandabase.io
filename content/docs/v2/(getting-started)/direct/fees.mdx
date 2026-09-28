@@ -1,0 +1,39 @@
+---
+title: "Fees"
+description: "The Pandabase fee, processing costs, and an example payment."
+---
+
+<Callout type="warn">
+Pandabase v2 is still in development, and we're still writing these docs. Some content may be inaccurate, incomplete, or inconsistent between pages.
+</Callout>
+
+Pandabase Direct costs **3.9% + 29¢** per successful transaction, plus **Interchange++** fees from our payment processing partner, passed through at cost. These rates apply to software and digital products.
+
+## What Interchange++ means
+
+Interchange++ separates card processing costs into three parts:
+
+| Part | What it pays for |
+| --- | --- |
+| Interchange | The card issuer's fee. |
+| Card network fee | The card network's fee. |
+| Acquirer fee | The processing partner's fee for accepting the payment. |
+
+These costs are added to the Pandabase fee. They aren't a single fixed rate for every payment. [Adyen's explanation of Interchange++](https://help.adyen.com/knowledge/payment-methods/explore-payment-methods/what-is-the-interchange) describes this pricing model; it doesn't set the rates for your Pandabase account.
+
+## Example payment
+
+A buyer pays **$50.00**. For this example only, assume the total processing partner charge is **$1.00**.
+
+| Item | Amount |
+| --- | --- |
+| Payment | $50.00 |
+| Pandabase fee: 3.9% × $50.00 + 29¢ | −$2.24 |
+| Processing partner charge, illustrative | −$1.00 |
+| Remaining after these fees | **$46.76** |
+
+The $1.00 processing charge is an example, not a quoted rate. This calculation excludes tax, payout fees, and any other charges that apply to the payment.
+
+## Other fees
+
+Billing, disputes, standalone 3DS, and payouts can have separate charges. See [Pricing](/v2/pricing) for the listed rates and confirm the processing terms for your account.

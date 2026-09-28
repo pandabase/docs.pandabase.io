@@ -1,2 +1,4 @@
 allowBuilds:
   esbuild: true
+patchedDependencies:
+  '@fumadocs/base-ui@16.15.14': patches/@fumadocs__base-ui@16.15.14.patch

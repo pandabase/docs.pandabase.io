@@ -1,0 +1,13 @@
+{
+  "title": "Pandabase Direct",
+  "icon": "Store",
+  "pages": [
+    "index",
+    "tax",
+    "disputes",
+    "buyer-support",
+    "fees",
+    "payouts"
+  ],
+  "defaultOpen": true
+}

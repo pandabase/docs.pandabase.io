@@ -1,6 +1,43 @@
 ---
 title: "What is Pandabase?"
-description: "Pandabase v2 documentation for merchants."
+description: "Payments, tax, and payouts for your digital products."
 ---
 
-This section is being written. Until then, see the [current documentation](/).
+import { BookOpen, CreditCard, Rocket, ShoppingBasket, Terminal } from 'lucide-react';
+
+<Callout>
+Pandabase v2 is still in development, and we're still writing these docs. Some content may be inaccurate, incomplete, or inconsistent between pages.
+</Callout>
+
+Pandabase helps you accept payments for your digital products. We rebuilt this version from the ground up to support payments across multiple processors and give you more flexibility.
+
+<Callout>
+In this version of Pandabase, Workspaces replace stores as the main containers for your business. Each Workspace is isolated and can have several stores attached to it. Your existing stores continue to work as usual.
+</Callout>
+
+## Get started
+
+Follow [Start selling](/v2/quickstart) to create your account and set up a Workspace. You can sell in two modes. See [Pricing](/v2/pricing) for rates and what each mode includes.
+
+<Cards>
+  <Card title="Merchant of record" icon={<Rocket />} href="/v2/merchant-of-record">
+    Pandabase is the legal seller and handles payments, tax, disputes, and payouts for you.
+  </Card>
+  <Card title="Pandabase Direct" icon={<CreditCard />} href="/v2/direct">
+    You remain the legal seller. Payments run through our processing partners, and you keep responsibility for tax, disputes, and fraud liability.
+  </Card>
+</Cards>
+
+## Learn more
+
+<Cards>
+  <Card title="Current documentation" icon={<BookOpen />} href="/">
+    Explore existing guides for payments, products, stores, and payouts.
+  </Card>
+  <Card title="Developers" icon={<Terminal />} href="/v2/developers">
+    Find documentation for integrating with Pandabase.
+  </Card>
+  <Card title="Platforms" icon={<ShoppingBasket />} href="/v2/platforms">
+    Find documentation for platforms using Pandabase.
+  </Card>
+</Cards>

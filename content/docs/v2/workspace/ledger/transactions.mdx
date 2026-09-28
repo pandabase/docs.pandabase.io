@@ -1,0 +1,100 @@
+---
+title: "Transactions"
+description: "Record balance changes, manage pending transactions, and reverse posted entries."
+---
+
+<Callout type="warn">
+Ledger is in alpha. There are no Ledger fees during alpha.
+</Callout>
+
+A transaction records a balance change between accounts in the same ledger. Its total debits and credits must match **in each currency**. You can include more than one currency, but a USD debit can't balance a EUR credit.
+
+## Create a transaction
+
+| Field | Description |
+| --- | --- |
+| `entries` | **Required.** 2–1,000 entries. |
+| `status` | `posted` (default) or `pending`. |
+| `effective_at` | The accounting date. Defaults to the creation time. |
+| `external_id` | Your own reference, up to 255 bytes, unique within the ledger. |
+| `description`, `metadata` | A readable explanation and your own attributes. |
+
+Each entry needs an `account_id`, a `side` (`debit` or `credit`), and a positive `amount`.
+
+```json
+{
+  "description": "Opening capital",
+  "external_id": "opening-2026",
+  "entries": [
+    { "account_id": "acct_cash...", "side": "debit", "amount": "10000" },
+    { "account_id": "acct_equity...", "side": "credit", "amount": "10000" }
+  ]
+}
+```
+
+## Balance conditions
+
+Add a balance condition to an entry when the transaction must leave the account within a limit, such as keeping at least $5 available. The ledger checks the condition as part of the transaction, so another balance change cannot slip between the check and the posting.
+
+| Condition | Checks |
+| --- | --- |
+| `available_balance_amount` | The available balance after the transaction. |
+| `posted_balance_amount` | The posted balance after the transaction. |
+| `pending_balance_amount` | The pending balance after the transaction. |
+
+Each condition can use `gt`, `gte`, `eq`, `lt`, `lte`, or `not_eq`, and every comparison you supply must pass. For example, `{"gte": "500"}` on a USD account requires at least $5 after the whole transaction.
+
+Include the account's expected `lock_version` if the transaction should only proceed when the account is unchanged since you last read it. If the version has changed, the ledger rejects the transaction.
+
+## Pending, posted, and archived transactions
+
+Transactions are posted by default. Create one as pending when you need to reserve funds before deciding whether to post or archive it.
+
+<Steps>
+<Step>
+
+### Pending
+
+Create a transaction with `status: "pending"` to reserve outgoing funds. Pending inflows raise the pending balance but not the available balance. You can still edit a pending transaction's description, metadata, accounting date, or entries.
+
+</Step>
+<Step>
+
+### Posted
+
+Post a pending transaction to make it final. You can post all of its entries, or post less — the unused part of the reservation is released and nothing stays pending.
+
+</Step>
+<Step>
+
+### Archived
+
+Archive a pending transaction to release its reservation without posting it.
+
+</Step>
+</Steps>
+
+### Reverse a transaction
+
+Posted transactions are never edited or deleted. To undo one, reverse it: this creates a new posted transaction with the opposite entries and leaves the original intact. Each transaction can be reversed once, and normal balance checks still apply.
+
+## Batches and bulk requests
+
+| | Batch | Bulk request |
+| --- | --- | --- |
+| Size | 1–1,000 transactions | 1–10,000 transactions |
+| Processing | Synchronous | Queued in the background |
+| Atomic | Yes by default, or independent | Always independent |
+| Results | In the response, in input order | Fetched later, in input order |
+
+A batch is all-or-nothing by default: if one transaction fails, none are saved. Always inspect each item's result, even when the whole response isn't a success.
+
+## Retry requests safely
+
+Creating transactions, batches, bulk requests, holds, captures, reversals, schedules, and settlements requires an `Idempotency-Key`. Use a unique key per intended operation, and reuse it only when retrying that exact request.
+
+```http
+Idempotency-Key: order-1001-payment
+```
+
+A retry with the same key and identical request returns the saved result without recording the operation twice. The same key with a different request is rejected. Use globally unique keys and don't recycle them. Batch and bulk items get `/0`, `/1`, and so on appended to your key.

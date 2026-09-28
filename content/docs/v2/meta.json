@@ -1,4 +1,10 @@
 {
   "title": "v2",
-  "pages": ["(getting-started)", "developers", "platforms"]
+  "pages": [
+    "(getting-started)",
+    "workspace",
+    "account",
+    "developers",
+    "platforms"
+  ]
 }

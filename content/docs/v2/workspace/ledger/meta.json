@@ -1,0 +1,14 @@
+{
+  "title": "Ledger",
+  "icon": "BookOpenCheck",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "accounts",
+    "transactions",
+    "holds",
+    "statements-and-settlements",
+    "closing-periods",
+    "events"
+  ]
+}

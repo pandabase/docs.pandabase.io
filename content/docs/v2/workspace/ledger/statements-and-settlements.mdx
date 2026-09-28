@@ -1,0 +1,67 @@
+---
+title: "Statements and settlements"
+description: "Save statements, record settlements, and get notified when a balance changes."
+---
+
+<Callout type="warn">
+Ledger is in alpha. There are no Ledger fees during alpha.
+</Callout>
+
+Statements save records for reporting. Settlements mark entries as settled, and balance monitors notify your application when a balance meets a condition.
+
+## Statements
+
+A statement saves an account's posted opening balance, closing balance, and entries for a period. Later backdated transactions don't change a saved statement, so it stays a reliable record of what was reported.
+
+```json
+{
+  "account_id": "acct_...",
+  "effective_at_lower_bound": "2026-09-01T00:00:00Z",
+  "effective_at_upper_bound": "2026-10-01T00:00:00Z",
+  "description": "September statement"
+}
+```
+
+This includes entries dated September 1 up to, but not including, October 1. The statement returns `starting_balance`, `ending_balance`, and `entry_count`. You can also list its saved entries.
+
+## Settlements
+
+A settlement totals an account's unsettled postings, records the net amount against another account, and marks the covered entries as settled. The other account is called the **contra account**. Each posting can be settled only once.
+
+Use this to record a seller payout or a transfer to a bank account in the ledger. Your payment provider still handles the actual transfer.
+
+| Field | Description |
+| --- | --- |
+| `settled_account_id` | **Required.** The account whose unsettled entries are covered. |
+| `contra_account_id` | **Required.** A different account in the same ledger and currency. |
+| `effective_at_upper_bound` | Only cover postings before this accounting date. Omit to include everything unsettled. |
+
+```json
+{
+  "settled_account_id": "acct_vendor...",
+  "contra_account_id": "acct_bank...",
+  "description": "Vendor payout"
+}
+```
+
+If the covered entries net to zero, the settlement marks them without creating a transaction.
+
+## Balance monitors
+
+A balance monitor watches an account and emits a `balance_monitor.triggered` event when a condition becomes true, such as a wallet dropping below $5.
+
+```json
+{
+  "account_id": "acct_...",
+  "alert_condition": {
+    "field": "available_balance_amount",
+    "operator": "lt",
+    "value": "500"
+  },
+  "description": "Low wallet balance"
+}
+```
+
+The monitor sends an event when a balance change makes the condition true after it was false. It does not send an event just because the condition is already true when you create it.
+
+To watch a different account or change the condition, replace the monitor.

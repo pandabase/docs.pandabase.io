@@ -1,0 +1,72 @@
+---
+title: "Events and webhooks"
+description: "Receive notifications when accounts, transactions, and other ledger records change."
+---
+
+<Callout type="warn">
+Ledger is in alpha. There are no Ledger fees during alpha.
+</Callout>
+
+Ledger saves an event whenever a record changes. The event and the change are saved together in the same database transaction.
+
+An event's `data` shows the resource at the time of that change. Fetch the resource again if your application needs its latest state.
+
+## Event types
+
+| Type | Sent when |
+| --- | --- |
+| `account.created`, `account.updated` | An account is created or changed, including status changes. |
+| `transaction.created` | A transaction is created, including ones created posted. |
+| `transaction.updated` | A pending transaction is edited. |
+| `transaction.posted` | A pending transaction is posted. |
+| `transaction.archived` | A transaction is archived. |
+| `hold.created`, `hold.captured`, `hold.voided`, `hold.expired` | A hold changes. |
+| `balance_monitor.triggered` | A balance monitor's condition becomes true. |
+| `bulk_request.completed` | A bulk request finishes. |
+| `settlement.created` | A settlement is created. |
+
+Events are kept for 30 days. Use them to react to changes, and use ledger entries for the accounting history.
+
+## Webhook endpoints
+
+Register an HTTPS URL to receive events as JSON `POST` requests. Choose which events to receive with `event_types`, using exact names like `hold.captured`, patterns like `transaction.*`, or `*` for everything.
+
+```json
+{
+  "url": "https://example.com/webhooks/ledger",
+  "event_types": ["transaction.*", "hold.captured"],
+  "description": "Payments service"
+}
+```
+
+Creating an endpoint returns a signing secret that starts with `whsec_`. It's only shown once, so save it then.
+
+## Receive events
+
+The same event can arrive more than once, and events can arrive out of order. Track event IDs so you don't process a duplicate twice.
+
+Return a `2xx` response once you've accepted the event. Any other status, a network error, or no response within 10 seconds counts as a failed attempt.
+
+## Verify signatures
+
+<Steps>
+<Step>
+Read the raw request body before parsing the JSON.
+</Step>
+<Step>
+Extract `t` and `v1` from the signature header, which looks like `t=1788220800,v1=<hex signature>`.
+</Step>
+<Step>
+Compute an HMAC-SHA256 of `<t>.<raw body>`, using the **entire** secret string, including `whsec_`, as the key.
+</Step>
+<Step>
+Compare the lowercase hex digest with `v1` using a constant-time comparison.
+</Step>
+<Step>
+Reject timestamps outside your tolerance, such as five minutes, and deduplicate by event ID.
+</Step>
+</Steps>
+
+## Retries
+
+A failed delivery is retried 11 times after the first attempt, over roughly three days: after 1 minute, 5 minutes, 30 minutes, 1 hour, 2 hours, 5 hours, 10 hours, 10 hours, 12 hours, 12 hours, and 12 hours. Each attempt gets a fresh timestamp and signature. You can also request another attempt for a failed delivery yourself.

@@ -1,0 +1,76 @@
+---
+title: "Holds and scheduled transactions"
+description: "Reserve funds for later use or schedule a transaction."
+---
+
+<Callout type="warn">
+Ledger is in alpha. There are no Ledger fees during alpha.
+</Callout>
+
+A hold reserves funds now. A scheduled transaction attempts to post entries later. Use a hold when the funds must stay available for a specific operation.
+
+## Create a hold
+
+A hold reduces the available balance without creating a pending transaction. You can capture it once, release it by voiding it, or let it expire.
+
+| Field | Description |
+| --- | --- |
+| `account_id` | **Required.** The account whose funds are reserved. |
+| `amount` | **Required.** The positive amount to reserve. |
+| `expires_at` | **Required.** When the hold can no longer be captured. |
+| `description` | What the reservation is for. |
+
+```json
+{
+  "account_id": "acct_...",
+  "amount": "10000",
+  "description": "Order reservation",
+  "expires_at": "2030-01-01T00:00:00Z"
+}
+```
+
+### Capture a hold
+
+Capturing creates a ledger transaction for up to the held amount. The destination account must use the same ledger and currency.
+
+```json
+{
+  "destination_account_id": "acct_...",
+  "amount": "6240",
+  "description": "Order completed"
+}
+```
+
+Capturing releases the **whole** hold, including any unused amount. In this example, $100 was held and $62.40 captured, so the remaining $37.60 becomes available again.
+
+### Release a hold
+
+| Outcome | What happens |
+| --- | --- |
+| Voided | You release the hold. No transaction is created. |
+| Expired | The hold passes `expires_at` and can't be captured, even before its status updates. |
+
+A hold's status is `pending`, `captured`, `voided`, or `expired`.
+
+## Scheduled transactions
+
+Set `execute_at` alongside the usual transaction fields to schedule a transaction. It runs at or after that time.
+
+```json
+{
+  "execute_at": "2030-01-01T00:00:00Z",
+  "description": "Monthly interest",
+  "entries": [
+    { "account_id": "acct_interest...", "side": "debit", "amount": "1000" },
+    { "account_id": "acct_income...", "side": "credit", "amount": "1000" }
+  ]
+}
+```
+
+<Callout>
+Scheduling doesn't reserve funds. Account and balance checks happen when the schedule runs, so it can fail if funds are no longer available.
+</Callout>
+
+A schedule has one of four statuses: `scheduled`, `executed`, `failed`, or `canceled`. You can cancel it only while it is `scheduled`.
+
+Schedules can't be edited or retried. If one fails, read its `failure` reason before creating a replacement with a new idempotency key.

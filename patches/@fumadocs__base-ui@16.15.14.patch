@@ -1,0 +1,12 @@
+diff --git a/dist/components/ui/popover.js b/dist/components/ui/popover.js
+index 40399721a0296f92edb83e22afbeef814e1d479f..917abcd29acd1da456c992d67f5f8e0a272c1e1d 100644
+--- a/dist/components/ui/popover.js
++++ b/dist/components/ui/popover.js
+@@ -8,6 +8,7 @@ const Popover = Popover$1.Root;
+ const PopoverTrigger = Popover$1.Trigger;
+ function PopoverContent({ className, align = "center", sideOffset = 4, ...props }) {
+ 	return /* @__PURE__ */ jsx(Popover$1.Portal, { children: /* @__PURE__ */ jsx(Popover$1.Positioner, {
++		positionMethod: "fixed",
+ 		align,
+ 		side: "bottom",
+ 		sideOffset,

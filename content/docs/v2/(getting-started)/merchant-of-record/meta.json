@@ -1,0 +1,12 @@
+{
+  "title": "Merchant of record",
+  "icon": "Landmark",
+  "pages": [
+    "index",
+    "tax",
+    "disputes",
+    "buyer-support",
+    "payouts"
+  ],
+  "defaultOpen": true
+}

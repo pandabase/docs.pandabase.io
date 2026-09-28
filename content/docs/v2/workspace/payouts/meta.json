@@ -1,0 +1,11 @@
+{
+  "title": "Payouts",
+  "icon": "Banknote",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "bank-accounts",
+    "payout-schedule",
+    "requesting-a-payout"
+  ]
+}

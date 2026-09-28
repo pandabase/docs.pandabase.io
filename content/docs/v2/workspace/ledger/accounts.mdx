@@ -1,0 +1,97 @@
+---
+title: "Accounts and balances"
+description: "Create ledger accounts, read their balances, and organize them with categories."
+---
+
+<Callout type="warn">
+Ledger is in alpha. There are no Ledger fees during alpha.
+</Callout>
+
+An account tracks a balance in one currency. Create separate accounts for the balances you need to track, such as a customer's wallet.
+
+The account's **normal side** tells the ledger which entries increase its balance. Asset and expense accounts normally increase with a `debit`; liability, equity, and revenue accounts normally increase with a `credit`. A customer wallet usually uses `credit` because its balance represents money you owe the customer.
+
+## Create an account
+
+| Field | Description |
+| --- | --- |
+| `ledger_id` | **Required.** The ledger the account belongs to. |
+| `code` | **Required.** Up to 128 bytes, unique within the ledger. A readable key like `wallet:alice`. |
+| `currency` | **Required.** A registered currency code. |
+| `normal_side` | **Required.** `debit` or `credit`. Can't be changed later. |
+| `name`, `description`, `metadata` | Display details and your own attributes. |
+| `allow_negative` | Default `false`. Allows unlimited negative balances. |
+| `overdraft_limit` | Default `"0"`. How far below zero the balance may go when `allow_negative` is `false`. |
+
+```json
+{
+  "ledger_id": "ldg_...",
+  "code": "wallet:alice",
+  "name": "Alice's wallet",
+  "currency": "USD",
+  "normal_side": "credit"
+}
+```
+
+## Balances
+
+Each account reports three balances. Every balance includes total `debits`, total `credits`, and an `amount`. For a debit-normal account, the amount is debits minus credits. For a credit-normal account, it is credits minus debits.
+
+| Balance | Meaning |
+| --- | --- |
+| `posted` | The balance from entries that have been posted. |
+| `pending` | Posted totals plus pending debits and credits. |
+| `available` | Posted funds minus pending outflows and holds. Pending inflows aren't spendable yet. |
+
+The account also reports `held`, the funds reserved by outstanding [holds](/v2/workspace/ledger/holds).
+
+```json
+{
+  "posted": { "debits": "0", "credits": "5000", "amount": "5000" },
+  "pending": { "debits": "1500", "credits": "5000", "amount": "3500" },
+  "available": { "debits": "1500", "credits": "5000", "amount": "3500" }
+}
+```
+
+This credit-normal wallet has $50 posted and $35 available after a pending $15 withdrawal.
+
+You can also read balances for an accounting date range. Those totals cover entries in the range and **exclude holds**, so use the account itself for the current spendable balance.
+
+## History
+
+The entry history shows posted entries in the order they were posted. Each entry includes `balance_after`, the balance immediately after that entry. Backdating an entry doesn't change its place in this history.
+
+## Account status
+
+| Status | Behavior |
+| --- | --- |
+| `open` | New accounts start open. |
+| `frozen` | Rejects new money movements until unfrozen. |
+| `closed` | Permanent. Requires a zero posted balance, no pending changes, and no held funds. |
+
+Repeating the same status change returns the account unchanged.
+
+## Currencies
+
+ISO 4217 currencies are preloaded. To use another currency, register it first with a `code` (3–16 characters: uppercase letters, digits, or `_`, starting with a letter) and an `exponent`, the number of decimal places in one whole unit.
+
+```json
+{ "code": "ETH", "exponent": 18 }
+```
+
+Registration is permanent; currencies can't be updated or deleted.
+
+## Account categories
+
+Use categories to total related accounts, such as all customer wallets in USD. Accounts in a category must belong to the same ledger and use the same currency. Categories can nest up to seven levels deep. An account included through more than one branch is counted only once.
+
+```json
+{
+  "ledger_id": "ldg_...",
+  "currency": "USD",
+  "normal_side": "credit",
+  "name": "Customer wallets"
+}
+```
+
+The category's normal side controls the sign of its totals, and its members must match its ledger and currency. Deleting a category leaves its accounts in place.

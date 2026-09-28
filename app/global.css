@@ -33,7 +33,7 @@
   --secondary-foreground: oklch(25% 0.012 150);
   --muted: oklch(97.5% 0.006 150 / 70%);
   --muted-foreground: oklch(46% 0.014 150);
-  --accent: oklch(97.5% 0.006 150);
+  --accent: oklch(97.5% 0.006 150 / 70%);
   --accent-foreground: oklch(25% 0.012 150);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(91% 0.008 150);
@@ -62,7 +62,7 @@
   --secondary-foreground: oklch(96% 0.004 150);
   --muted: oklch(20% 0.008 150 / 70%);
   --muted-foreground: oklch(70% 0.008 150);
-  --accent: oklch(23% 0.01 150);
+  --accent: oklch(23% 0.01 150 / 70%);
   --accent-foreground: oklch(96% 0.004 150);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(28% 0.01 150);
@@ -109,55 +109,72 @@ body::before {
 
 body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.1;
-  mix-blend-mode: soft-light;
+  /* no mix-blend-mode here: blending isolates the page and silently disables every backdrop-filter */
+  opacity: 0.05;
 }
 
 .dark body::after {
-  opacity: 0.16;
+  opacity: 0.07;
 }
 
-/* glass surfaces so the grain shows through */
+/* glass surfaces so the grain shows through; tune the frost here */
+:root {
+  --glass: blur(64px) saturate(180%) brightness(1.03);
+  --glass-surface: blur(40px) saturate(170%) brightness(1.03);
+}
+
+.dark {
+  --glass: blur(64px) saturate(180%) brightness(1.18);
+  --glass-surface: blur(40px) saturate(170%) brightness(1.15);
+}
+
 #nd-notebook-layout header {
   background-color: color-mix(in oklab, var(--background) 50%, transparent);
-  backdrop-filter: blur(28px) saturate(160%);
+  backdrop-filter: var(--glass);
 }
 
 #nd-sidebar {
   background-color: color-mix(in oklab, var(--sidebar) 45%, transparent);
-  backdrop-filter: blur(40px) saturate(170%);
+  backdrop-filter: var(--glass);
 }
 
 #nd-sidebar[data-collapsed='false'] {
-  inset: 0.75rem auto 0.75rem 0.75rem;
-  width: calc(100% - 0.75rem);
-  border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
-  border-radius: var(--radius-xl);
-  box-shadow:
-    0 1px 0 0 color-mix(in oklab, white 6%, transparent) inset,
-    0 12px 32px -12px rgb(0 0 0 / 0.35);
-  overflow: hidden;
-}
-
-#nd-sidebar[data-collapsed='false'] > * {
-  width: 100%;
+  border-inline-end: 1px solid var(--border);
 }
 
 #nd-sidebar-mobile {
   background-color: color-mix(in oklab, var(--background) 60%, transparent);
-  backdrop-filter: blur(40px) saturate(170%);
+  backdrop-filter: var(--glass);
 }
 
 /* card, popover and secondary surfaces are translucent, frost whatever sits behind them */
 [class*='bg-fd-card'],
 [class*='bg-fd-popover'],
-[class*='bg-fd-secondary'] {
-  backdrop-filter: blur(24px) saturate(160%);
+[class*='bg-fd-secondary'],
+[class*='bg-fd-muted'],
+[class*='bg-fd-background'] {
+  backdrop-filter: var(--glass-surface);
+}
+
+/* nested glass can only blur its parent and stacks tints, so only the outermost panel frosts */
+#nd-page
+  :is([class*='bg-fd-card'], [class*='bg-fd-popover'], [class*='bg-fd-secondary'], [class*='bg-fd-muted'], [class*='bg-fd-background'])
+  :is([class*='bg-fd-card'], [class*='bg-fd-popover'], [class*='bg-fd-secondary'], [class*='bg-fd-muted'], [class*='bg-fd-background']):not(
+    :hover,
+    [data-popup-open]
+  ) {
+  backdrop-filter: none;
+  background-color: transparent;
+}
+
+/* openapi example panels and the mobile toc bar use the solid page background */
+#nd-notebook-layout [class~='bg-fd-background'] {
+  background-color: color-mix(in oklab, var(--background) 55%, transparent);
 }
 
 /* dim and blur the page behind the search dialog and mobile menu */
 [class*='bg-fd-overlay'] {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
 }
 
 #nd-page :is([class*='bg-fd-card'], [class*='bg-fd-secondary']) {

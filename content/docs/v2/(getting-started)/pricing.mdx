@@ -1,0 +1,137 @@
+---
+title: "Pricing"
+description: "Compare payment modes, transaction rates, and other fees."
+---
+
+import { Building2, Landmark, Store } from 'lucide-react';
+
+Choose Merchant of record or Pandabase Direct. There are no monthly fees, setup fees, or minimum commitments. Transaction fees apply to successful payments; other fees are listed below.
+
+<Callout>
+All prices are in USD. These rates apply to software and digital products. Other business categories are priced at 8–9%. Contact sales for a quote.
+</Callout>
+
+## Plans
+
+<Cards>
+  <Card title="Merchant of record — 5.9% + 50¢" icon={<Landmark />}>
+    Pandabase is the legal seller and handles payments, tax, disputes, and payouts for you.
+  </Card>
+  <Card title="Pandabase Direct — 3.9% + 29¢" icon={<Store />}>
+    You remain the legal seller. Payments run through our processing partners, and you keep responsibility for tax, disputes, and fraud liability.
+  </Card>
+  <Card title="Custom" icon={<Building2 />}>
+    Contact sales for rates based on your payment volume and business needs.
+  </Card>
+</Cards>
+
+### Merchant of record
+
+**5.9% + 50¢** per successful transaction.
+
+- **+1.5%** for cards and alternative payment methods outside the US
+- **+0.5%** for subscription payments
+
+Included:
+
+- Pandabase is the legal seller of record
+- Sales tax, VAT, and GST filed and paid
+- Fraud screening and dispute handling
+- Processor fees
+- Checkout, billing, and invoicing
+
+### Pandabase Direct
+
+**3.9% + 29¢** per successful transaction, plus **Interchange++** fees from our payment processing partner, passed through at cost.
+
+Included:
+
+- Checkout, billing, and invoicing
+- The same payment methods and currencies as Merchant of record
+
+Your responsibilities:
+
+- Tax registration and filing
+- Dispute and fraud liability
+
+### Custom
+
+Contact sales if you process a high volume of payments or need different rates. Custom plans can include:
+
+- Volume discounts
+- Multi-product pricing
+- Country-specific rates
+- Dedicated support
+
+## Compare plans
+
+The main difference is who acts as the legal seller. With Merchant of record, Pandabase handles tax and disputes. With Pandabase Direct, those responsibilities stay with you.
+
+| Feature                                   | Pandabase Direct | Merchant of record |
+| ----------------------------------------- | ---------------- | ------------------ |
+| Checkout, cards, wallets, and local methods | Included       | Included           |
+| Billing, invoicing, and payment links     | Included         | Included           |
+| Legal seller of record                    | You              | Pandabase          |
+| Sales tax and VAT registration            | You register     | Included           |
+| Tax filing and remittance                 | You file         | Included           |
+| Dispute handling and liability            | You              | Included           |
+| Billing support for buyers                | Included         | Included           |
+| Processor fees                            | Passed through   | Included           |
+
+## Payments
+
+| Product                                 | Plan               | Rate                                  |
+| --------------------------------------- | ------------------ | ------------------------------------- |
+| Cards and wallets                       | Merchant of record | 5.9% + 50¢ per successful transaction |
+| Bank and local payment methods          | Merchant of record | 5.9% + 50¢ per successful transaction |
+| Adaptive currency                       | Merchant of record | 3–4%, paid by the customer, not you   |
+| Cards, wallets, and local methods       | Pandabase Direct   | 3.9% + 29¢ + Interchange++            |
+| Standalone 3DS                          | Both               | $0.12 per authentication              |
+| Hosted, embedded, and in-app checkout   | Both               | Included in the standard rate         |
+
+- **Cards and wallets:** Visa, Mastercard, American Express, Discover, Apple Pay, and Google Pay, online and in-app.
+- **Bank and local payment methods:** iDEAL, Pix, UPI, Pay by Bank, Alipay, WeChat Pay, and more.
+- **Adaptive currency:** show prices in the buyer's local currency at checkout.
+- **Standalone 3DS:** ask the cardholder's bank to verify a card payment before you charge it, so eligible fraud liability shifts to the issuer.
+
+With Merchant of record, cards and alternative payment methods from outside the US add **1.5%**, and subscription payments add **0.5%**.
+
+## Billing and disputes
+
+| Product                                 | Rate                                                      |
+| --------------------------------------- | --------------------------------------------------------- |
+| Recurring and usage-based billing       | +0.5% per subscription payment, on top of the transaction rate |
+| Invoices                                | Included in the standard rate                             |
+| Dispute handling                        | $30 per dispute                                           |
+| Dispute prevention                      | $30 per dispute prevented                                 |
+
+- **Recurring and usage-based billing:** plans, seats, credits, trials, proration, and failed payment retries.
+- **Invoices:** hosted invoice pages with automatic reminders and receipts.
+- **Dispute handling:** we respond to chargebacks with evidence on your behalf.
+- **Dispute prevention:** resolve disputes with the card issuer before they become chargebacks.
+
+## Payouts and other services
+
+| Product                          | Rate                                       |
+| -------------------------------- | ------------------------------------------ |
+| US payouts                       | $1 per ACH payout                          |
+| International payouts            | 2–4% + $1 per payout, depending on the country |
+| Ledger (alpha)                   | Free during alpha                          |
+| Vault (alpha)                    | Free during alpha                          |
+
+- **Ledger:** post balanced entries and close periods over the API.
+- **Vault:** tokenize cards and sensitive data through our vault.
+
+## Example payment
+
+A customer in the US pays **$49.00** for a one-time purchase, sold with Pandabase as merchant of record:
+
+|                                  | Amount     |
+| -------------------------------- | ---------- |
+| Sale                             | $49.00     |
+| Pandabase fee (5.9% × $49.00 + 50¢) | -$3.39  |
+| **You keep**                     | **$45.61** |
+
+You keep **$45.61** after the transaction fee. Payout fees and any other applicable charges are separate.
+
+Follow [Start selling](/v2/quickstart) to set up your Workspace and accept your first payment.

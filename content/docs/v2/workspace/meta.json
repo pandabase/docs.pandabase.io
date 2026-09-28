@@ -1,0 +1,16 @@
+{
+  "title": "Manage your workspace",
+  "icon": "LayoutGrid",
+  "root": true,
+  "pages": [
+    "---[LayoutGrid]Manage your workspace---",
+    "index",
+    "stores",
+    "payments",
+    "disputes",
+    "payment-fraud",
+    "payouts",
+    "vault",
+    "ledger"
+  ]
+}

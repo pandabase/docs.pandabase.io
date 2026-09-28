@@ -1,0 +1,105 @@
+---
+title: "Access and security"
+description: "Control access to saved data, review activity, and handle retries and errors."
+---
+
+<Callout type="warn">
+Vault is in alpha. There are no Vault fees during alpha.
+</Callout>
+
+Vault uses API keys and permissions to control what each integration can do. Access logs record token activity, and events notify your application when tokens change.
+
+## Keys and permissions
+
+| Key | Prefix | Use |
+| --- | --- | --- |
+| Secret key | `sk_live_`, `sk_test_` | Server-side requests. Never expose it in a browser or app. |
+| Publishable key | `pk_live_`, `pk_test_` | Loading Elements in the browser. It can only create tokens through a session. |
+
+Choose permissions based on what the integration needs to do. Reading a token and revealing its raw data are separate permissions:
+
+| Permission | Allows |
+| --- | --- |
+| `tokens:read` | Retrieving and listing tokens, without raw data. |
+| `tokens:write` | Creating, updating, and deleting tokens, and creating sessions. |
+| `tokens:reveal` | Revealing raw data. Grant it only to keys that must see raw values. |
+| `proxy:use` | Sending proxy requests. |
+
+Test keys only work with test tokens, and test tokens can't hold real card numbers.
+
+## Access logs
+
+Access logs record each action on a token, the actor, and the source of the request. Use them to check when a token was read, revealed, or sent through the proxy.
+
+`GET /tokens/{id}/access_logs` returns a list, newest first.
+
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "access_log",
+      "id": "val_01j9zt4n6q8s0u2w4y6a8c0e2g",
+      "token_id": "tok_01j9zq3c7mfx8v2k5n6p4r8t0w",
+      "action": "revealed",
+      "actor": { "type": "api_key", "id": "key_01j9zs2m4p6r8t0v2x4z6b8d0f" },
+      "ip_address": "203.0.113.24",
+      "created_at": "2026-09-02T09:15:00Z"
+    }
+  ],
+  "has_more": false,
+  "next_cursor": null
+}
+```
+
+The `action` field is `created`, `retrieved`, `updated`, `revealed`, `proxied`, or `deleted`. Proxy logs also include the destination host and `Pandabase-Proxy-Request-Id`, which you can match to the response header.
+
+## Events
+
+Vault sends events to your webhook endpoints when tokens change.
+
+| Type | Sent when |
+| --- | --- |
+| `token.created` | A token is created, including through Elements. |
+| `token.updated` | A token's metadata or expiry changes. |
+| `token.revealed` | A token's raw data is revealed. |
+| `token.deleted` | A token is deleted or expires. |
+
+Event data never includes raw values.
+
+## Retry requests safely
+
+Include an `Idempotency-Key` when creating a token or sending a proxy request. Give each operation its own key. If you need to retry, send the same request with the same key.
+
+```http
+Idempotency-Key: order-1001-charge
+```
+
+An identical retry with the same key returns the saved result without repeating the operation. Reusing the key with a different request returns `422 idempotency_key_reused`.
+
+## Errors
+
+Errors return JSON with the content type `application/problem+json`. Check `code` to decide how your application should respond. The `detail` field explains what went wrong, and `request_id` identifies the request.
+
+```json
+{
+  "type": "urn:pandabase:vault:error:permission_denied",
+  "title": "Forbidden",
+  "status": 403,
+  "code": "permission_denied",
+  "detail": "This key doesn't have the tokens:reveal permission.",
+  "request_id": "req_01j9zv6q8s0u2w4y6a8c0e2g4j"
+}
+```
+
+| Status | Codes |
+| --- | --- |
+| 400 | `invalid_request`, `idempotency_key_required` |
+| 401 | `unauthorized` |
+| 403 | `permission_denied`, `proxy_destination_not_allowed` |
+| 404 | `token_not_found`, `session_not_found` |
+| 409 | `idempotency_key_in_use` |
+| 410 | `token_expired`, `session_expired`, `cvc_unavailable` |
+| 422 | `validation_error`, `invalid_card_number`, `idempotency_key_reused` |
+| 429 | `rate_limited` |
+| 502 | `proxy_destination_unreachable` |

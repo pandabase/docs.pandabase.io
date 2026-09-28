@@ -1,0 +1,10 @@
+{
+  "title": "Disputes",
+  "icon": "Gavel",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "responding-to-disputes",
+    "dispute-prevention"
+  ]
+}

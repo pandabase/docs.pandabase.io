@@ -26,7 +26,7 @@ export const socials = [
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: <Image src="/logo.png" alt={appName} width={2479} height={617} priority className="h-7 w-auto" />,
+      title: <Image src="/logo.png" alt={appName} width={2479} height={617} priority className="h-6 w-auto shrink-0 object-contain object-left sm:h-7" />,
     },
   };
 }

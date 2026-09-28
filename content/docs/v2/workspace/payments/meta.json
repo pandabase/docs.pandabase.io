@@ -1,0 +1,11 @@
+{
+  "title": "Payments",
+  "icon": "CreditCard",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "viewing-payments",
+    "payment-methods",
+    "refunds"
+  ]
+}
