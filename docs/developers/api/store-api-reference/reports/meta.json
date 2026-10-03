@@ -1,0 +1,9 @@
+{
+	"title": "Reports",
+	"pages": [
+		"get-stores-storeid-reports",
+		"post-stores-storeid-reports",
+		"get-stores-storeid-reports-reportid",
+		"get-stores-storeid-reports-reportid-download-format"
+	]
+}

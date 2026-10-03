@@ -1,0 +1,10 @@
+{
+	"title": "Coupons",
+	"pages": [
+		"get-stores-storeid-coupons",
+		"post-stores-storeid-coupons",
+		"get-stores-storeid-coupons-couponid",
+		"patch-stores-storeid-coupons-couponid",
+		"delete-stores-storeid-coupons-couponid"
+	]
+}

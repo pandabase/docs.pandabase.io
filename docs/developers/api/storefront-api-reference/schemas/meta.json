@@ -1,0 +1,15 @@
+{
+	"title": "Schemas",
+	"icon": "box",
+	"pages": [
+		"producttype",
+		"pricingmodel",
+		"pagination",
+		"categoryref",
+		"storefront",
+		"storefrontproductlistitem",
+		"storefrontproduct",
+		"storefrontcategorylistitem",
+		"storefrontcategory"
+	]
+}

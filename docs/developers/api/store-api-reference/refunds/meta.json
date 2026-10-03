@@ -1,0 +1,8 @@
+{
+	"title": "Refunds",
+	"pages": [
+		"get-stores-storeid-refunds",
+		"get-stores-storeid-refunds-refundid",
+		"post-stores-storeid-refunds-orders-orderid"
+	]
+}

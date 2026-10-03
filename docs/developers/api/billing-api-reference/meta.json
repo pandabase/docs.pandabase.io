@@ -1,0 +1,8 @@
+{
+	"title": "Billing APIs",
+	"icon": "code",
+	"pages": [
+		"checkouts",
+		"schemas"
+	]
+}

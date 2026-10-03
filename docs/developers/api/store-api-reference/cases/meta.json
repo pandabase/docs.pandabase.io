@@ -1,0 +1,11 @@
+{
+	"title": "Cases",
+	"pages": [
+		"get-stores-storeid-cases",
+		"get-stores-storeid-cases-caseid",
+		"patch-stores-storeid-cases-caseid",
+		"get-stores-storeid-cases-caseid-messages",
+		"post-stores-storeid-cases-caseid-messages",
+		"post-stores-storeid-cases-caseid-read"
+	]
+}

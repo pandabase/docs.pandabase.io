@@ -1,0 +1,14 @@
+{
+	"title": "Subscriptions",
+	"pages": [
+		"get-stores-storeid-subscriptions",
+		"get-stores-storeid-subscriptions-subscriptionid",
+		"get-stores-storeid-subscriptions-subscriptionid-usage",
+		"get-stores-storeid-subscriptions-subscriptionid-upcoming-invoice",
+		"post-stores-storeid-subscriptions-subscriptionid-cancel",
+		"post-stores-storeid-subscriptions-subscriptionid-pause",
+		"post-stores-storeid-subscriptions-subscriptionid-resume",
+		"post-stores-storeid-subscriptions-subscriptionid-change",
+		"post-stores-storeid-subscriptions-subscriptionid-reactivate"
+	]
+}

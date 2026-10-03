@@ -1,0 +1,9 @@
+{
+	"title": "Payouts",
+	"pages": [
+		"get-stores-storeid-payouts",
+		"get-stores-storeid-payouts-payoutid",
+		"get-stores-storeid-payouts-bank-accounts",
+		"get-stores-storeid-payouts-ledger"
+	]
+}

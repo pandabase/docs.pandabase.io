@@ -1,0 +1,10 @@
+{
+	"title": "Storefront APIs",
+	"icon": "code",
+	"pages": [
+		"store",
+		"products",
+		"categories",
+		"schemas"
+	]
+}

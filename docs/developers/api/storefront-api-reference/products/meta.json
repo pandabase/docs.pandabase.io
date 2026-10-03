@@ -1,0 +1,7 @@
+{
+	"title": "Products",
+	"pages": [
+		"liststorefrontproducts",
+		"getstorefrontproduct"
+	]
+}

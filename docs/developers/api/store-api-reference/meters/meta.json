@@ -1,0 +1,10 @@
+{
+	"title": "Meters",
+	"pages": [
+		"get-stores-storeid-products-productid-meters",
+		"post-stores-storeid-products-productid-meters",
+		"get-stores-storeid-products-productid-meters-meterid",
+		"patch-stores-storeid-products-productid-meters-meterid",
+		"delete-stores-storeid-products-productid-meters-meterid"
+	]
+}

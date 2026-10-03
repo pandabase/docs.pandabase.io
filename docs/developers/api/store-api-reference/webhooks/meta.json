@@ -1,0 +1,10 @@
+{
+	"title": "Webhooks",
+	"pages": [
+		"get-stores-storeid-webhooks",
+		"post-stores-storeid-webhooks",
+		"get-stores-storeid-webhooks-webhookid",
+		"patch-stores-storeid-webhooks-webhookid",
+		"delete-stores-storeid-webhooks-webhookid"
+	]
+}

@@ -1,0 +1,7 @@
+{
+	"title": "Customers",
+	"pages": [
+		"get-stores-storeid-customers",
+		"get-stores-storeid-customers-customerid"
+	]
+}

@@ -1,0 +1,17 @@
+{
+	"title": "Schemas",
+	"icon": "box",
+	"pages": [
+		"catalogitem",
+		"dynamicitem",
+		"customer",
+		"billingaddress",
+		"customfielddefinition",
+		"estimatecheckoutbody",
+		"createcheckoutbody",
+		"merchant",
+		"lineitem",
+		"estimateresponse",
+		"checkoutsession"
+	]
+}
